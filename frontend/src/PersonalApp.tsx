@@ -27,6 +27,7 @@ import {
 } from "./personalStore";
 import "./personal.css";
 import MuscleGlyph from "./MuscleGlyph";
+import { effortLabel, effortLabels, groupInsights } from "./personalInsights";
 import {
   groups,
   exercises as catalogExercises,
@@ -92,6 +93,12 @@ export default function PersonalApp() {
       set: PersonalSet;
       index: number;
     } | null>(null);
+  const [effortEdit, setEffortEdit] = useState<{
+    exercise: string;
+    set: string;
+    workout?: string;
+    value: PersonalSet["repsInReserve"];
+  } | null>(null);
   const [backupText, setBackupText] = useState(""),
     [persistence, setPersistence] = useState("Not requested"),
     [offline, setOffline] = useState(false),
@@ -104,7 +111,8 @@ export default function PersonalApp() {
     queue = useRef(Promise.resolve(true)),
     writeSerial = useRef(0),
     blocked = useRef(false),
-    repsRef = useRef<HTMLInputElement>(null);
+    repsRef = useRef<HTMLInputElement>(null),
+    effortTrigger = useRef<HTMLElement | null>(null);
   function installState(s: PersonalState) {
     stateRef.current = s;
     revision.current = s.revision;
@@ -424,6 +432,130 @@ export default function PersonalApp() {
       setNotice("Set corrected. Original workout and set identity kept.");
     }
     setBusy(false);
+  }
+  function closeEffort() {
+    setEffortEdit(null);
+    requestAnimationFrame(() => {
+      if (effortTrigger.current?.isConnected) effortTrigger.current.focus();
+    });
+  }
+  function openEffort(
+    x: PersonalExercise,
+    set: PersonalSet,
+    workoutId?: string,
+  ) {
+    effortTrigger.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setEffortEdit({
+      exercise: x.id,
+      set: set.id,
+      workout: workoutId,
+      value: set.repsInReserve,
+    });
+  }
+  async function saveEffort(value: PersonalSet["repsInReserve"]) {
+    if (!effortEdit || busy || blocked.current) return;
+    const target = effortEdit;
+    setEffortEdit({ ...target, value });
+    setBusy(true);
+    const change = (x: PersonalExercise): PersonalExercise =>
+      x.id !== target.exercise
+        ? x
+        : {
+            ...x,
+            sets: x.sets.map((set) => {
+              if (set.id !== target.set) return set;
+              const { repsInReserve: removed, ...withoutEffort } = set;
+              return value === undefined
+                ? withoutEffort
+                : { ...withoutEffort, repsInReserve: value };
+            }),
+          };
+    const ok = await update(
+      (s) =>
+        target.workout
+          ? {
+              ...s,
+              history: s.history.map((w) =>
+                w.id === target.workout
+                  ? { ...w, exercises: w.exercises.map(change) }
+                  : w,
+              ),
+            }
+          : {
+              ...s,
+              current: s.current
+                ? { ...s.current, exercises: s.current.exercises.map(change) }
+                : null,
+            },
+      false,
+    );
+    if (ok) {
+      closeEffort();
+      setNotice("");
+    }
+    setBusy(false);
+  }
+  function effortPanel(x: PersonalExercise, workoutId?: string) {
+    if (
+      !effortEdit ||
+      effortEdit.exercise !== x.id ||
+      effortEdit.workout !== workoutId
+    )
+      return null;
+    const index = x.sets.findIndex((set) => set.id === effortEdit.set);
+    if (index < 0) return null;
+    return (
+      <section
+        className="nb-effort-picker"
+        aria-label={`Effort for set ${index + 1} of ${x.name}`}
+      >
+        <h3>How did that set feel?</h3>
+        <p>How many more reps could you have done with good form?</p>
+        <small className="personal-muted">
+          Set {index + 1} · Optional estimate. Tap a choice to save.
+        </small>
+        <div className="nb-effort-options">
+          {effortLabels.map((option) => (
+            <button
+              key={option.value}
+              className="nb-effort-option"
+              aria-pressed={effortEdit.value === option.value}
+              aria-label={`Set ${index + 1}: ${option.value === 4 ? "4+ more" : option.value === 0 ? "No more" : `${option.value} more`} good-form reps`}
+              disabled={busy || status === "error"}
+              onClick={() => void saveEffort(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <div className="personal-actions">
+          {(x.sets[index].repsInReserve !== undefined ||
+            effortEdit.value !== undefined) && (
+            <button
+              disabled={busy || status === "error"}
+              onClick={() => void saveEffort(undefined)}
+            >
+              Remove effort
+            </button>
+          )}
+          <button disabled={busy} onClick={closeEffort}>
+            Close effort
+          </button>
+        </div>
+        <details>
+          <summary>What is RPE?</summary>
+          <p className="personal-muted">
+            RPE is a rough effort scale: about 10 minus the good-form reps you
+            think you had left. No more is about RPE 10; 1 more about 9; 2 about
+            8; 3 about 7; 4+ about 6 or less. This is your estimate, not a
+            measurement.
+          </p>
+        </details>
+      </section>
+    );
   }
   async function removeSet(s: PersonalSet, index: number) {
     if (!exercise || busy || blocked.current) return;
@@ -1084,6 +1216,15 @@ export default function PersonalApp() {
                                       Cancel
                                     </button>
                                     <button
+                                      disabled={busy || status === "error"}
+                                      aria-label={`${s.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
+                                      onClick={() => openEffort(x, s)}
+                                    >
+                                      {s.repsInReserve === undefined
+                                        ? "Add effort"
+                                        : "Change effort"}
+                                    </button>
+                                    <button
                                       className="personal-danger"
                                       disabled={busy}
                                       onClick={() => void removeSet(s, index)}
@@ -1093,29 +1234,43 @@ export default function PersonalApp() {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="nb-set-row is-saved" key={s.id}>
-                                  <span className="nb-set-number">
-                                    {index + 1}
-                                  </span>
-                                  <span className="nb-set-value">
-                                    {s.weight}
-                                  </span>
-                                  <span className="nb-set-value">{s.reps}</span>
-                                  <button
-                                    className="nb-set-check"
-                                    aria-label={`Edit set ${index + 1}`}
-                                    title="Saved · edit set"
-                                    onClick={() =>
-                                      setEdit({
-                                        exercise: x.id,
-                                        set: s.id,
-                                        weight: String(s.weight),
-                                        reps: String(s.reps),
-                                      })
-                                    }
-                                  >
-                                    <Check size={20} />
-                                  </button>
+                                <div className="nb-saved-set" key={s.id}>
+                                  <div className="nb-set-row is-saved">
+                                    <span className="nb-set-number">
+                                      {index + 1}
+                                    </span>
+                                    <span className="nb-set-value">
+                                      {s.weight}
+                                    </span>
+                                    <span className="nb-set-value">
+                                      {s.reps}
+                                    </span>
+                                    <button
+                                      className="nb-set-check"
+                                      aria-label={`Edit set ${index + 1}`}
+                                      title="Saved · edit set"
+                                      onClick={() =>
+                                        setEdit({
+                                          exercise: x.id,
+                                          set: s.id,
+                                          weight: String(s.weight),
+                                          reps: String(s.reps),
+                                        })
+                                      }
+                                    >
+                                      <Check size={20} />
+                                    </button>
+                                  </div>
+                                  {s.repsInReserve !== undefined && (
+                                    <button
+                                      className="nb-effort-caption"
+                                      aria-label={`Change effort for set ${index + 1} of ${x.name}`}
+                                      onClick={() => openEffort(x, s)}
+                                    >
+                                      Set {index + 1} ·{" "}
+                                      {effortLabel(s.repsInReserve)}
+                                    </button>
+                                  )}
                                 </div>
                               ),
                             )}
@@ -1263,6 +1418,18 @@ export default function PersonalApp() {
                               </button>
                             )}
                           </div>
+                          {x.sets.length > 0 &&
+                            x.sets.at(-1)!.repsInReserve === undefined &&
+                            !effortEdit && (
+                              <button
+                                className="personal-text-button nb-effort-entry"
+                                disabled={busy || status === "error"}
+                                onClick={() => openEffort(x, x.sets.at(-1)!)}
+                              >
+                                How did that set feel?
+                              </button>
+                            )}
+                          {effortPanel(x)}
                           {comparison !== null && (
                             <p className="personal-muted">
                               Across {x.sets.length} recorded sets:{" "}
@@ -1524,6 +1691,85 @@ export default function PersonalApp() {
                 <button onClick={() => setTab("today")}>Go to Today</button>
               </section>
             )}
+            {state.history.length > 0 && (
+              <section aria-label="Muscle-group performance">
+                <h2>Performance by muscle group</h2>
+                <p className="personal-muted">
+                  Based on comparable recorded lifts, not a measurement of
+                  muscle growth.
+                </p>
+                <div className="nb-muscle-insights">
+                  {groupInsights(state.history).map((group) => (
+                    <article className="nb-muscle-insight" key={group.group}>
+                      <div className="personal-row">
+                        <MuscleGlyph group={group.group} />
+                        <h3>
+                          {groups.find((g) => g.id === group.group)?.name}
+                        </h3>
+                      </div>
+                      <p className="nb-insight-state">
+                        {group.improved
+                          ? "Performance improving"
+                          : group.comparable
+                            ? "No clear increase in comparable records"
+                            : "No comparable sessions yet"}
+                      </p>
+                      <p>
+                        {group.comparable > 0
+                          ? `${group.improved} of ${group.comparable} exercise comparisons improved`
+                          : "Two matching sessions with complete sets will unlock comparisons."}
+                      </p>
+                      <details>
+                        <summary>See exercise evidence</summary>
+                        {group.movements.map((movement) => (
+                          <div
+                            className="nb-insight-evidence"
+                            key={movement.key}
+                          >
+                            <h4>{movement.name}</h4>
+                            <p>{movement.summary}</p>
+                            {movement.previous && (
+                              <p className="nb-insight-date">
+                                Previous · {date(movement.previous.date)} ·{" "}
+                                {movement.previous.exercise.gym ||
+                                  "Unspecified gym"}{" "}
+                                · {movement.previous.exercise.equipment}
+                                <br />
+                                {movement.previous.exercise.sets
+                                  .map((set) =>
+                                    actual(
+                                      set,
+                                      movement.previous!.exercise.unit,
+                                    ),
+                                  )
+                                  .join(" · ")}
+                              </p>
+                            )}
+                            {movement.current && (
+                              <p className="nb-insight-date">
+                                Latest · {date(movement.current.date)} ·{" "}
+                                {movement.current.exercise.gym ||
+                                  "Unspecified gym"}{" "}
+                                · {movement.current.exercise.equipment}
+                                <br />
+                                {movement.current.exercise.sets
+                                  .map((set) =>
+                                    actual(
+                                      set,
+                                      movement.current!.exercise.unit,
+                                    ),
+                                  )
+                                  .join(" · ")}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </details>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
             {state.history.map((w) => (
               <article className="personal-progress-card" key={w.id}>
                 <h2>
@@ -1540,7 +1786,12 @@ export default function PersonalApp() {
                     </h3>
                     <p>
                       {x.sets.length
-                        ? x.sets.map((s) => actual(s, x.unit)).join(" · ")
+                        ? x.sets
+                            .map(
+                              (s) =>
+                                `${actual(s, x.unit)}${s.repsInReserve !== undefined ? ` (${effortLabel(s.repsInReserve)})` : ""}`,
+                            )
+                            .join(" · ")
                         : "No sets logged"}
                     </p>
                     <small className="personal-muted">
@@ -1614,8 +1865,19 @@ export default function PersonalApp() {
                                 </button>
                               </>
                             )}
+                            <button
+                              className="nb-effort-history"
+                              disabled={busy || status === "error"}
+                              aria-label={`${set.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
+                              onClick={() => openEffort(x, set, w.id)}
+                            >
+                              {set.repsInReserve === undefined
+                                ? "Add effort"
+                                : effortLabel(set.repsInReserve)}
+                            </button>
                           </div>
                         ))}
+                        {effortPanel(x, w.id)}
                       </details>
                     )}
                   </div>

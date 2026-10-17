@@ -65,3 +65,5 @@ Engineering and UX agreed nb-* components for the new notebook while retaining p
 ## Implemented visual review
 
 UX reviewed the actual browser captures tests/artifacts/redesign-choose-390.png, redesign-lineup-390.png and redesign-session-390.png after implementation. The 390px captures show the agreed neutral charcoal surfaces, target silhouettes, white main actions, compact lineup, emerald committed actual rows and adjacent current load/reps/check controls. No blocking visual discrepancy was found in those captures. This is a screenshot review, not evidence of real-device keyboard ergonomics or a human usability study. A minor singular/plural session-count copy issue was reported to integration. Automated narrow-viewport and behavioral checks remain owned by QA.
+
+UX also reviewed tests/artifacts/redesign-notebook-320.png: the narrow Shoulders session keeps the current load/reps fields and explicit check in one row, shows all three set positions without horizontal scrolling, preserves labeled movement identity and keeps navigation separate from controls. This supports layout review at that captured size, not a claim of physical one-handed comfort.

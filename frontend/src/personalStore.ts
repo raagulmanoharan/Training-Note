@@ -6,6 +6,7 @@ export interface PersonalSet {
   weight: number;
   reps: number;
   loggedAt: string;
+  repsInReserve?: 0 | 1 | 2 | 3 | 4;
 }
 export interface PersonalExercise {
   id: string;
@@ -247,7 +248,9 @@ export function validateState(input: unknown): asserts input is PersonalState {
           setIds.has(set.id) ||
           !finite(set.weight, 0, 2000) ||
           !integer(set.reps, 1, 1000) ||
-          !date(set.loggedAt)
+          !date(set.loggedAt) ||
+          (Object.prototype.hasOwnProperty.call(set, "repsInReserve") &&
+            !integer(set.repsInReserve, 0, 4))
         )
           fail();
         setIds.add(set.id);

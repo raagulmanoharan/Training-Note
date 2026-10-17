@@ -54,3 +54,11 @@ You can also use the published URL after deployment. The test writes only isolat
 The active Today flow is Choose → Review lineup → Active session. Each exercise is an inline card with one expanded at a time; its weight/reps/check rows combine editing and persisted actuals. Swaps, corrections and optional setup remain on the same page. White actions and neutral charcoal surfaces keep green reserved for selection and saved actuals.
 
 Detailed reference analysis and joint decisions: [PM journeys](docs/REDESIGN-PM.md), [UX handoff](docs/REDESIGN-UX.md), [delivery board](docs/REDESIGN-SPRINT.md), [redesign verification](docs/REDESIGN-QA.md). User-provided reference media is not included in the public source package.
+
+## Optional effort and muscle-group performance
+
+After recording a set, choose **How did that set feel?** and estimate how many more good-form reps you could have done: 4+, 3, 2, 1 or none. Skip it freely. A choice explicitly saves to that recorded set; tap its effort caption to change it. The optional RPE explanation shows approximate ratings; no scale needs to be learned to log a workout.
+
+Progress groups actual exercise comparisons by muscle group. It compares complete matching movement, gym, equipment, units and rep prescriptions across the latest two finished sessions. Set your gym label in Backup settings or the exercise's Setup section so future records use a known setup. Missing context, partial work and mixed changes have visible reasons; evidence shows dated actual sets. These are performance signals, not measured muscle growth.
+
+[Effort/progress journeys](docs/EFFORT-PROGRESS-PM.md), [UX](docs/EFFORT-PROGRESS-UX.md), [research](docs/EFFORT-PROGRESS-RESEARCH.md) and [verification](docs/EFFORT-PROGRESS-QA.md) explain the current scope. The default personal test commands include the effort tests; Pages remains a separate production smoke check.
