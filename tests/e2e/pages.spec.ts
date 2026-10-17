@@ -38,11 +38,11 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("40");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
-  await page.getByTitle("Log set", { exact: true }).click();
+  await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on device");
+  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -61,7 +61,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("42.5");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
-  await page.getByTitle("Log set", { exact: true }).click();
+  await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toBeVisible();

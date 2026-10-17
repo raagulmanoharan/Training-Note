@@ -62,3 +62,11 @@ After recording a set, choose **How did that set feel?** and estimate how many m
 Progress groups actual exercise comparisons by muscle group. It compares complete matching movement, gym, equipment, units and rep prescriptions across the latest two finished sessions. Set your gym label in Backup settings or the exercise's Setup section so future records use a known setup. Missing context, partial work and mixed changes have visible reasons; evidence shows dated actual sets. These are performance signals, not measured muscle growth.
 
 [Effort/progress journeys](docs/EFFORT-PROGRESS-PM.md), [UX](docs/EFFORT-PROGRESS-UX.md), [research](docs/EFFORT-PROGRESS-RESEARCH.md) and [verification](docs/EFFORT-PROGRESS-QA.md) explain the current scope. The default personal test commands include the effort tests; Pages remains a separate production smoke check.
+
+## Journey-led design workbench
+
+Open `?design=1` on the app URL to inspect the service blueprint, information architecture, ten task flows, interactive component library and screen composition record. The workbench is a memory-only design sandbox; it does not open, write or clear the workout database. Examples are explicitly synthetic.
+
+The [journey model](docs/DESIGN-JOURNEYS.md), [task flows](docs/DESIGN-FLOWS.md), [design-system contract](docs/DESIGN-SYSTEM.md) and [delivery record](docs/DESIGN-DELIVERY.md) document the reasoning before implementation. The system includes typed atoms and molecules under `frontend/src/design-system/`; the production screens use those same parts. Feelings and comprehension remain research hypotheses, not observed findings.
+
+Default test commands include the isolated design-system checks. The separate production Pages/offline check still verifies the installable app under its project path.

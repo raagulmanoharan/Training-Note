@@ -8,9 +8,11 @@ export default function MuscleGlyph({
   group: MuscleGroup;
   selected?: boolean;
 }) {
-  const base = "#454952",
-    line = "#191a1d",
-    highlight = selected ? "#36d786" : "#c6cad2";
+  const base = "var(--ds-rule, #454952)",
+    line = "var(--ds-sheet, #1c211b)",
+    highlight = selected
+      ? "var(--ds-accent, #add2b3)"
+      : "var(--ds-secondary, #b9c0b1)";
   const fill = (target: MuscleGroup) => (target === group ? highlight : base);
   return (
     <svg
