@@ -12,7 +12,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   const response = await page.goto(appURL);
   expect(response?.status()).toBe(200);
   await expect(
-    page.getByRole("heading", { name: "What are we training?" }),
+    page.getByRole("heading", { name: "What are you training?" }),
   ).toBeVisible();
   const manifestResponse = await page.request.get(
     new URL("manifest.webmanifest", appURL).href,
@@ -38,7 +38,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("40");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
+  await page.getByTitle("Log set", { exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
@@ -61,7 +61,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("42.5");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
+  await page.getByTitle("Log set", { exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toBeVisible();

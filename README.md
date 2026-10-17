@@ -4,7 +4,7 @@ Publication prepared for `raagulmanoharan/gym-notebook`. Remote repository creat
 
 A personal, mobile-first gym log. No account, backend, analytics or subscription. Your workout records live in this browser's IndexedDB database.
 
-Choose muscle groups and an exercise count, review a compact plan, start, and log actual weight and reps. Switch exercises or swap equipment inline. Finished sessions retain every set. Optional progression hints compare the same exercise and setup; the final decision stays with you.
+Choose muscle groups and an exercise count, review a compact lineup, then log weight and reps directly in numbered set rows. Tap the row check after performing each set. Switch exercises or swap equipment inline. Finished sessions retain every set. Optional progression hints compare the same exercise and setup; the final decision stays with you.
 
 ## Run
 
@@ -48,3 +48,9 @@ PAGES_URL=http://127.0.0.1:5178/gym-notebook/ npm run test:pages
 ```
 
 You can also use the published URL after deployment. The test writes only isolated synthetic browser records.
+
+## Reference-led interaction redesign
+
+The active Today flow is Choose → Review lineup → Active session. Each exercise is an inline card with one expanded at a time; its weight/reps/check rows combine editing and persisted actuals. Swaps, corrections and optional setup remain on the same page. White actions and neutral charcoal surfaces keep green reserved for selection and saved actuals.
+
+Detailed reference analysis and joint decisions: [PM journeys](docs/REDESIGN-PM.md), [UX handoff](docs/REDESIGN-UX.md), [delivery board](docs/REDESIGN-SPRINT.md), [redesign verification](docs/REDESIGN-QA.md). User-provided reference media is not included in the public source package.

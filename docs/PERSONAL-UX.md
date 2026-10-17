@@ -1,3 +1,5 @@
+> The active interaction and visual design is superseded by [REDESIGN-UX.md](REDESIGN-UX.md). Storage, accessibility and data-safety principles remain applicable.
+
 # Personal notebook — interaction and visual specification
 
 This specification implements PERSONAL-PRD.md and PERS01–05 in PERSONAL-STORIES.md. The active product is a personal gym notebook. Coaching, login, enrollment, feeds, nutrition and CRM have no place in its primary interface.

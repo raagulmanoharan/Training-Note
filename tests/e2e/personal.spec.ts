@@ -208,29 +208,31 @@ test("personal store: verified backup restores history, draft, settings after sy
 async function startPersonal(page: any, groups = ["Chest", "Back"], count = 4) {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "What are we training?" }),
+    page.getByRole("heading", { name: "What are you training?" }),
   ).toBeVisible();
   for (const group of groups)
     await page.getByRole("button", { name: group, exact: true }).click();
-  await page.getByLabel("Number of exercises").fill(String(count));
+  await page.getByLabel("Exercises", { exact: true }).fill(String(count));
   await page.getByRole("button", { name: "Build my workout" }).click();
   await expect(
-    page.getByRole("heading", { name: "Today’s lineup" }),
+    page.getByRole("heading", { name: "Today’s workout" }),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Start workout", exact: true })
     .click();
-  await expect(page.locator(".personal-workbench h2")).toBeVisible();
+  await expect(
+    page.locator(".nb-exercise-card.is-active .nb-exercise-title"),
+  ).toBeVisible();
 }
 async function logActual(page: any, weight = "40", reps = "10") {
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill(weight);
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill(reps);
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
-  await expect(
-    page.getByRole("textbox", { name: "Reps", exact: true }),
-  ).toHaveValue("");
+  await page.getByTitle("Log set", { exact: true }).click();
+  await expect(page.locator(".personal-status")).toHaveText("Saved on device");
+  const next = page.getByRole("textbox", { name: "Reps", exact: true });
+  if (await next.count()) await expect(next).toHaveValue("");
 }
 
 test("personal UI: one-hand logger explicit actuals, corrections, undo, replacement and history", async ({
@@ -242,11 +244,11 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
     page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
   ).toHaveValue("");
   const logBox = await page
-    .getByRole("button", { name: "Log set", exact: true })
+    .getByTitle("Log set", { exact: true })
     .boundingBox();
   expect(logBox!.y + logBox!.height).toBeLessThan(650);
   await page.screenshot({
-    path: "tests/artifacts/personal-first-set-390.png",
+    path: "tests/artifacts/redesign-first-set-390.png",
     fullPage: true,
   });
   await logActual(page);
@@ -267,7 +269,9 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toBeVisible();
-  const before = await page.locator(".personal-workbench h2").innerText();
+  const before = await page
+    .locator(".nb-exercise-card.is-active .nb-exercise-title")
+    .innerText();
   await page
     .getByRole("button", { name: `Swap ${before}`, exact: true })
     .click();
@@ -278,15 +282,17 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
       .filter({ hasText: "Previous sets kept under their original exercise." }),
   ).toBeVisible();
   await expect(
-    page.getByText("No previous sets for this setup.", { exact: true }),
-  ).toBeVisible();
-  await expect(page.locator(".personal-context")).toContainText("1 sets");
+    page.locator(".nb-exercise-card.is-active .nb-last-time"),
+  ).toHaveCount(0);
+  await expect(page.locator(".nb-exercise-card.is-active")).toContainText(
+    "1 sets",
+  );
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toHaveCount(0);
   await logActual(page, "20", "8");
   await page.screenshot({
-    path: "tests/artifacts/personal-notebook-390.png",
+    path: "tests/artifacts/redesign-notebook-390.png",
     fullPage: true,
   });
   await page.getByRole("button", { name: "Finish", exact: true }).click();
@@ -353,7 +359,7 @@ test("personal UI: draft inputs survive reload and 320 px has no page overflow",
     page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
   ).toHaveValue("12.5");
   await page.screenshot({
-    path: "tests/artifacts/personal-notebook-320.png",
+    path: "tests/artifacts/redesign-notebook-320.png",
     fullPage: true,
   });
 });
@@ -396,7 +402,7 @@ test("personal UI: offline production shell restores draft without API requests"
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
+  await page.getByTitle("Log set", { exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toBeVisible();
@@ -423,7 +429,7 @@ test("personal UI: storage failure never claims a logged set is saved and retry 
       return original.apply(this, args as any);
     };
   });
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
+  await page.getByTitle("Log set", { exact: true }).click();
   await expect(page.locator(".personal-status")).toHaveText("Not saved");
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
@@ -461,13 +467,11 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
   await page
     .getByRole("button", { name: "Cancel import", exact: true })
     .click();
-  await page
-    .getByLabel("Choose backup file", { exact: true })
-    .setInputFiles({
-      name: "damaged.json",
-      mimeType: "application/json",
-      buffer: Buffer.from('{"version":999}'),
-    });
+  await page.getByLabel("Choose backup file", { exact: true }).setInputFiles({
+    name: "damaged.json",
+    mimeType: "application/json",
+    buffer: Buffer.from('{"version":999}'),
+  });
   await expect(page.getByRole("alert")).toContainText("invalid");
   await page.getByRole("button", { name: "Today", exact: true }).click();
   await expect(
@@ -575,7 +579,7 @@ test("personal UI: earlier typing acknowledgement cannot reveal a later failed s
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("42.5");
-  await page.getByRole("button", { name: "Log set", exact: true }).click();
+  await page.getByTitle("Log set", { exact: true }).click();
   await expect(page.locator(".personal-status")).toHaveText("Not saved");
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
@@ -633,7 +637,7 @@ test("personal UI: all-set history shows two more reps without automatically add
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await page.getByRole("button", { name: "Save workout", exact: true }).click();
   await startPersonal(page, ["Chest"], 1);
-  await expect(page.locator(".personal-context")).toContainText(
+  await expect(page.locator(".nb-exercise-card.is-active")).toContainText(
     "40 kg × 10 · 40 kg × 10 · 40 kg × 8",
   );
   await logActual(page, "40", "10");
@@ -646,9 +650,205 @@ test("personal UI: all-set history shows two more reps without automatically add
     ),
   ).toBeVisible();
   await expect(
-    page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
-  ).toHaveValue("");
+    page.getByRole("button", { name: "Add set", exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Edit set 4", exact: true }),
   ).toHaveCount(0);
+});
+
+test("redesign: compact lineup can be revised before explicit session start", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Chest", exact: true }).click();
+  await page.getByRole("button", { name: "Back", exact: true }).click();
+  await page.getByLabel("Exercises", { exact: true }).fill("4");
+  await page.getByRole("button", { name: "Build my workout" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Today’s workout" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "What are you training?" }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Change muscles", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "What are you training?" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Chest", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Build my workout" }).click();
+  await page
+    .getByRole("button", { name: "Start workout", exact: true })
+    .click();
+  await expect(page.locator(".nb-exercise-card")).toHaveCount(4);
+  await expect(
+    page.getByRole("button", { name: "Edit set 1", exact: true }),
+  ).toHaveCount(0);
+});
+
+test("redesign: next-set row stays aligned, thumb-sized and draft survives exercise switching", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await startPersonal(page, ["Shoulders"], 3);
+  const weight = page.getByRole("textbox", {
+    name: "Weight (kg)",
+    exact: true,
+  });
+  const reps = page.getByRole("textbox", { name: "Reps", exact: true });
+  const check = page.getByTitle("Log set", { exact: true });
+  await expect(weight).toHaveAttribute("inputmode", "decimal");
+  await expect(reps).toHaveAttribute("inputmode", "numeric");
+  for (const control of [weight, reps, check]) {
+    const box = await control.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    expect(box!.width).toBeGreaterThanOrEqual(44);
+  }
+  const w = await weight.boundingBox(),
+    r = await reps.boundingBox(),
+    c = await check.boundingBox();
+  expect(Math.abs(w!.y - r!.y)).toBeLessThan(5);
+  expect(Math.abs(w!.y - c!.y)).toBeLessThan(5);
+  await weight.fill("12.5");
+  await reps.fill("8");
+  await expect(page.locator(".personal-status")).toHaveText("Saved on device");
+  const firstName = await page
+    .locator(".nb-exercise-card.is-active .nb-exercise-title")
+    .innerText();
+  await page
+    .locator(".nb-exercise-card:not(.is-active)")
+    .first()
+    .getByRole("button")
+    .first()
+    .click();
+  await expect(weight).toHaveValue("");
+  await page
+    .locator(".nb-exercise-card")
+    .filter({
+      has: page.getByRole("heading", { name: firstName, exact: true }),
+    })
+    .getByRole("button")
+    .first()
+    .click();
+  await expect(weight).toHaveValue("12.5");
+  await expect(reps).toHaveValue("8");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await check.click();
+  await expect(
+    page.getByRole("button", { name: "Edit set 1", exact: true }),
+  ).toBeVisible();
+  await logActual(page, "12.5", "8");
+  await logActual(page, "12.5", "8");
+  await page.getByRole("button", { name: "Add set", exact: true }).click();
+  await expect(weight).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Edit set 4", exact: true }),
+  ).toHaveCount(0);
+});
+
+test("redesign: swapping an unperformed exercise requires explicit draft discard", async ({
+  page,
+}) => {
+  await startPersonal(page, ["Chest"], 1);
+  const weight = page.getByRole("textbox", {
+    name: "Weight (kg)",
+    exact: true,
+  });
+  const reps = page.getByRole("textbox", { name: "Reps", exact: true });
+  await weight.fill("40");
+  await reps.fill("10");
+  await expect(page.locator(".personal-status")).toHaveText("Saved on device");
+  const title = await page
+    .locator(".nb-exercise-card.is-active .nb-exercise-title")
+    .innerText();
+  await page
+    .getByRole("button", { name: `Swap ${title}`, exact: true })
+    .click();
+  await page.locator(".personal-inline .personal-secondary").first().click();
+  await expect(
+    page.getByRole("heading", { name: "Discard unlogged entry and swap?" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Keep entry", exact: true }).click();
+  await expect(weight).toHaveValue("40");
+  await expect(reps).toHaveValue("10");
+  await expect(
+    page.locator(".nb-exercise-card.is-active .nb-exercise-title"),
+  ).toHaveText(title);
+  await page
+    .getByRole("button", { name: `Swap ${title}`, exact: true })
+    .click();
+  await page.locator(".personal-inline .personal-secondary").first().click();
+  await page
+    .getByRole("button", { name: "Discard entry and swap", exact: true })
+    .click();
+  await expect(
+    page.locator(".nb-exercise-card.is-active .nb-exercise-title"),
+  ).not.toHaveText(title);
+  await expect(weight).toHaveValue("");
+  await expect(reps).toHaveValue("");
+  await expect(page.locator(".nb-set-row.is-saved")).toHaveCount(0);
+});
+
+test("redesign: invalid input explains blocked completion and Repeat cannot discard draft", async ({
+  page,
+}) => {
+  await startPersonal(page, ["Chest", "Back"], 2);
+  await logActual(page, "40", "10");
+  const weight = page.getByRole("textbox", {
+    name: "Weight (kg)",
+    exact: true,
+  });
+  const reps = page.getByRole("textbox", { name: "Reps", exact: true });
+  await weight.fill("2001");
+  await reps.fill("10");
+  await expect(
+    page.getByText(
+      "Use a weight from 0 to 2000. Use a decimal point if needed.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(page.getByTitle("Log set", { exact: true })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Repeat 40 kg × 10", exact: true }),
+  ).toBeDisabled();
+  await weight.fill("42.5");
+  await reps.fill("8.5");
+  await expect(
+    page.getByText("Use whole reps from 1 to 1000.", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByTitle("Log set", { exact: true })).toBeDisabled();
+  await reps.fill("8");
+  await expect(page.getByTitle("Log set", { exact: true })).toBeEnabled();
+  await page
+    .locator(".nb-exercise-card:not(.is-active)")
+    .first()
+    .getByRole("button")
+    .first()
+    .click();
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
+  await expect(
+    page.getByText("You have unlogged input.", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Keep logging", exact: true }).click();
+  await expect(page.locator(".nb-set-row.is-saved")).toHaveCount(0);
+  await page
+    .locator(".nb-exercise-card:not(.is-active)")
+    .first()
+    .getByRole("button")
+    .first()
+    .click();
+  await expect(weight).toHaveValue("42.5");
+  await expect(reps).toHaveValue("8");
+  await expect(
+    page.getByRole("button", { name: "Edit set 1", exact: true }),
+  ).toBeVisible();
 });

@@ -24,3 +24,6 @@ playwright-report/
 .pytest_cache/
 *.tsbuildinfo
 tests/artifacts/
+
+# Private user-supplied design references (do not publish)
+references/
