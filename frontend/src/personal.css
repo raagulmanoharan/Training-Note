@@ -1,0 +1,95 @@
+:root { color-scheme: dark; background: #101311; }
+body { margin: 0; background: #101311; }
+.personal-app {
+  --p-bg: #101311; --p-panel: #1a1e1b; --p-border: #333a34; --p-muted: #a8b2a9; --p-accent: #c7ef9e;
+  min-height: 100dvh; background: var(--p-bg); color: #f0f3eb; font: 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding: env(safe-area-inset-top) 18px calc(104px + env(safe-area-inset-bottom));
+}
+.personal-app *, .personal-app *::before, .personal-app *::after { box-sizing: border-box; }
+.personal-app button, .personal-app input, .personal-app select, .personal-app textarea { font: inherit; }
+.personal-app button { min-height: 46px; padding: 10px 16px; border: 1px solid var(--p-border); border-radius: 14px; background: #242a25; color: #f0f3eb; cursor: pointer; touch-action: manipulation; }
+.personal-app button:disabled { cursor: default; opacity: .45; }
+.personal-app :is(button,input,select,textarea,a):focus-visible { outline: 3px solid var(--p-accent); outline-offset: 3px; }
+.personal-app :is(input,select,textarea) { min-width: 0; width: 100%; min-height: 48px; padding: 12px; border: 1px solid #4c584d; border-radius: 12px; background: #111612; color: #f0f3eb; }
+.personal-app input::placeholder, .personal-app textarea::placeholder { color: #818c82; opacity: 1; }
+.personal-app label { display: block; color: #c0c9bf; font-size: 13px; font-weight: 600; }
+.personal-app label > :is(input,select,textarea) { margin-top: 6px; }
+.personal-app input[type=checkbox] { min-height: 20px; width: 20px; accent-color: var(--p-accent); }
+.personal-app h1,.personal-app h2,.personal-app h3 { font-family: inherit; color: #f0f3eb; margin: 0 0 10px; letter-spacing: -.6px; }
+.personal-app h1 { font-size: clamp(29px,7vw,40px); font-weight: 700; line-height: 1.12; }
+.personal-app h2 { font-size: 23px; line-height: 1.2; }
+.personal-app h3 { font-size: 17px; }
+.personal-app p { margin: 0 0 12px; line-height: 1.5; }
+.personal-app small { font-size: 12px; }
+.personal-app a { color: var(--p-accent); }
+.personal-header,.personal-main { max-width: 760px; margin: 0 auto; }
+.personal-header { min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.personal-brand { font-weight: 750; letter-spacing: -1px; font-size: 22px; }
+.personal-status { color: var(--p-muted); font-size: 11px; text-align: right; max-width: 150px; }
+.personal-status::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--p-accent); }
+.personal-main { display: grid; gap: 18px; }
+.personal-panel { display: grid; gap: 18px; min-width: 0; }
+.personal-eyebrow { color: var(--p-accent); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.personal-title { margin-bottom: 6px; }
+.personal-muted { color: var(--p-muted); font-size: 14px; }
+.personal-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.personal-app .personal-chip { border-radius: 30px; padding: 10px 18px; }
+.personal-app .personal-chip.selected { background: var(--p-accent); color: #172211; border-color: var(--p-accent); font-weight: 700; }
+.personal-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+.personal-row > label { flex: 1; min-width: 110px; }
+.personal-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.personal-card { padding: 18px; border: 1px solid var(--p-border); border-radius: 20px; background: var(--p-panel); min-width: 0; }
+.personal-plan-card { display: grid; gap: 10px; }
+.personal-plan-card + .personal-plan-card { margin-top: 10px; }
+.personal-plan-card .personal-row { align-items: flex-start; }
+.personal-app .personal-primary { color: #15220e; background: var(--p-accent); border-color: var(--p-accent); font-weight: 750; min-height: 54px; }
+.personal-app .personal-secondary { background: transparent; border-color: #465046; }
+.personal-app .personal-danger { background: transparent; color: #ffb4a3; border-color: #755349; }
+.personal-inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.personal-notice { color: #dceacb; background: #273121; border: 1px solid #4c5b3c; padding: 12px 14px; border-radius: 14px; font-size: 13px; overflow-wrap: anywhere; }
+.personal-error { color: #ffccbd; background: #39211c; border: 1px solid #825648; padding: 12px 14px; border-radius: 14px; font-size: 14px; overflow-wrap: anywhere; }
+.personal-exercise-nav { display: flex; gap: 8px; overflow-x: auto; padding: 3px 3px 10px; scrollbar-width: thin; max-width: 100%; }
+.personal-app .personal-exercise-nav button { flex-shrink: 0; max-width: 230px; font-size: 13px; }
+.personal-app .personal-exercise-nav button.active { border-color: var(--p-accent); background: #2c3824; color: var(--p-accent); }
+.personal-workbench { display: grid; gap: 16px; min-width: 0; }
+.personal-context { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--p-border); border-bottom: 1px solid var(--p-border); color: #e1e6dd; font-size: 14px; }
+.personal-context > * { min-width: 0; overflow-wrap: anywhere; }
+.personal-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.personal-inputs input { min-height: 82px; font-size: clamp(30px,9vw,44px); line-height: 1; text-align: center; font-weight: 650; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.personal-inputs label { text-align: center; }
+.personal-workbench > .personal-primary { width: 100%; }
+.personal-sets { display: grid; gap: 8px; }
+.personal-receipt { display: flex; align-items: center; gap: 10px; justify-content: space-between; border-bottom: 1px solid var(--p-border); padding: 8px 0; font-variant-numeric: tabular-nums; }
+.personal-receipt > span, .personal-receipt > strong { flex: 1; }
+.personal-receipt button { min-height: 44px; font-size: 13px; padding: 8px 10px; background: transparent; }
+.personal-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.personal-actions > button { flex: 1; }
+.personal-backup,.personal-progress-card { display: grid; gap: 14px; }
+.personal-backup input[type=file] { font-size: 13px; }
+.personal-progress-card table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.personal-progress-card :is(th,td) { text-align: left; padding: 9px 5px; border-bottom: 1px solid var(--p-border); }
+.personal-tabs { position: fixed; z-index: 40; bottom: 0; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; padding: 10px 18px calc(10px + env(safe-area-inset-bottom)); background: #101311f5; border-top: 1px solid var(--p-border); backdrop-filter: blur(16px); }
+.personal-app .personal-tab { width: min(31%,220px); min-height: 54px; background: transparent; border-color: transparent; color: var(--p-muted); display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; }
+.personal-app .personal-tab.active { background: #283222; color: var(--p-accent); }
+.personal-app details { border: 1px solid var(--p-border); padding: 12px 14px; border-radius: 14px; }
+.personal-app summary { cursor: pointer; min-height: 30px; color: #c9d3c6; font-size: 14px; }
+.personal-app details[open] summary { margin-bottom: 14px; }
+@media (max-width:360px) { .personal-app { padding-left: 12px; padding-right: 12px; } .personal-card { padding: 14px; } .personal-grid { gap: 8px; } .personal-receipt { flex-wrap: wrap; } .personal-context { font-size: 12px; } }
+@media (min-width:700px) { .personal-app { padding-top: 14px; } .personal-header { min-height: 90px; } .personal-workbench { padding: 26px; } .personal-inputs input { min-height: 100px; } }
+@media (prefers-reduced-motion:no-preference) { .personal-app button { transition: background .12s ease,border-color .12s ease; } .personal-app button:active { transform: translateY(1px); } }
+/* Keep actual logging above secondary guidance in the gym. */
+.personal-main > .personal-notice { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; min-height: 44px; }
+.personal-main > .personal-notice button { min-height: 44px; min-width: 44px; padding: 2px 8px; border: 0; background: transparent; }
+.personal-session-bar { min-height: 46px; }
+.personal-session-bar .personal-eyebrow { margin: 0; }
+.personal-app .personal-exercise-nav button { display: grid; grid-template-columns: 20px 1fr; gap: 1px 8px; text-align: left; padding: 9px 12px; max-width: 240px; line-height: 1.3; }
+.personal-exercise-nav button > span { grid-row: span 2; color: var(--p-muted); align-self: center; }
+.personal-exercise-nav button > small { grid-column: 2; color: var(--p-muted); font-size: 11px; }
+.personal-exercise-nav button.active > span { color: var(--p-accent); }
+.personal-logger { gap: 12px; }
+.personal-logger .personal-row > div { flex: 1; min-width: 0; }
+.personal-logger .personal-row > button { flex: 0 0 46px; padding: 8px; }
+.personal-logger h2 { margin-bottom: 0; }
+.personal-logger .personal-eyebrow { display: block; letter-spacing: 1.1px; font-size: 10px; margin-bottom: 5px; }
+.personal-logger .personal-context { padding: 10px 0; }
+.personal-logger .personal-context p { margin: 4px 0 0; }
