@@ -149,3 +149,7 @@ Real fatigued one-hand operation, machine substitution discovery, whether the la
 ### Final rendered follow-up
 
 Final QA confirmed a visible Swap label and Use last time action. The latter fills pending weight/reps without creating actual sets; explicit Log is still required. The redundant Next exercise control is absent for a single-movement session. Updated actual screenshots are in `docs/images/two-screen-home.png` and `docs/images/two-screen-workout.png`; these are synthetic fixture captures.
+
+## Workout audit follow-up
+
+See `TWO-SCREEN-WORKOUT-AUDIT.md` for the later executable multi-exercise walkthrough, the performed-work repeat policy, finish-confirmation focus fix, and typography cleanup. Current Home has a plain Training title, no motivational hero/eyebrow, and three shared text roles. Older captures and proposed heading sizes above are historical.

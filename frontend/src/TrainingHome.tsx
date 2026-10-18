@@ -47,12 +47,7 @@ export default function TrainingHome({
   return (
     <div className="training-home">
       <div className="home-intro">
-        <span>Your training, at a glance</span>
-        <h1>
-          A little stronger.
-          <br />
-          One visit at a time.
-        </h1>
+        <h1>Training</h1>
       </div>
       <section
         className="home-attendance"
@@ -95,26 +90,15 @@ export default function TrainingHome({
         className="home-next"
         aria-label={active ? "Current workout" : "Next workout suggestion"}
       >
-        <div className="home-eyebrow">
-          {active
-            ? "PICK UP WHERE YOU LEFT OFF"
-            : next
-              ? "NEXT UP · YOUR LAST SESSION, REPEATED"
-              : "YOUR NEXT WORKOUT"}
-        </div>
         <h2>
-          {active
-            ? title(active)
-            : next
-              ? title(next)
-              : "What are we training?"}
+          {active ? title(active) : next ? title(next) : "Plan your workout"}
         </h2>
         <p>
           {active
             ? `${recorded} sets recorded · your session is saved as you go`
             : next
-              ? `${next.exercises.length} ${next.exercises.length === 1 ? "exercise" : "exercises"} · adjust before you start`
-              : "Choose your muscles. We’ll put together a simple starting point."}
+              ? "Repeat the work you logged last time. Adjust before starting."
+              : "Choose the muscles you want to train."}
         </p>
         <button
           className="home-start"
@@ -143,7 +127,7 @@ export default function TrainingHome({
         aria-label="Your muscle group performance"
       >
         <div className="home-section-title">
-          <h2>Getting stronger</h2>
+          <h2>Progress</h2>
           <button onClick={onEvidence} aria-label="View progress details">
             Details <ArrowUpRight size={16} />
           </button>
@@ -153,8 +137,8 @@ export default function TrainingHome({
         </p>
         {!insights.length ? (
           <div className="home-empty">
-            Your first workout starts the story. Repeat a movement in the same
-            setup to see what changes.
+            Log a workout, then repeat it in the same setup to compare your
+            lifts.
           </div>
         ) : (
           <div className="home-muscle-list">
@@ -176,7 +160,7 @@ export default function TrainingHome({
                           )
                           ? "Mixed results · see details"
                           : "Same recorded weights and reps"
-                        : "Building your baseline"}
+                        : "No matching sessions yet"}
                   </span>
                 </div>
                 <div
@@ -217,7 +201,7 @@ export default function TrainingHome({
       </section>
       <section className="home-recent">
         <div className="home-section-title">
-          <h2>Last time you showed up</h2>
+          <h2>Last workout</h2>
           <span>
             {history.length} {history.length === 1 ? "workout" : "workouts"}{" "}
             total
@@ -241,9 +225,7 @@ export default function TrainingHome({
             <ArrowUpRight size={18} />
           </button>
         ) : (
-          <p className="home-caption">
-            Nothing to catch up on. Start whenever you’re ready.
-          </p>
+          <p className="home-caption">No workouts recorded yet.</p>
         )}
       </section>
       <button className="home-new-session" hidden={!!active} onClick={onPlan}>

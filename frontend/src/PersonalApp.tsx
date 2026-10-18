@@ -147,7 +147,14 @@ export default function PersonalApp() {
     writeSerial = useRef(0),
     blocked = useRef(false),
     repsRef = useRef<HTMLInputElement>(null),
-    effortTrigger = useRef<HTMLElement | null>(null);
+    effortTrigger = useRef<HTMLElement | null>(null),
+    finishTrigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!finishing) return;
+    const panel = document.getElementById("finish-confirmation");
+    panel?.scrollIntoView({ block: "start" });
+    panel?.focus({ preventScroll: true });
+  }, [finishing]);
   function installState(s: PersonalState) {
     stateRef.current = s;
     revision.current = s.revision;
@@ -273,13 +280,17 @@ export default function PersonalApp() {
       setTab("today");
       return;
     }
-    const exercises = previous.exercises.map((x) => ({
-      ...x,
-      id: uid(),
-      sets: [],
-      pendingWeight: "",
-      pendingReps: "",
-    }));
+    const performed = previous.exercises.filter((x) => x.sets.length > 0);
+    const exercises = (performed.length ? performed : previous.exercises).map(
+      (x) => ({
+        ...x,
+        id: uid(),
+        sets: [],
+        plannedSets: x.sets.length || x.plannedSets,
+        pendingWeight: "",
+        pendingReps: "",
+      }),
+    );
     setPlan({
       id: uid(),
       startedAt: new Date().toISOString(),
@@ -845,7 +856,7 @@ export default function PersonalApp() {
               <ArrowLeft size={20} /> Home
             </DSButton>
           ) : (
-            <span>Gym notebook</span>
+            <span>Notebook</span>
           )}
         </div>
         <div className="two-header-actions">
@@ -1023,7 +1034,7 @@ export default function PersonalApp() {
                   <section className="personal-lineup">
                     <DSScreenHeader
                       title="Today’s workout"
-                      register="Session draft · not saved until you start"
+                      register="Not saved until you start"
                       description={`${plan.groups.map((g) => groups.find((x) => x.id === g)?.name).join(" + ")} · ${plan.exercises.length} exercises`}
                       action={
                         <DSButton
@@ -1155,7 +1166,11 @@ export default function PersonalApp() {
                     .join(" + ")}
                   register={`${date(workout.startedAt)} · ${recordedCount} ${recordedCount === 1 ? "set" : "sets"} recorded`}
                   action={
-                    <DSButton variant="text" onClick={() => setFinishing(true)}>
+                    <DSButton
+                      ref={finishTrigger}
+                      variant="text"
+                      onClick={() => setFinishing(true)}
+                    >
                       Finish
                     </DSButton>
                   }
@@ -1186,9 +1201,6 @@ export default function PersonalApp() {
                           }}
                         >
                           <span className="nb-exercise-label">
-                            <span className="nb-exercise-meta">
-                              {i + 1} · {x.equipment} · {x.target}
-                            </span>
                             <span
                               className="nb-exercise-title"
                               role="heading"
@@ -1197,7 +1209,8 @@ export default function PersonalApp() {
                               {x.name}
                             </span>
                             <span className="nb-exercise-meta">
-                              {x.sets.length} / {x.plannedSets} sets recorded
+                              {x.sets.length} / {x.plannedSets} sets ·{" "}
+                              {x.equipment}
                             </span>
                           </span>
                         </DSButton>
@@ -1647,6 +1660,8 @@ export default function PersonalApp() {
                 {finishing && (
                   <section
                     className="personal-inline"
+                    id="finish-confirmation"
+                    tabIndex={-1}
                     aria-label="Finish workout"
                   >
                     <h2>Finish this workout?</h2>
@@ -1697,7 +1712,10 @@ export default function PersonalApp() {
                     )}
                     <DSButton
                       variant="text"
-                      onClick={() => setFinishing(false)}
+                      onClick={() => {
+                        setFinishing(false);
+                        finishTrigger.current?.focus();
+                      }}
                     >
                       Keep logging
                     </DSButton>
@@ -1757,7 +1775,7 @@ export default function PersonalApp() {
               <>
                 <DSScreenHeader
                   title="Your training record"
-                  description="Actual sets and comparable performance, in context."
+                  description="Your saved workouts and lift comparisons."
                 />
                 {!state.history.length && (
                   <DSSurface
@@ -1766,7 +1784,7 @@ export default function PersonalApp() {
                     className="personal-card"
                   >
                     <Dumbbell />
-                    <h2>Your first page is waiting.</h2>
+                    <h2>No workouts recorded yet.</h2>
                     <p>
                       Finish a workout and its actual sets will appear here.
                     </p>

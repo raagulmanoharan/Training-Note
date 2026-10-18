@@ -1,3 +1,5 @@
+> Current type rules: see “Current typography contract — 18 October workout audit” below. Earlier typography examples are historical and superseded.
+
 > Upstream design record, written before screen composition. Subsequent readiness decisions and delivery status are recorded in [DESIGN-DELIVERY.md](DESIGN-DELIVERY.md); the initial pause/blockers below are retained as process evidence.
 
 # Training ledger — design-system contract
@@ -331,3 +333,17 @@ The composition grid now requires a280px minimum reading column, so phone summar
 **Resolved after actual reinspection:** UX reviewed the refreshed tests/artifacts/muscle-evidence-390.png and muscle-performance-390.png. The summary and opened evidence now use the full available phone reading width, the numerator/denominator and effort qualification are visible before expansion, and dates/ordered actuals are legible without the previous empty right column. The F09 width blocker is resolved.
 
 UX also reviewed final design-app-capture-320.png and design-app-choose-320.png. The selected muscle tiles retain complete names and supporting glyphs without clipped text; the actual worksheet keeps ordinal, weight, reps and explicit record control aligned at320px; the session title and Finish fit their intended roles. Final visual composition review is complete. QA reports29 checks passed with one intentionally skipped development-only offline case; the separate production Pages/offline verification remains the release evidence for that capability. Human physical-device comfort and subjective preference are still unverified.
+
+## Current typography contract — 18 October workout audit
+
+This supersedes earlier per-component size and monospaced-register rules. Shared tokens now define three text roles, used by both scenes and the interactive component library:
+
+| Role | Token | Size / line | Use |
+|---|---|---|---|
+| Heading | `--ds-type-heading-size`, `--ds-type-heading-line` | 28 / 34 px | Screen titles and large factual numbers |
+| Subheading | `--ds-type-subheading-size`, `--ds-type-subheading-line` | 18 / 24 px | Section and exercise titles |
+| Reading / action | `--ds-type-body-size`, `--ds-type-body-line` | 14 / 20 px | Body, metadata, labels, actions, supporting text |
+
+Accent is weight/color, never another font family or size. All roles use the same system sans family; numbers may use tabular alignment. Uppercase tracking and monospaced eyebrows are removed. Editable inputs alone retain `--ds-type-input-size:16px` minimum to prevent mobile focus zoom; prominent numeric entry can use the existing subheading size. Screen width does not invent new sizes. Home loses its motivational hero/eyebrow; section names are direct. Chart endpoints and totals share the reading role, not tiny captions.
+
+A real rendered Home inspection after this change found exactly 14, 18 and 28 px among its visible text leaves. Narrow layouts and the complete workout are checked in `TWO-SCREEN-WORKOUT-AUDIT.md`. These are browser checks, not proof of physical gym usability.

@@ -74,3 +74,5 @@ Default test commands include the isolated design-system checks. The separate pr
 ## Gym-week redesign
 
 The current design starts with the real-world [gym journey and service overlay](docs/REAL-GYM-JOURNEY.md), [actual source observations](docs/TWO-SCREEN-REFERENCES.md), [two-screen UX](docs/TWO-SCREEN-UX.md) and [verification](docs/TWO-SCREEN-QA.md). Open `?design=1` for the workbench. `node scripts/export-workbench.mjs` produces a self-contained offline design-review HTML file in `/workspace/shared`; it contains synthetic screenshots and does not include the workout application or personal records.
+
+The [complete-workout audit](docs/TWO-SCREEN-WORKOUT-AUDIT.md) covers a full session, finish/recovery states and the current three-role typography contract. Repeat uses performed blocks and their actual set counts, with an editable preview; it does not silently restore skipped sets or inflate work after a mid-exercise swap.

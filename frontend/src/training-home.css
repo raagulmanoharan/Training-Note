@@ -46,29 +46,25 @@
   max-width: 620px;
 }
 .two-home .personal-brand {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
+  font-size: var(--ds-type-body-size);
+  font-weight: 600;
+  letter-spacing: normal;
 }
 .two-home .personal-header {
   border-bottom: 0;
   padding-top: 22px;
 }
 .two-home .personal-status {
-  font-size: 10px;
+  font-size: var(--ds-type-body-size);
 }
 .training-home {
   padding-top: 16px;
 }
-.home-intro > span {
-  font-size: 12px;
-  color: #626d69;
-}
 .home-intro h1 {
-  font-size: 38px;
+  font-size: var(--ds-type-heading-size);
   line-height: 1.08;
-  letter-spacing: -1.8px;
-  font-weight: 650;
+  letter-spacing: normal;
+  font-weight: 600;
   margin: 12px 0 30px;
 }
 .home-attendance {
@@ -81,17 +77,17 @@
   margin-bottom: 15px;
 }
 .home-attendance-heading strong {
-  font-size: 40px;
+  font-size: var(--ds-type-heading-size);
   line-height: 1;
-  letter-spacing: -1.5px;
+  letter-spacing: normal;
 }
 .home-attendance-heading strong span {
-  font-size: 17px;
-  letter-spacing: -0.3px;
-  font-weight: 500;
+  font-size: var(--ds-type-body-size);
+  letter-spacing: normal;
+  font-weight: 400;
 }
 .home-attendance-heading p {
-  font-size: 12px;
+  font-size: var(--ds-type-body-size);
   color: #626d69;
   margin: 5px 0 0;
 }
@@ -111,7 +107,7 @@
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 20px;
+  font-size: var(--ds-type-subheading-size);
   line-height: 1;
 }
 .home-day.visited {
@@ -126,7 +122,7 @@
   justify-content: space-between;
   gap: 8px;
   color: #626d69;
-  font-size: 10px;
+  font-size: var(--ds-type-body-size);
   margin-top: 10px;
 }
 .home-next {
@@ -135,21 +131,15 @@
   border-radius: 22px;
   margin-bottom: 32px;
 }
-.home-eyebrow {
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 1px;
-  color: #536047;
-}
 .home-next h2 {
-  font-size: 29px;
+  font-size: var(--ds-type-subheading-size);
   line-height: 1.15;
-  letter-spacing: -1px;
+  letter-spacing: normal;
   margin: 13px 0 8px;
 }
 .home-next p {
-  font-size: 13px;
-  line-height: 20px;
+  font-size: var(--ds-type-body-size);
+  line-height: var(--ds-type-body-line);
   color: #505b48;
 }
 .personal-app button.home-start {
@@ -163,7 +153,7 @@
   color: #fff;
   border: 0;
   border-radius: 14px;
-  font-size: 15px;
+  font-size: var(--ds-type-body-size);
   margin-top: 20px;
 }
 .home-start svg:last-child {
@@ -179,7 +169,7 @@
   gap: 5px;
   width: 100%;
   border: 0;
-  font-size: 12px;
+  font-size: var(--ds-type-body-size);
   padding: 8px 0 0;
   min-height: 44px;
   color: #424d3e;
@@ -191,12 +181,12 @@
   gap: 10px;
 }
 .home-section-title h2 {
-  font-size: 21px;
-  letter-spacing: -0.7px;
+  font-size: var(--ds-type-subheading-size);
+  letter-spacing: normal;
   margin: 0;
 }
 .home-section-title > span {
-  font-size: 11px;
+  font-size: var(--ds-type-body-size);
   color: #626d69;
 }
 .personal-app .home-section-title button {
@@ -204,19 +194,19 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: var(--ds-type-body-size);
   padding: 0 0 0 8px;
 }
 .home-caption {
-  font-size: 12px;
-  line-height: 19px;
+  font-size: var(--ds-type-body-size);
+  line-height: var(--ds-type-body-line);
   color: #626d69;
   margin: 5px 0 14px;
 }
 .home-empty {
-  font-size: 14px;
+  font-size: var(--ds-type-body-size);
   color: #626d69;
-  line-height: 22px;
+  line-height: var(--ds-type-body-line);
   padding: 24px 0;
   border-top: 1px solid #d9ded8;
 }
@@ -243,10 +233,10 @@
   flex: 1;
 }
 .home-muscle-row strong {
-  font-size: 14px;
+  font-size: var(--ds-type-body-size);
 }
 .home-muscle-row span {
-  font-size: 11px;
+  font-size: var(--ds-type-body-size);
   font-weight: 400;
   color: #626d69;
 }
@@ -288,13 +278,13 @@
 .home-date-block {
   display: grid;
   text-align: center;
-  font-size: 10px;
+  font-size: var(--ds-type-body-size);
   color: #626d69;
   min-width: 40px;
 }
 .home-date-block b {
-  font-size: 23px;
-  line-height: 26px;
+  font-size: var(--ds-type-subheading-size);
+  line-height: var(--ds-type-subheading-line);
   color: #19201f;
 }
 .home-recent-row > span:nth-child(2) {
@@ -303,10 +293,10 @@
   flex: 1;
 }
 .home-recent-row strong {
-  font-size: 14px;
+  font-size: var(--ds-type-body-size);
 }
 .home-recent-row small {
-  font-size: 11px;
+  font-size: var(--ds-type-body-size);
   color: #626d69;
   font-weight: 400;
 }
@@ -315,7 +305,7 @@
   align-items: center;
   gap: 8px;
   border: 0;
-  font-size: 12px;
+  font-size: var(--ds-type-body-size);
   margin-top: 14px;
   padding-left: 0;
 }
@@ -347,8 +337,8 @@
   border-radius: 12px;
 }
 .two-workout .ds-set-row .ds-input {
-  font-size: 23px;
-  font-weight: 650;
+  font-size: var(--ds-type-subheading-size);
+  font-weight: 600;
   min-height: 52px;
 }
 .two-workout .nb-last-time {
@@ -356,10 +346,10 @@
   background: #272c33;
   border-radius: 10px;
   color: #d0d8e3;
-  font-size: 12px;
+  font-size: var(--ds-type-body-size);
 }
 .two-workout .personal-session-heading h1 {
-  font-size: 30px;
+  font-size: var(--ds-type-heading-size);
 }
 .two-workout .personal-header {
   margin-bottom: 8px;
@@ -382,14 +372,14 @@
 }
 .two-sheet-heading h2 {
   margin: 0;
-  font-size: 23px;
+  font-size: var(--ds-type-subheading-size);
 }
 .two-sheet .personal-tabs {
   display: none;
 }
 @media (min-width: 700px) {
   .home-intro h1 {
-    font-size: 48px;
+    font-size: var(--ds-type-heading-size);
   }
   .home-next {
     padding: 30px;
@@ -405,13 +395,13 @@
     padding-right: 16px;
   }
   .home-intro h1 {
-    font-size: 33px;
+    font-size: var(--ds-type-heading-size);
   }
   .home-next {
     padding: 18px;
   }
   .home-chart-legend {
-    font-size: 9px;
+    font-size: var(--ds-type-body-size);
     gap: 4px;
   }
   .home-visit-grid {
@@ -465,7 +455,7 @@
   justify-content: flex-end;
 }
 .two-header-actions .ds-button {
-  font-size: 11px;
+  font-size: var(--ds-type-body-size);
   padding: 8px;
 }
 .two-home .personal-header,
@@ -481,11 +471,8 @@
   padding-top: 8px;
 }
 .home-intro h1 {
-  font-size: 33px;
+  font-size: var(--ds-type-heading-size);
   margin: 10px 0 22px;
-}
-.home-intro > span {
-  font-size: 11px;
 }
 .home-attendance {
   margin-bottom: 24px;
@@ -495,6 +482,46 @@
 }
 @media (min-width: 700px) {
   .home-intro h1 {
-    font-size: 40px;
+    font-size: var(--ds-type-heading-size);
   }
+}
+
+.home-chart-legend {
+  flex-wrap: wrap;
+  line-height: var(--ds-type-body-line);
+}
+.home-chart-legend span:nth-child(2) {
+  display: none;
+}
+.two-header-actions .personal-status {
+  max-width: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 350px) {
+  .two-header-actions .ds-button__normal > span {
+    display: none;
+  }
+}
+
+/* A fixed, compact header: readable saved receipt plus a labelled icon control. */
+.two-home .personal-header,
+.two-workout .personal-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+.personal-brand {
+  white-space: nowrap;
+}
+.two-header-actions {
+  flex-wrap: nowrap;
+}
+.two-header-actions > .ds-button {
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+}
+.two-header-actions .ds-button__normal > span {
+  display: none;
 }
