@@ -1,0 +1,22 @@
+{
+  "prototypeOnly": true,
+  "actualFontUsedForPrivateCapture": true,
+  "viewportChecks": [
+    320,
+    390
+  ],
+  "attendanceCells": 28,
+  "fullSessionSets": 9,
+  "sourcePreservedAfterSwap": true,
+  "repeatVisitDayDeduplicated": true,
+  "dialogFocusAndEscape": true,
+  "externalRequests": 0,
+  "databaseCalls": 0,
+  "pageErrors": [],
+  "firstLogBounds": {
+    "x": 22,
+    "y": 710.9207153320312,
+    "width": 346,
+    "height": 52
+  }
+}
