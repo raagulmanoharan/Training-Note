@@ -58,3 +58,7 @@ Aligned interaction: Choose workout → row Preview → common plan/setup → St
 Engineering pickup order: S1-01/S1-02 feedback facts and guidance, then routine/backup data-contract review, then S1-03/S1-04 chooser and explicit template save/update, then S1-05 setup and S1-06 production composition. Each story starts with its UX journey. Confirm prepared-plan durability and the conservative optional-effort policy during domain review; do not infer those from static visuals. S1-07 production regression and renewed day0/5/10/100 walkthrough remain not started.
 
 No production files, stored workouts or database schema were changed during this design kickoff.
+
+## Visual direction pivot: instrument study
+
+User selected Teenage Engineering as the new visual reference. UX and graphic designers reconvened; root inspected the official EP–133 and OP–1 product panels in Chromium. `INSTRUMENT-REFERENCE-STUDY.md` records observations and journey translations. `design/instrument-direction.html` is the new interactive two-screen proposal, superseding the script/athlete art direction for future composition. Production integration remains S1-06; this does not mark production stories complete or change stored workouts.
