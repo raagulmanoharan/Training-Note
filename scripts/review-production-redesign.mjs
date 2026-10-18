@@ -84,6 +84,16 @@ for (const width of [320, 390]) {
 await page.getByRole("button", { name: "Use last time", exact: true }).click();
 await page.waitForTimeout(200);
 await page.screenshot({ path: output + "/workout.png", fullPage: true });
+await page
+  .getByRole("button", { name: "Hide elapsed time", exact: true })
+  .click();
+await page.screenshot({
+  path: output + "/workout-compact.png",
+  fullPage: true,
+});
+await page
+  .getByRole("button", { name: "Show elapsed time", exact: true })
+  .click();
 await page.getByRole("button", { name: /^Log set \d+ for / }).click();
 await page
   .locator(".personal-status")

@@ -70,3 +70,7 @@ The user clarified that Teenage Engineering was a reference for clean visual com
 ## Production usability / visual redesign delivery
 
 The dot direction is now integrated into the actual React logger, following a fresh-context synthetic browser evaluation, UX/graphic handoffs, a screenshot-fed image-generation exploration and a second real-app walkthrough. `PROFESSIONAL-REDESIGN-SPRINT.md` tracks completed work; `REDESIGN-DELIVERY.md` records actual test evidence and limitations. This completes the visual/composition portion of S1-06 and regression for this change; it does not mark the separate saved-routine/domain-model stories as implemented.
+
+## Session hierarchy refinement
+
+Completed persistent session card with a strong Finish action, wall-clock elapsed time derived from saved start, and remembered hide/show preference. Secondary setup remains collapsed; inactive exercise tap targets are larger. `SESSION-CARD.md` records the full journey and verification. Workout data schema and saving semantics are unchanged.

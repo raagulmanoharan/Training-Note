@@ -923,3 +923,110 @@
     line-height: 18px;
   }
 }
+/* Persistent session ownership; the logging action keeps its own visual priority. */
+.nb-session-card {
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 8px);
+  z-index: 12;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #fffdf8;
+  border: 1px solid var(--ds-rule);
+  border-radius: 18px;
+  box-shadow: 0 4px 18px #2526240a;
+}
+.nb-session-clock {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.nb-session-clock time {
+  font: 400 28px/34px var(--ds-mono);
+  color: var(--ds-ink);
+  font-variant-numeric: tabular-nums;
+}
+.nb-session-clock > span {
+  color: var(--ds-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+.nb-session-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.personal-app .nb-session-toggle {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+.personal-app .nb-session-finish.ds-button {
+  min-height: 48px;
+  padding: 12px 16px;
+  background: #252624;
+  border-color: #252624;
+  color: #fffdf8;
+  border-radius: 12px;
+}
+.nb-session-card.is-compact {
+  padding: 8px 12px;
+}
+.nb-session-card.is-compact .nb-session-card-actions {
+  width: 100%;
+  justify-content: space-between;
+}
+.two-workout .nb-exercise-card.is-collapsed .nb-exercise-top {
+  width: 100%;
+}
+.two-workout .nb-exercise-card.is-collapsed .nb-exercise-heading {
+  width: 100%;
+  min-height: 68px;
+}
+#finish-confirmation {
+  scroll-margin-top: calc(env(safe-area-inset-top) + 112px);
+}
+@media (max-width: 350px) {
+  .nb-session-card {
+    gap: 8px;
+    padding: 10px;
+  }
+  .personal-app .nb-session-finish.ds-button {
+    padding: 12px;
+  }
+  .nb-session-card-actions {
+    gap: 4px;
+  }
+}
+/* Keep session context subordinate to the exercise, and avoid repeating the set number above Log. */
+.two-workout.is-session .personal-header {
+  min-height: 48px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.nb-session-card {
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+.nb-session-clock {
+  gap: 0;
+}
+.nb-session-clock time {
+  font-size: 18px;
+  line-height: 24px;
+}
+.two-workout .ds-set-entry .ds-entry-ordinal {
+  display: none;
+}
+@media (max-width: 350px) {
+  .nb-session-card {
+    padding: 8px 10px;
+  }
+}

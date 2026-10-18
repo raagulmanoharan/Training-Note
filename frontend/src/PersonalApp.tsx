@@ -29,6 +29,7 @@ import {
 import "./personal.css";
 import MuscleGlyph from "./MuscleGlyph";
 import TrainingHome from "./TrainingHome";
+import SessionCard from "./SessionCard";
 import { effortLabel, groupInsights } from "./personalInsights";
 import {
   DSButton,
@@ -870,27 +871,26 @@ export default function PersonalApp() {
         </div>
         <div className="two-header-actions">
           <DSStatus state={status} className={`personal-status ${status}`} />
-          {workout && tab === "today" ? (
-            <DSButton
-              ref={finishTrigger}
-              variant="secondary"
-              className="nb-header-finish"
-              onClick={() => setFinishing(true)}
-            >
-              Finish
-            </DSButton>
-          ) : (
+          {!(workout && tab === "today") && (
             <DSButton
               variant="text"
               aria-label="Settings and backup"
               onClick={() => openOverlay("backup")}
             >
-              <Settings size={20} />{" "}
+              <Settings size={20} />
               <span className="visually-hidden">Settings</span>
             </DSButton>
           )}
         </div>
       </header>
+      {workout && tab === "today" && (
+        <SessionCard
+          ref={finishTrigger}
+          startedAt={workout.startedAt}
+          savedSets={recordedCount}
+          onFinish={() => setFinishing(true)}
+        />
+      )}
       <main className="personal-main">
         {error && (
           <DSInlineNotice
@@ -1181,13 +1181,6 @@ export default function PersonalApp() {
             )}
             {workout && exercise && (
               <>
-                <p className="nb-session-context">
-                  {workout.groups
-                    .map((g) => groups.find((x) => x.id === g)?.name)
-                    .join(" + ")}
-                  <span aria-hidden="true"> · </span>
-                  {recordedCount} {recordedCount === 1 ? "set" : "sets"} saved
-                </p>
                 <div className="personal-exercise-stack">
                   {[
                     exercise,
