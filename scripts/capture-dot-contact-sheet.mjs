@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+import { readFile, mkdir } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1200,height:1100}});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.setContent(await readFile('docs/design/dot-muscle-contact-sheet.html','utf8'));
+await page.waitForTimeout(250);
+assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+await page.screenshot({path:'docs/design/dot-muscle-contact-sheet.png',fullPage:true});
+await page.setViewportSize({width:390,height:844});
+assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+assert.deepEqual(errors,[]);
+console.log('Contact sheet rendered at 1200px and 390px without overflow or page errors.');
+await browser.close();

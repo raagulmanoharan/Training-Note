@@ -62,3 +62,7 @@ No production files, stored workouts or database schema were changed during this
 ## Visual direction pivot: instrument study
 
 User selected Teenage Engineering as the new visual reference. UX and graphic designers reconvened; root inspected the official EP–133 and OP–1 product panels in Chromium. `INSTRUMENT-REFERENCE-STUDY.md` records observations and journey translations. `design/instrument-direction.html` is the new interactive two-screen proposal, superseding the script/athlete art direction for future composition. Production integration remains S1-06; this does not mark production stories complete or change stored workouts.
+
+## Visual correction: dot-based editorial language
+
+The user clarified that Teenage Engineering was a reference for clean visual communication, not physical hardware. The instrument/keycap metaphor is superseded. Graphic design pickup: create a coherent nine-target dot-based muscle contact sheet and reusable SVG assets, then compose a flat two-screen proposal using them at workout selection and logging touchpoints. UX reviewed essential versus redundant labels and the need to preserve target names, units, reference context and explicit actions. No human testing is claimed. This is design-system exploration; production integration remains pending.
