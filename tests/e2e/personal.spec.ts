@@ -207,6 +207,9 @@ test("personal store: verified backup restores history, draft, settings after sy
 
 async function startPersonal(page: any, groups = ["Chest", "Back"], count = 4) {
   await page.goto("/");
+  await page
+    .getByRole("button", { name: "Build a different workout", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What are you training?" }),
   ).toBeVisible();
@@ -230,7 +233,9 @@ async function logActual(page: any, weight = "40", reps = "10") {
     .fill(weight);
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill(reps);
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const next = page.getByRole("textbox", { name: "Reps", exact: true });
   if (await next.count()) await expect(next).toHaveValue("");
 }
@@ -297,7 +302,9 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
   });
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await page.getByRole("button", { name: "Save workout", exact: true }).click();
-  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page
+    .getByRole("button", { name: "View progress details", exact: true })
+    .click();
   await expect(
     page.getByText("42.5 kg × 10 · 40 kg × 10", { exact: true }),
   ).toBeVisible();
@@ -307,7 +314,9 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
       .filter({ hasText: /^20 kg × 8$/ }),
   ).toBeVisible();
   await page.reload();
-  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page
+    .getByRole("button", { name: "View progress details", exact: true })
+    .click();
   await expect(
     page.getByText("42.5 kg × 10 · 40 kg × 10", { exact: true }),
   ).toBeVisible();
@@ -337,7 +346,9 @@ test("personal UI: draft inputs survive reload and 320 px has no page overflow",
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("12.5");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.reload();
   await expect(
     page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
@@ -387,7 +398,9 @@ test("personal UI: offline production shell restores draft without API requests"
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("42.5");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -417,7 +430,9 @@ test("personal UI: storage failure never claims a logged set is saved and retry 
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("40");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.evaluate(() => {
     const original = IDBDatabase.prototype.transaction;
     (window as any).restoreTransactions = () => {
@@ -436,7 +451,9 @@ test("personal UI: storage failure never claims a logged set is saved and retry 
   ).toHaveCount(0);
   await page.evaluate(() => (window as any).restoreTransactions());
   await page.getByRole("button", { name: "Retry save", exact: true }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
@@ -450,7 +467,9 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
 }) => {
   await startPersonal(page, ["Chest"], 1);
   await logActual(page);
-  await page.getByRole("button", { name: "Backup", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Settings and backup", exact: true })
+    .click();
   const downloadPromise = page.waitForEvent("download");
   await page
     .getByRole("button", { name: "Export backup", exact: true })
@@ -472,8 +491,12 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
     mimeType: "application/json",
     buffer: Buffer.from('{"version":999}'),
   });
-  await expect(page.getByRole("alert")).toContainText("invalid");
-  await page.getByRole("button", { name: "Today", exact: true }).click();
+  await expect(
+    page
+      .getByRole("dialog", { name: "Settings and backup", exact: true })
+      .getByRole("alert"),
+  ).toContainText("invalid");
+  await page.getByRole("button", { name: "Close panel", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
@@ -551,7 +574,9 @@ test("personal UI: earlier typing acknowledgement cannot reveal a later failed s
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
     .fill("40");
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.evaluate(() => {
     const original = IDBDatabase.prototype.transaction;
     let writes = 0;
@@ -589,7 +614,9 @@ test("personal UI: earlier typing acknowledgement cannot reveal a later failed s
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toHaveCount(0);
@@ -625,11 +652,15 @@ test("personal UI: all-set history shows two more reps without automatically add
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Backup", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Settings and backup", exact: true })
+    .click();
   await page
     .getByRole("textbox", { name: "Gym label", exact: true })
     .fill("Same gym");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await startPersonal(page, ["Chest"], 1);
   await logActual(page, "40", "10");
   await logActual(page, "40", "10");
@@ -662,6 +693,9 @@ test("redesign: compact lineup can be revised before explicit session start", as
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page
+    .getByRole("button", { name: "Build a different workout", exact: true })
+    .click();
   await page.getByRole("button", { name: "Chest", exact: true }).click();
   await page.getByRole("button", { name: "Back", exact: true }).click();
   await page.getByLabel("Exercises", { exact: true }).fill("4");
@@ -716,7 +750,9 @@ test("redesign: next-set row stays aligned, thumb-sized and draft survives exerc
   expect(Math.abs(w!.y - c!.y)).toBeLessThan(5);
   await weight.fill("12.5");
   await reps.fill("8");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const firstName = await page
     .locator(".nb-exercise-card.is-active .nb-exercise-title")
     .innerText();
@@ -766,7 +802,9 @@ test("redesign: swapping an unperformed exercise requires explicit draft discard
   const reps = page.getByRole("textbox", { name: "Reps", exact: true });
   await weight.fill("40");
   await reps.fill("10");
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const title = await page
     .locator(".nb-exercise-card.is-active .nb-exercise-title")
     .innerText();

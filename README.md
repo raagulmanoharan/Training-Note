@@ -4,7 +4,7 @@ Publication prepared for `raagulmanoharan/gym-notebook`. Remote repository creat
 
 A personal, mobile-first gym log. No account, backend, analytics or subscription. Your workout records live in this browser's IndexedDB database.
 
-Choose muscle groups and an exercise count, review a compact lineup, then log weight and reps directly in numbered set rows. Tap the row check after performing each set. Switch exercises or swap equipment inline. Finished sessions retain every set. Optional progression hints compare the same exercise and setup; the final decision stays with you.
+Two primary screens: Home shows recorded gym visits, comparable muscle-group performance and a repeat/plan action. Workout keeps previous actuals, set entry and substitutions together. History and backup/settings open contextual panels. Choose muscle groups and an exercise count, review a compact lineup, then log weight and reps directly in numbered set rows. Tap the row check after performing each set. Switch exercises or swap equipment inline. Finished sessions retain every set. Optional progression hints compare the same exercise and setup; the final decision stays with you.
 
 ## Run
 
@@ -70,3 +70,7 @@ Open `?design=1` on the app URL to inspect the service blueprint, information ar
 The [journey model](docs/DESIGN-JOURNEYS.md), [task flows](docs/DESIGN-FLOWS.md), [design-system contract](docs/DESIGN-SYSTEM.md) and [delivery record](docs/DESIGN-DELIVERY.md) document the reasoning before implementation. The system includes typed atoms and molecules under `frontend/src/design-system/`; the production screens use those same parts. Feelings and comprehension remain research hypotheses, not observed findings.
 
 Default test commands include the isolated design-system checks. The separate production Pages/offline check still verifies the installable app under its project path.
+
+## Gym-week redesign
+
+The current design starts with the real-world [gym journey and service overlay](docs/REAL-GYM-JOURNEY.md), [actual source observations](docs/TWO-SCREEN-REFERENCES.md), [two-screen UX](docs/TWO-SCREEN-UX.md) and [verification](docs/TWO-SCREEN-QA.md). Open `?design=1` for the workbench. `node scripts/export-workbench.mjs` produces a self-contained offline design-review HTML file in `/workspace/shared`; it contains synthetic screenshots and does not include the workout application or personal records.

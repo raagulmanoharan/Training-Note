@@ -8,8 +8,9 @@ import {
   LayoutTemplate,
   ChevronRight,
 } from "lucide-react";
-import journeysDoc from "../../docs/DESIGN-JOURNEYS.md?raw";
+import realJourneyDoc from "../../docs/REAL-GYM-JOURNEY.md?raw";
 import flowsDoc from "../../docs/DESIGN-FLOWS.md?raw";
+import twoScreenDoc from "../../docs/TWO-SCREEN-UX.md?raw";
 import systemDoc from "../../docs/DESIGN-SYSTEM.md?raw";
 import critiqueDoc from "../../docs/DESIGN-CRITIQUE.md?raw";
 import ComponentGallery from "./design-system/ComponentGallery";
@@ -33,17 +34,6 @@ function sections(doc: string, prefix: string) {
       .slice((m.index ?? 0) + m[0].length, all[index + 1]?.index ?? doc.length)
       .trim(),
   }));
-}
-function field(body: string, label: string) {
-  return (
-    body
-      .match(
-        new RegExp(
-          `\\*\\*${label}[^*]*:\\*\\*\\s*([\\s\\S]*?)(?=\\*\\*[^*]+:\\*\\*|\\n\\n|$)`,
-        ),
-      )?.[1]
-      ?.trim() || ""
-  );
 }
 function inline(s: string): ReactNode {
   return s
@@ -110,63 +100,72 @@ function Document({ source }: { source: string }) {
     </div>
   );
 }
-const compositionImages = import.meta.glob("../../docs/images/design-*.png", {
-  eager: true,
-  query: "?url",
-  import: "default",
-}) as Record<string, string>;
+const compositionImages = import.meta.glob(
+  ["../../docs/images/two-screen-home.png", "../../docs/images/two-screen-workout.png"],
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+) as Record<string, string>;
+// Derive the visual map from the canonical off-app journey rather than maintaining
+// a second, screen-led version of the research synthesis.
+const realPhases = realJourneyDoc
+  .split("## End-to-end journey and app overlay")[1]
+  .split("## The week is a loop")[0]
+  .split("\n")
+  .filter((line) => /^\| \d+\./.test(line))
+  .map((line, index) => {
+    const [title, actions, friction, feeling, intervention, noApp] = line
+      .split("|")
+      .slice(1, -1)
+      .map((cell) => cell.trim());
+    return {
+      id: `G${String(index + 1).padStart(2, "0")}`,
+      title,
+      actions,
+      friction,
+      feeling,
+      intervention,
+      noApp,
+    };
+  });
 const jobs = [
   {
-    name: "Today",
-    job: "Prepare / Capture / Resume",
-    flows: "F01 · F02 · F03 · F04 · F05 · F06 · F07 · F08",
+    name: "Home",
+    job: "Orient / Plan / Understand",
+    flows: "Plan and progress share one place",
     items: [
-      "Choose focus → review a session",
-      "Capture one performed set",
-      "Correct, swap or add optional effort",
-      "Finish while preserving partial work",
+      "Resume an active session, or start the chosen next workout",
+      "See actual visit dates and supported performance changes",
+      "Repeat or prepare a workout inline",
+      "Expand exact history; access backup and settings contextually",
     ],
   },
   {
-    name: "Progress",
-    job: "Understand",
-    flows: "F09",
+    name: "Session",
+    job: "Recall / Perform / Record / Adapt",
+    flows: "One continuous worksheet",
     items: [
-      "Dated actual records",
-      "Comparable movement / setup evidence",
-      "Visible effort and context qualification",
-      "Correct a historical actual in context",
-    ],
-  },
-  {
-    name: "Backup",
-    job: "Protect / Recover",
-    flows: "F10",
-    items: [
-      "On-device records ≠ offline app ≠ backup",
-      "Export a recovery file",
-      "Inspect and safely merge an import",
-      "Storage protection and install guidance",
+      "See last matching actuals beside today's set rows",
+      "Record weight and reps explicitly",
+      "Jump exercises or swap equipment without losing work",
+      "Correct, optionally record effort, and finish partially",
     ],
   },
 ];
 export default function DesignWorkbench() {
   const [view, setView] = useState<View>("journey"),
-    [journeyId, setJourneyId] = useState("J03"),
+    [journeyId, setJourneyId] = useState("G07"),
     [flowId, setFlowId] = useState("F03");
-  const journeys = sections(journeysDoc, "J"),
-    flows = sections(flowsDoc, "F");
-  const journey = journeys.find((j) => j.id === journeyId) || journeys[0],
+  const flows = sections(flowsDoc, "F");
+  const journey = realPhases.find((j) => j.id === journeyId) || realPhases[0],
     flow = flows.find((f) => f.id === flowId) || flows[0];
   const paths =
     flow?.body
       .match(/```text\n([\s\S]*?)```/)?.[1]
       ?.trim()
       .split("\n") || [];
-  const openFlow = (id: string) => {
-    setFlowId(id);
-    setView("flows");
-  };
   return (
     <div className="design-workbench">
       <header className="dw-header">
@@ -207,7 +206,7 @@ export default function DesignWorkbench() {
             <h1>{views.find((v) => v.id === view)?.name}</h1>
             <p>
               {view === "journey"
-                ? "Design the moments, then the interface. The complete service includes the browser, the gym, interruptions and recovery—not only screens."
+                ? "Start outside the app: deciding to train, finding equipment, lifting, remembering, and returning next week. Application touchpoints are an overlay, not the journey itself."
                 : view === "architecture"
                   ? "Organize around the job the person is doing. Keep intentions, pending entries, recorded actuals and interpreted evidence distinct."
                   : view === "flows"
@@ -220,75 +219,81 @@ export default function DesignWorkbench() {
           {view === "journey" && (
             <>
               <div className="dw-principle">
-                <strong>Prepare → Capture → Understand</strong>
-                <span>Protect is a service across the whole journey.</span>
+                <strong>
+                  Decide → Arrive → Lift → Rest → Record → Leave → Return
+                </strong>
+                <span>
+                  User statements are evidence. Feelings and other behaviour
+                  remain hypotheses, not observed research.
+                </span>
               </div>
-              <div className="dw-blueprint" aria-label="Service blueprint">
-                {journeys.map((j) => (
+              <div
+                className="dw-blueprint"
+                aria-label="Real gym week and application touchpoint overlay"
+              >
+                {realPhases.map((j) => (
                   <button
                     className={`dw-journey-column ${journeyId === j.id ? "selected" : ""}`}
                     key={j.id}
-                    aria-label={`${j.id}: ${j.title.replace(/\s*\(.+$/, "")} — inspect touchpoint`}
+                    aria-label={`${j.id}: ${j.title} — inspect real-world moment`}
                     onClick={() => setJourneyId(j.id)}
                     aria-pressed={journeyId === j.id}
                   >
                     <span className="dw-kicker">
-                      {j.id} /{" "}
-                      {j.body.match(/F\d+/)?.[0] ||
-                        j.title.match(/F\d+/)?.[0] ||
-                        ""}
+                      {j.id} / Outside the app first
                     </span>
-                    <h2>{j.title.replace(/\s*\(.+$/, "")}</h2>
+                    <h2>{j.title}</h2>
                     <div>
-                      <label>Human intent</label>
-                      <p>{field(j.body, "Human intent/context")}</p>
+                      <label>Person, environment and artefacts</label>
+                      <p>{j.actions}</p>
                     </div>
                     <div>
-                      <label>Digital touchpoint / frontstage</label>
-                      <p>{field(j.body, "Touchpoints and visible UX")}</p>
+                      <label>Friction to investigate</label>
+                      <p>{j.friction}</p>
                     </div>
                     <div className="dw-emotion">
-                      <label>Feeling / friction · hypothesis</label>
-                      <p>{field(j.body, "Hypothesis")}</p>
+                      <label>Feeling · hypothesis</label>
+                      <p>{j.feeling}</p>
                     </div>
                     <div>
-                      <label>UX intervention</label>
-                      <p>{field(j.body, "Intervention")}</p>
+                      <label>Optional app touchpoint · overlay</label>
+                      <p>{j.intervention}</p>
                     </div>
                     <div>
-                      <label>Local service / backstage</label>
-                      <p>{field(j.body, "Backstage")}</p>
-                    </div>
-                    <div>
-                      <label>External actors / environment</label>
-                      <p>{field(j.body, "External actors")}</p>
+                      <label>Leave these moments alone</label>
+                      <p>{j.noApp}</p>
                     </div>
                     <span className="dw-inspect">
-                      Inspect touchpoint <ChevronRight size={14} />
+                      Inspect moment <ChevronRight size={14} />
                     </span>
                   </button>
                 ))}
               </div>
               {journey && (
                 <section className="dw-detail">
-                  <div className="dw-section-heading">
-                    <div>
-                      <span className="dw-kicker">
-                        Selected touchpoint / full blueprint
-                      </span>
-                      <h2>
-                        {journey.id} — {journey.title.replace(/\s*\(.+$/, "")}
-                      </h2>
-                    </div>
-                    <button onClick={() => openFlow(`F${journey.id.slice(1)}`)}>
-                      See task flow <ChevronRight size={15} />
-                    </button>
-                  </div>
-                  <Document source={journey.body} />
+                  <span className="dw-kicker">
+                    Selected real-world moment / application overlay
+                  </span>
+                  <h2>{journey.title}</h2>
+                  <Document
+                    source={`**Outside the app:** ${journey.actions}\n\n**Friction to investigate:** ${journey.friction}\n\n**Feeling hypothesis:** ${journey.feeling}\n\n**Possible intervention:** ${journey.intervention}\n\n**No app interaction required:** ${journey.noApp}`}
+                  />
+                  <button onClick={() => setView("architecture")}>
+                    See two-screen architecture <ChevronRight size={15} />
+                  </button>
                 </section>
               )}
               <details className="dw-source">
-                <summary>Design critique and evidence boundaries</summary>
+                <summary>
+                  Full gym-week map, service ecosystem, evidence boundaries and
+                  validation plan
+                </summary>
+                <Document source={realJourneyDoc} />
+              </details>
+              <details className="dw-source">
+                <summary>
+                  Earlier implementation critique · historical context
+                </summary>
                 <Document source={critiqueDoc} />
               </details>
             </>
@@ -350,6 +355,16 @@ export default function DesignWorkbench() {
           )}
           {view === "flows" && (
             <>
+              <section className="dw-detail">
+                <span className="dw-kicker">Current two-screen task model</span>
+                <h2>The physical gym week determines the interaction.</h2>
+                <Document source={twoScreenDoc} />
+              </section>
+              <p className="dw-note">
+                Historical implementation contracts below: F01–F10 preserve
+                useful transaction and recovery rules. Their earlier screen
+                architecture is not the current two-screen design.
+              </p>
               <div className="dw-flow-selector" aria-label="Choose a task flow">
                 {flows.map((f) => (
                   <button
@@ -398,8 +413,11 @@ export default function DesignWorkbench() {
           {view === "components" && (
             <>
               <div className="dw-sandbox-label">
-                Interactive specimens · synthetic, in-memory state · no workout
-                storage
+                Legacy shared-state specimens · synthetic, in-memory state · no
+                workout storage. These demonstrate reusable behavior and
+                transaction states; their green ledger material is the earlier
+                theme. The current Home and Workout scenes are shown in Screen
+                composition.
               </div>
               <ComponentGallery />
               <details className="dw-source">
@@ -415,25 +433,18 @@ export default function DesignWorkbench() {
               <div className="dw-composition-list">
                 {[
                   {
-                    title: "Prepare & review",
-                    flow: "F02",
+                    title: "Home · visits, performance, next workout",
+                    flow: "Current primary screen 1 of 2",
                     parts:
-                      "Focus selection · Stepper · Plan line · Primary action",
-                    image: "design-plan.png",
+                      "Visit strip · Next-workout action · Comparable performance · Recent session · Contextual settings",
+                    image: "two-screen-home.png",
                   },
                   {
-                    title: "Capture a performed set",
-                    flow: "F03 / F04 / F05 / F07",
+                    title: "Workout · recall, record, adapt",
+                    flow: "Current primary screen 2 of 2",
                     parts:
-                      "Worksheet · Set row · Transaction status · Contextual controls",
-                    image: "design-capture.png",
-                  },
-                  {
-                    title: "Understand the evidence",
-                    flow: "F09",
-                    parts:
-                      "Section header · Evidence summary · Disclosure · Comparison rows",
-                    image: "design-evidence.png",
+                      "Exercise outline · Previous actuals · Set worksheet · Optional effort · Swap · Finish",
+                    image: "two-screen-workout.png",
                   },
                 ].map((screen) => (
                   <article className="dw-composition" key={screen.title}>
@@ -443,8 +454,8 @@ export default function DesignWorkbench() {
                       <p>{screen.parts}</p>
                       <p className="dw-note">
                         {compositionImages[`../../docs/images/${screen.image}`]
-                          ? "Actual rendered screen, using the shared library. Synthetic records only; the working app is the source of behavior."
-                          : "Composition pending isolated component review. The app is not being replaced from a feature list."}
+                          ? "Actual rendered current app screen. Synthetic records only; the working app is the source of behavior. Temporary planning, history and data sheets are not additional primary destinations."
+                          : "Current screenshot is being captured; do not substitute an earlier three-screen image."}
                       </p>
                     </div>
                     {compositionImages[`../../docs/images/${screen.image}`] ? (

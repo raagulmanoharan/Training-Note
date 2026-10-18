@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 
 async function start(page: any) {
   await page.goto("/");
+  await page
+    .getByRole("button", { name: "Plan a workout", exact: true })
+    .click();
   await page.getByRole("button", { name: "Chest", exact: true }).click();
   await page.getByLabel("Exercises", { exact: true }).fill("1");
   await page.getByRole("button", { name: "Build my workout" }).click();
@@ -271,7 +274,9 @@ test("effort UI: optional add change remove, correction and undo preserve stable
     fullPage: true,
   });
   await choice.click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await expect(page.locator(".nb-effort-picker")).toHaveCount(0);
   let actual = (await saved(page)).current!.exercises[0].sets[0];
   expect(actual).toEqual({ ...original, repsInReserve: 2 });
@@ -280,7 +285,9 @@ test("effort UI: optional add change remove, correction and undo preserve stable
     .getByRole("button", { name: /Change effort for set 1 of/ })
     .click();
   await page.getByRole("button", { name: "4+ more", exact: true }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
   await page.getByLabel("Edit weight", { exact: true }).fill("42.5");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
@@ -297,7 +304,9 @@ test("effort UI: optional add change remove, correction and undo preserve stable
   await page
     .getByRole("button", { name: "Remove effort", exact: true })
     .click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.reload();
   expect((await saved(page)).current!.exercises[0].sets[0]).toEqual({
     ...original,
@@ -318,7 +327,9 @@ test("effort UI: failed edit retains prior committed effort and proposed choice,
     .getByRole("button", { name: "How did that set feel?", exact: true })
     .click();
   await page.getByRole("button", { name: "2 more", exact: true }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const before = (await saved(page)).current!.exercises[0].sets[0];
   await page
     .getByRole("button", { name: /^Change effort for set 1 of/ })
@@ -344,7 +355,9 @@ test("effort UI: failed edit retains prior committed effort and proposed choice,
   expect((await saved(page)).current!.exercises[0].sets[0]).toEqual(before);
   await page.evaluate(() => (window as any).restoreEffortTransactions());
   await page.getByRole("button", { name: "Retry save", exact: true }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const after = (await saved(page)).current!.exercises[0];
   expect(after.sets).toHaveLength(1);
   expect(after.sets[0]).toEqual({ ...before, repsInReserve: 0 });
@@ -377,7 +390,9 @@ test("effort UI: history retains effort and muscle card exposes actual compariso
     await s.saveState(state, 0);
   });
   await page.reload();
-  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page
+    .getByRole("button", { name: "View progress details", exact: true })
+    .click();
   const group = page
     .locator(".nb-muscle-insight")
     .filter({ has: page.getByRole("heading", { name: "Chest", exact: true }) });
@@ -409,11 +424,15 @@ test("effort UI: history retains effort and muscle card exposes actual compariso
     .first()
     .click();
   await page.getByRole("button", { name: "1 more", exact: true }).click();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   const after = (await saved(page)).history[0].exercises[0].sets[0];
   expect(after).toEqual({ ...before, repsInReserve: 1 });
   await page.reload();
-  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page
+    .getByRole("button", { name: "View progress details", exact: true })
+    .click();
   await expect(page.locator(".personal-progress-card").first()).toContainText(
     "1 rep left",
   );

@@ -1,0 +1,500 @@
+/* Two scenes, one notebook: reflection in daylight; a focused worksheet at the gym. */
+.personal-app.two-home {
+  --ds-canvas: #f6f5f0;
+  --ds-sheet: #fff;
+  --ds-raised: #ecece6;
+  --ds-ink: #19201f;
+  --ds-secondary: #505b58;
+  --ds-muted: #626d69;
+  --ds-rule: #d9ded8;
+  --ds-control-border: #7b8680;
+  --ds-accent: #254cf4;
+  --ds-accent-surface: #e8edff;
+  --ds-action-ink: #fff;
+  --ds-focus: #254cf4;
+  --ds-warning: #775900;
+  --ds-warning-surface: #fff4d2;
+  --ds-danger: #a32c30;
+  --ds-danger-surface: #fff0ed;
+  color-scheme: light;
+}
+.personal-app.two-workout {
+  --ds-canvas: #121417;
+  --ds-sheet: #1b1e23;
+  --ds-raised: #272c33;
+  --ds-ink: #f6f7f9;
+  --ds-secondary: #b8bec7;
+  --ds-muted: #a1aab6;
+  --ds-rule: #3c444e;
+  --ds-control-border: #778291;
+  --ds-accent: #b8edc3;
+  --ds-accent-surface: #253c2e;
+  --ds-focus: #c5d4ff;
+  --ds-action-ink: #121417;
+}
+.personal-app.two-home,
+.personal-app.two-workout {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+.two-home .personal-header,
+.two-workout .personal-header {
+  max-width: 620px;
+}
+.two-home .personal-main,
+.two-workout .personal-main {
+  max-width: 620px;
+}
+.two-home .personal-brand {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+.two-home .personal-header {
+  border-bottom: 0;
+  padding-top: 22px;
+}
+.two-home .personal-status {
+  font-size: 10px;
+}
+.training-home {
+  padding-top: 16px;
+}
+.home-intro > span {
+  font-size: 12px;
+  color: #626d69;
+}
+.home-intro h1 {
+  font-size: 38px;
+  line-height: 1.08;
+  letter-spacing: -1.8px;
+  font-weight: 650;
+  margin: 12px 0 30px;
+}
+.home-attendance {
+  margin-bottom: 28px;
+}
+.home-attendance-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.home-attendance-heading strong {
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+.home-attendance-heading strong span {
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  font-weight: 500;
+}
+.home-attendance-heading p {
+  font-size: 12px;
+  color: #626d69;
+  margin: 5px 0 0;
+}
+.home-attendance-heading > svg {
+  color: #626d69;
+}
+.home-visit-grid {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 6px;
+}
+.home-day {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: #e2e6df;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+}
+.home-day.visited {
+  background: #254cf4;
+}
+.home-day.is-today {
+  outline: 1.5px solid #19201f;
+  outline-offset: 2px;
+}
+.home-chart-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #626d69;
+  font-size: 10px;
+  margin-top: 10px;
+}
+.home-next {
+  padding: 23px;
+  background: #e5e9dd;
+  border-radius: 22px;
+  margin-bottom: 32px;
+}
+.home-eyebrow {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  color: #536047;
+}
+.home-next h2 {
+  font-size: 29px;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  margin: 13px 0 8px;
+}
+.home-next p {
+  font-size: 13px;
+  line-height: 20px;
+  color: #505b48;
+}
+.personal-app button.home-start {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 54px;
+  background: #19201f;
+  color: #fff;
+  border: 0;
+  border-radius: 14px;
+  font-size: 15px;
+  margin-top: 20px;
+}
+.home-start svg:last-child {
+  margin-left: auto;
+}
+.home-start svg:first-child {
+  margin-right: auto;
+}
+.personal-app button.home-alternate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  border: 0;
+  font-size: 12px;
+  padding: 8px 0 0;
+  min-height: 44px;
+  color: #424d3e;
+}
+.home-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.home-section-title h2 {
+  font-size: 21px;
+  letter-spacing: -0.7px;
+  margin: 0;
+}
+.home-section-title > span {
+  font-size: 11px;
+  color: #626d69;
+}
+.personal-app .home-section-title button {
+  border: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 0 0 0 8px;
+}
+.home-caption {
+  font-size: 12px;
+  line-height: 19px;
+  color: #626d69;
+  margin: 5px 0 14px;
+}
+.home-empty {
+  font-size: 14px;
+  color: #626d69;
+  line-height: 22px;
+  padding: 24px 0;
+  border-top: 1px solid #d9ded8;
+}
+.personal-app button.home-muscle-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-top: 1px solid #d9ded8;
+  border-radius: 0;
+  min-height: 75px;
+  padding: 12px 0;
+  text-align: left;
+}
+.home-muscle-row > svg:first-child {
+  width: 29px;
+  height: 40px;
+  flex: none;
+}
+.home-muscle-row > div:nth-child(2) {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+}
+.home-muscle-row strong {
+  font-size: 14px;
+}
+.home-muscle-row span {
+  font-size: 11px;
+  font-weight: 400;
+  color: #626d69;
+}
+.home-comparison-dots {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 72px;
+  gap: 4px;
+}
+.home-comparison-dots i {
+  width: 7px;
+  height: 15px;
+  border-radius: 3px;
+  background: #d9ded8;
+}
+.home-comparison-dots i.comparable {
+  background: #829087;
+}
+.home-comparison-dots i.improved {
+  background: #254cf4;
+}
+.home-performance {
+  margin-bottom: 30px;
+}
+.home-recent {
+  margin-bottom: 10px;
+}
+.personal-app button.home-recent-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid #d9ded8;
+  border-radius: 0;
+  text-align: left;
+}
+.home-date-block {
+  display: grid;
+  text-align: center;
+  font-size: 10px;
+  color: #626d69;
+  min-width: 40px;
+}
+.home-date-block b {
+  font-size: 23px;
+  line-height: 26px;
+  color: #19201f;
+}
+.home-recent-row > span:nth-child(2) {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+}
+.home-recent-row strong {
+  font-size: 14px;
+}
+.home-recent-row small {
+  font-size: 11px;
+  color: #626d69;
+  font-weight: 400;
+}
+.personal-app button.home-new-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  font-size: 12px;
+  margin-top: 14px;
+  padding-left: 0;
+}
+.two-home .personal-tabs,
+.two-workout .personal-tabs {
+  background: var(--ds-canvas);
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 664px;
+}
+.two-home .personal-tab.active {
+  color: #254cf4;
+}
+.two-workout .personal-tab.active {
+  color: #b8edc3;
+}
+.two-workout .personal-exercise-stack {
+  gap: 10px;
+}
+.two-workout .nb-exercise {
+  border-radius: 18px;
+}
+.two-workout .nb-exercise.active {
+  padding: 18px 16px;
+}
+.two-workout .ds-set-row {
+  min-height: 58px;
+}
+.two-workout .ds-input {
+  border-radius: 12px;
+}
+.two-workout .ds-set-row .ds-input {
+  font-size: 23px;
+  font-weight: 650;
+  min-height: 52px;
+}
+.two-workout .nb-last-time {
+  padding: 10px 12px;
+  background: #272c33;
+  border-radius: 10px;
+  color: #d0d8e3;
+  font-size: 12px;
+}
+.two-workout .personal-session-heading h1 {
+  font-size: 30px;
+}
+.two-workout .personal-header {
+  margin-bottom: 8px;
+}
+.two-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--ds-canvas);
+  overflow: auto;
+  padding: 20px max(20px, calc((100vw - 620px) / 2))
+    calc(35px + env(safe-area-inset-bottom));
+}
+.two-sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.two-sheet-heading h2 {
+  margin: 0;
+  font-size: 23px;
+}
+.two-sheet .personal-tabs {
+  display: none;
+}
+@media (min-width: 700px) {
+  .home-intro h1 {
+    font-size: 48px;
+  }
+  .home-next {
+    padding: 30px;
+  }
+  .home-visit-grid {
+    gap: 9px;
+  }
+}
+@media (max-width: 350px) {
+  .personal-app.two-home,
+  .personal-app.two-workout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .home-intro h1 {
+    font-size: 33px;
+  }
+  .home-next {
+    padding: 18px;
+  }
+  .home-chart-legend {
+    font-size: 9px;
+    gap: 4px;
+  }
+  .home-visit-grid {
+    gap: 5px;
+  }
+}
+.personal-app .two-sheet {
+  border: 0;
+  margin: auto;
+  width: min(100%, 680px);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 24px;
+  color: var(--ds-ink);
+  background: var(--ds-canvas);
+  --ds-canvas: #f6f5f0;
+  --ds-sheet: #fff;
+  --ds-raised: #ecece6;
+  --ds-ink: #19201f;
+  --ds-secondary: #505b58;
+  --ds-muted: #626d69;
+  --ds-rule: #d9ded8;
+  --ds-control-border: #7b8680;
+  --ds-accent: #254cf4;
+  --ds-accent-surface: #e8edff;
+  --ds-action-ink: #fff;
+  --ds-focus: #254cf4;
+  --ds-warning: #775900;
+  --ds-warning-surface: #fff4d2;
+  --ds-danger: #a32c30;
+  --ds-danger-surface: #fff0ed;
+  color-scheme: light;
+}
+.two-sheet::backdrop {
+  background: #10141899;
+  backdrop-filter: blur(3px);
+}
+.two-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.two-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.two-header-actions .ds-button {
+  font-size: 11px;
+  padding: 8px;
+}
+.two-home .personal-header,
+.two-workout .personal-header {
+  gap: 8px;
+}
+.two-header-home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.training-home {
+  padding-top: 8px;
+}
+.home-intro h1 {
+  font-size: 33px;
+  margin: 10px 0 22px;
+}
+.home-intro > span {
+  font-size: 11px;
+}
+.home-attendance {
+  margin-bottom: 24px;
+}
+.personal-app button.home-new-session[hidden] {
+  display: none;
+}
+@media (min-width: 700px) {
+  .home-intro h1 {
+    font-size: 40px;
+  }
+}

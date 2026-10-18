@@ -34,14 +34,14 @@ test("design workbench: journeys, architecture and flows stay isolated from note
   await expect(
     page.getByRole("heading", { name: "Journey & blueprint", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".dw-journey-column")).toHaveCount(10);
+  await expect(page.locator(".dw-journey-column")).toHaveCount(12);
   await page.locator(".dw-journey-column").nth(4).click();
   await expect(page.locator(".dw-journey-column").nth(4)).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   await page.getByRole("button", { name: /Information architecture/ }).click();
-  await expect(page.locator(".dw-ia-card")).toHaveCount(3);
+  await expect(page.locator(".dw-ia-card")).toHaveCount(2);
   await page.getByRole("button", { name: /Task flows/ }).click();
   await expect(page.locator(".dw-flow-selector button")).toHaveCount(10);
   await page.locator(".dw-flow-selector button").last().click();
@@ -52,8 +52,7 @@ test("design workbench: journeys, architecture and flows stay isolated from note
   await page.getByRole("button", { name: /Component library/ }).click();
   await expect(
     page.getByText(
-      "Interactive specimens · synthetic, in-memory state · no workout storage",
-      { exact: true },
+      /Legacy shared-state specimens · synthetic, in-memory state · no workout storage/,
     ),
   ).toBeVisible();
   expect(await page.evaluate(() => (window as any).designStorageCalls)).toEqual(
@@ -342,6 +341,9 @@ test("integrated design states: effort saving never pretends another actual set 
   page,
 }) => {
   await page.goto("/");
+  await page
+    .getByRole("button", { name: "Plan a workout", exact: true })
+    .click();
   await page.getByRole("button", { name: "Chest", exact: true }).click();
   await page.getByLabel("Exercises", { exact: true }).fill("1");
   await page.getByRole("button", { name: "Build my workout" }).click();
@@ -401,7 +403,9 @@ test("integrated design atoms: backup checkbox remains a native compact persiste
 }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Backup", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Settings and backup", exact: true })
+    .click();
   const checkbox = page.getByRole("checkbox", {
     name: "Show double-progression hints",
     exact: true,
@@ -415,7 +419,9 @@ test("integrated design atoms: backup checkbox remains a native compact persiste
     "Saved on this device",
   );
   await page.reload();
-  await page.getByRole("button", { name: "Backup", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Settings and backup", exact: true })
+    .click();
   await expect(checkbox).toBeChecked();
   expect(
     await page.evaluate(

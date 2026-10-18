@@ -11,6 +11,9 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await page.setViewportSize({ width: 390, height: 844 });
   const response = await page.goto(appURL);
   expect(response?.status()).toBe(200);
+  await page
+    .getByRole("button", { name: "Plan a workout", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What are you training?" }),
   ).toBeVisible();
@@ -42,7 +45,9 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".personal-status")).toHaveText("Saved on this device");
+  await expect(page.locator(".personal-status")).toHaveText(
+    "Saved on this device",
+  );
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });

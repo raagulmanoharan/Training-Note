@@ -9,6 +9,8 @@ import {
   ArrowLeftRight,
   Plus,
   RotateCcw,
+  ArrowLeft,
+  Settings,
 } from "lucide-react";
 import {
   readState,
@@ -26,6 +28,7 @@ import {
 } from "./personalStore";
 import "./personal.css";
 import MuscleGlyph from "./MuscleGlyph";
+import TrainingHome from "./TrainingHome";
 import { effortLabel, groupInsights } from "./personalInsights";
 import {
   DSButton,
@@ -78,7 +81,23 @@ const draftError = (x: PersonalExercise) => {
 export default function PersonalApp() {
   const [state, setState] = useState<PersonalState | null>(null),
     [loadingError, setLoadingError] = useState(""),
-    [tab, setTab] = useState<"today" | "progress" | "backup">("today");
+    [tab, setTab] = useState<"home" | "today">("home");
+  const [overlay, setOverlay] = useState<"progress" | "backup" | null>(null);
+  const overlayRef = useRef<HTMLDialogElement>(null);
+  const firstLoad = useRef(true);
+  const overlayTrigger = useRef<HTMLElement | null>(null);
+  function openOverlay(value: "progress" | "backup") {
+    overlayTrigger.current = document.activeElement as HTMLElement | null;
+    setOverlay(value);
+  }
+  function closeOverlay() {
+    setOverlay(null);
+    requestAnimationFrame(() => overlayTrigger.current?.focus());
+  }
+  useEffect(() => {
+    const dialog = overlayRef.current;
+    if (overlay && dialog && !dialog.open) dialog.showModal();
+  }, [overlay]);
   const [selected, setSelected] = useState<MuscleGroup[]>([]),
     [count, setCount] = useState(4),
     [plan, setPlan] = useState<PersonalWorkout | null>(null),
@@ -137,7 +156,12 @@ export default function PersonalApp() {
   async function load() {
     setLoadingError("");
     try {
-      installState(await readState());
+      const loaded = await readState();
+      installState(loaded);
+      if (firstLoad.current) {
+        setTab(loaded.current ? "today" : "home");
+        firstLoad.current = false;
+      }
       blocked.current = false;
       setStatus("saved");
       setError("");
@@ -244,6 +268,31 @@ export default function PersonalApp() {
       setError(e instanceof Error ? e.message : "Choose fewer exercises.");
     }
   }
+  function repeatWorkout(previous: PersonalWorkout) {
+    if (stateRef.current?.current) {
+      setTab("today");
+      return;
+    }
+    const exercises = previous.exercises.map((x) => ({
+      ...x,
+      id: uid(),
+      sets: [],
+      pendingWeight: "",
+      pendingReps: "",
+    }));
+    setPlan({
+      id: uid(),
+      startedAt: new Date().toISOString(),
+      groups: [...previous.groups],
+      exercises,
+      activeExerciseId: exercises[0]?.id || "",
+    });
+    setSelected([...previous.groups]);
+    setCount(exercises.length);
+    setReviewing(true);
+    setTab("today");
+    setError("");
+  }
   function patchPlan(id: string, p: Partial<PersonalExercise>) {
     setPlan((current) =>
       current
@@ -292,6 +341,7 @@ export default function PersonalApp() {
     );
     if (ok) {
       setPlan(null);
+      setTab("today");
       setNotice("");
     }
     setBusy(false);
@@ -610,6 +660,7 @@ export default function PersonalApp() {
       )
     ) {
       setFinishing(false);
+      setTab("home");
       setNotice("Workout saved. Export a backup to protect this session.");
       setUndo(null);
     }
@@ -780,13 +831,33 @@ export default function PersonalApp() {
         )
       : null;
   return (
-    <div className={`personal-app ds-theme ${workout ? "is-session" : ""}`}>
+    <div
+      className={`personal-app ds-theme ${tab === "today" ? "two-workout" : "two-home"} ${workout && tab === "today" ? "is-session" : ""}`}
+    >
       <header className="personal-header">
         <div className="personal-brand">
-          <Dumbbell size={22} />
-          <span>Gym notebook</span>
+          {tab === "today" ? (
+            <DSButton
+              variant="text"
+              aria-label="Back to Home"
+              onClick={() => setTab("home")}
+            >
+              <ArrowLeft size={20} /> Home
+            </DSButton>
+          ) : (
+            <span>Gym notebook</span>
+          )}
         </div>
-        <DSStatus state={status} className={`personal-status ${status}`} />
+        <div className="two-header-actions">
+          <DSStatus state={status} className={`personal-status ${status}`} />
+          <DSButton
+            variant="text"
+            aria-label="Settings and backup"
+            onClick={() => openOverlay("backup")}
+          >
+            <Settings size={20} /> <span>Settings</span>
+          </DSButton>
+        </div>
       </header>
       <main className="personal-main">
         {error && (
@@ -836,7 +907,7 @@ export default function PersonalApp() {
           >
             {notice}
             {notice.startsWith("Workout saved.") && (
-              <DSButton variant="text" onClick={() => setTab("backup")}>
+              <DSButton variant="text" onClick={() => openOverlay("backup")}>
                 Back up now
               </DSButton>
             )}
@@ -849,8 +920,21 @@ export default function PersonalApp() {
             </DSButton>
           </DSInlineNotice>
         )}
+        {tab === "home" && (
+          <TrainingHome
+            state={state}
+            onPlan={() => {
+              setReviewing(false);
+              setPlan(null);
+              setTab("today");
+            }}
+            onRepeat={repeatWorkout}
+            onResume={() => setTab("today")}
+            onEvidence={() => openOverlay("progress")}
+          />
+        )}
         {tab === "today" && (
-          <>
+          <div className={!workout ? "two-planner" : "two-session"}>
             {!workout && (
               <>
                 {!reviewing && (
@@ -1133,7 +1217,7 @@ export default function PersonalApp() {
                             setSwapId((s) => (s === x.id ? null : x.id));
                           }}
                         >
-                          <ArrowLeftRight size={18} />
+                          <ArrowLeftRight size={18} /> Swap
                         </DSButton>
                       </div>
                       {x.id === exercise.id && (
@@ -1147,6 +1231,26 @@ export default function PersonalApp() {
                               {hint.previous.sets
                                 .map((s) => actual(s, hint.previous!.unit))
                                 .join(" · ")}
+                              {x.sets.length === 0 &&
+                                !x.pendingWeight.trim() &&
+                                !x.pendingReps.trim() &&
+                                hint.previous.sets[0] && (
+                                  <DSButton
+                                    variant="text"
+                                    disabled={busy || status === "error"}
+                                    onClick={() => {
+                                      const previous = hint.previous?.sets[0];
+                                      if (!previous || busy || blocked.current)
+                                        return;
+                                      void patchExercise(x.id, {
+                                        pendingWeight: String(previous.weight),
+                                        pendingReps: String(previous.reps),
+                                      });
+                                    }}
+                                  >
+                                    Use last time
+                                  </DSButton>
+                                )}
                             </p>
                           )}
                           {hint?.kind === "increase" && (
@@ -1519,25 +1623,27 @@ export default function PersonalApp() {
                     </DSSurface>
                   ))}
                 </div>
-                <DSButton
-                  variant="secondary"
-                  className="personal-secondary nb-next-exercise"
-                  onClick={() => {
-                    const i = workout.exercises.findIndex(
-                      (x) => x.id === exercise.id,
-                    );
-                    const next =
-                      workout.exercises[(i + 1) % workout.exercises.length];
-                    setEdit(null);
-                    setSwapId(null);
-                    void update((s) => ({
-                      ...s,
-                      current: { ...s.current!, activeExerciseId: next.id },
-                    }));
-                  }}
-                >
-                  Next exercise <ChevronRight size={18} />
-                </DSButton>
+                {workout.exercises.length > 1 && (
+                  <DSButton
+                    variant="secondary"
+                    className="personal-secondary nb-next-exercise"
+                    onClick={() => {
+                      const i = workout.exercises.findIndex(
+                        (x) => x.id === exercise.id,
+                      );
+                      const next =
+                        workout.exercises[(i + 1) % workout.exercises.length];
+                      setEdit(null);
+                      setSwapId(null);
+                      void update((s) => ({
+                        ...s,
+                        current: { ...s.current!, activeExerciseId: next.id },
+                      }));
+                    }}
+                  >
+                    Next exercise <ChevronRight size={18} />
+                  </DSButton>
+                )}
                 {finishing && (
                   <section
                     className="personal-inline"
@@ -1576,8 +1682,14 @@ export default function PersonalApp() {
                         variant="danger"
                         className="personal-danger"
                         onClick={() => {
-                          void update((s) => ({ ...s, current: null }));
-                          setFinishing(false);
+                          void update((s) => ({ ...s, current: null })).then(
+                            (saved) => {
+                              if (saved) {
+                                setFinishing(false);
+                                setTab("home");
+                              }
+                            },
+                          );
                         }}
                       >
                         Discard empty draft
@@ -1593,415 +1705,477 @@ export default function PersonalApp() {
                 )}
               </>
             )}
-          </>
+          </div>
         )}
-        {tab === "progress" && (
-          <>
-            <DSScreenHeader
-              title="Your training record"
-              description="Actual sets and comparable performance, in context."
-            />
-            {!state.history.length && (
-              <DSSurface
-                as="section"
-                variant="utility"
-                className="personal-card"
+        {overlay && (
+          <dialog
+            ref={overlayRef}
+            className="two-sheet ds-theme"
+            aria-label={
+              overlay === "progress"
+                ? "Training history and evidence"
+                : "Settings and backup"
+            }
+            onCancel={(event) => {
+              event.preventDefault();
+              closeOverlay();
+            }}
+          >
+            <div className="two-sheet-header">
+              <h2>
+                {overlay === "progress"
+                  ? "Training history"
+                  : "Settings & backup"}
+              </h2>
+              <DSButton
+                variant="text"
+                onClick={closeOverlay}
+                aria-label="Close panel"
               >
-                <Dumbbell />
-                <h2>Your first page is waiting.</h2>
-                <p>Finish a workout and its actual sets will appear here.</p>
-                <DSButton variant="text" onClick={() => setTab("today")}>
-                  Go to Today
+                Close
+              </DSButton>
+            </div>
+            {error && (
+              <DSInlineNotice tone="error" title="Changes need attention">
+                {error}
+                {status === "error" && (
+                  <DSButton variant="text" onClick={() => void retry()}>
+                    Retry save
+                  </DSButton>
+                )}
+                <DSButton variant="text" onClick={() => void download()}>
+                  Export on-screen data
                 </DSButton>
-              </DSSurface>
+              </DSInlineNotice>
             )}
-            {state.history.length > 0 && (
-              <section aria-label="Muscle-group performance">
-                <h2>Performance by muscle group</h2>
-                <p className="personal-muted">
-                  Based on comparable recorded lifts, not a measurement of
-                  muscle growth.
-                </p>
-                <div className="nb-muscle-insights">
-                  {groupInsights(state.history).map((group) => (
-                    <article className="nb-muscle-insight" key={group.group}>
-                      <div className="personal-row">
-                        <MuscleGlyph group={group.group} />
-                        <h3>
-                          {groups.find((g) => g.id === group.group)?.name}
-                        </h3>
-                      </div>
-                      <DSComparisonEvidence
-                        title={
-                          group.improved
-                            ? "Performance improving"
-                            : group.comparable
-                              ? "No clear increase in comparable records"
-                              : "No comparable sessions yet"
-                        }
-                        summary={
-                          group.comparable > 0
-                            ? `${group.improved} of ${group.comparable} exercise comparisons improved`
-                            : "Two matching sessions with complete sets will unlock comparisons."
-                        }
-                        qualification={
-                          group.movements.some(
-                            (m) =>
-                              m.summary.includes("effort was harder") ||
-                              m.summary.includes("felt harder"),
-                          )
-                            ? "Some work felt harder. Effort is subjective; inspect the matched records."
-                            : group.movements.some(
-                                  (m) => m.comparable && !m.effortComparable,
-                                )
-                              ? "Effort not compared for every matched set. These are recorded performance changes, not measured muscle growth."
-                              : "Comparisons require matching movement, setup, unit and prescription. Effort is a subjective estimate."
-                        }
-                        evidence={
-                          <>
-                            {group.movements.map((movement) => (
-                              <div
-                                className="nb-insight-evidence"
-                                key={movement.key}
-                              >
-                                <h4>{movement.name}</h4>
-                                <p>{movement.summary}</p>
-                                {movement.previous && (
-                                  <p className="nb-insight-date">
-                                    Previous · {date(movement.previous.date)} ·{" "}
-                                    {movement.previous.exercise.gym ||
-                                      "Unspecified gym"}{" "}
-                                    · {movement.previous.exercise.equipment}
-                                    <br />
-                                    {movement.previous.exercise.sets
-                                      .map((set) =>
-                                        actual(
-                                          set,
-                                          movement.previous!.exercise.unit,
-                                        ),
-                                      )
-                                      .join(" · ")}
-                                  </p>
-                                )}
-                                {movement.current && (
-                                  <p className="nb-insight-date">
-                                    Latest · {date(movement.current.date)} ·{" "}
-                                    {movement.current.exercise.gym ||
-                                      "Unspecified gym"}{" "}
-                                    · {movement.current.exercise.equipment}
-                                    <br />
-                                    {movement.current.exercise.sets
-                                      .map((set) =>
-                                        actual(
-                                          set,
-                                          movement.current!.exercise.unit,
-                                        ),
-                                      )
-                                      .join(" · ")}
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                          </>
-                        }
-                      />
-                    </article>
-                  ))}
-                </div>
-              </section>
+            {notice && (
+              <DSInlineNotice tone="info" title="Notebook update">
+                {notice}
+              </DSInlineNotice>
             )}
-            {state.history.map((w) => (
-              <article className="personal-progress-card" key={w.id}>
-                <h2>
-                  {date(w.finishedAt || w.startedAt)}{" "}
-                  <small>{w.groups.join(" + ")}</small>
-                </h2>
-                {w.exercises.map((x) => (
-                  <div key={x.id}>
-                    <h3>
-                      {x.name}{" "}
-                      <small>
-                        {x.sets.length < x.plannedSets ? "Partial" : ""}
-                      </small>
-                    </h3>
+            {overlay === "progress" && (
+              <>
+                <DSScreenHeader
+                  title="Your training record"
+                  description="Actual sets and comparable performance, in context."
+                />
+                {!state.history.length && (
+                  <DSSurface
+                    as="section"
+                    variant="utility"
+                    className="personal-card"
+                  >
+                    <Dumbbell />
+                    <h2>Your first page is waiting.</h2>
                     <p>
-                      {x.sets.length
-                        ? x.sets
-                            .map(
-                              (s) =>
-                                `${actual(s, x.unit)}${s.repsInReserve !== undefined ? ` (${effortLabel(s.repsInReserve)})` : ""}`,
-                            )
-                            .join(" · ")
-                        : "No sets logged"}
+                      Finish a workout and its actual sets will appear here.
                     </p>
-                    <small className="personal-muted">
-                      {x.gym || "Unspecified gym"} · {x.equipment}
-                    </small>
-                    {x.sets.length > 0 && (
-                      <DSDisclosure title="Correct a set">
-                        {x.sets.map((set, index) => (
-                          <div className="personal-receipt" key={set.id}>
-                            {edit?.set === set.id && edit.workout === w.id ? (
-                              <DSSetRow
-                                state="editing"
-                                className="nb-history-correction"
-                                number={index + 1}
-                                name={x.name}
-                                unit={x.unit}
-                                weight={edit.weight}
-                                reps={edit.reps}
-                                weightLabel="Correct history weight"
-                                repsLabel="Correct history reps"
-                                commitLabel="Save correction"
-                                onWeightChange={(weight) =>
-                                  setEdit({ ...edit, weight })
-                                }
-                                onRepsChange={(reps) =>
-                                  setEdit({ ...edit, reps })
-                                }
-                                onCommit={() => void saveEdit()}
-                                onCancel={() => setEdit(null)}
-                                disabled={busy || status === "error"}
-                              />
-                            ) : (
+                    <DSButton
+                      variant="text"
+                      onClick={() => {
+                        closeOverlay();
+                        setTab("today");
+                      }}
+                    >
+                      Plan a workout
+                    </DSButton>
+                  </DSSurface>
+                )}
+                {state.history.length > 0 && (
+                  <section aria-label="Muscle-group performance">
+                    <h2>Performance by muscle group</h2>
+                    <p className="personal-muted">
+                      Based on comparable recorded lifts, not a measurement of
+                      muscle growth.
+                    </p>
+                    <div className="nb-muscle-insights">
+                      {groupInsights(state.history).map((group) => (
+                        <article
+                          className="nb-muscle-insight"
+                          key={group.group}
+                        >
+                          <div className="personal-row">
+                            <MuscleGlyph group={group.group} />
+                            <h3>
+                              {groups.find((g) => g.id === group.group)?.name}
+                            </h3>
+                          </div>
+                          <DSComparisonEvidence
+                            title={
+                              group.improved
+                                ? "Performance improving"
+                                : group.comparable
+                                  ? "No clear increase in comparable records"
+                                  : "No comparable sessions yet"
+                            }
+                            summary={
+                              group.comparable > 0
+                                ? `${group.improved} of ${group.comparable} exercise comparisons improved`
+                                : "Two matching sessions with complete sets will unlock comparisons."
+                            }
+                            qualification={
+                              group.movements.some(
+                                (m) =>
+                                  m.summary.includes("effort was harder") ||
+                                  m.summary.includes("felt harder"),
+                              )
+                                ? "Some work felt harder. Effort is subjective; inspect the matched records."
+                                : group.movements.some(
+                                      (m) =>
+                                        m.comparable && !m.effortComparable,
+                                    )
+                                  ? "Effort not compared for every matched set. These are recorded performance changes, not measured muscle growth."
+                                  : "Comparisons require matching movement, setup, unit and prescription. Effort is a subjective estimate."
+                            }
+                            evidence={
                               <>
-                                <span>Set {index + 1}</span>
-                                <strong>{actual(set, x.unit)}</strong>
+                                {group.movements.map((movement) => (
+                                  <div
+                                    className="nb-insight-evidence"
+                                    key={movement.key}
+                                  >
+                                    <h4>{movement.name}</h4>
+                                    <p>{movement.summary}</p>
+                                    {movement.previous && (
+                                      <p className="nb-insight-date">
+                                        Previous ·{" "}
+                                        {date(movement.previous.date)} ·{" "}
+                                        {movement.previous.exercise.gym ||
+                                          "Unspecified gym"}{" "}
+                                        · {movement.previous.exercise.equipment}
+                                        <br />
+                                        {movement.previous.exercise.sets
+                                          .map((set) =>
+                                            actual(
+                                              set,
+                                              movement.previous!.exercise.unit,
+                                            ),
+                                          )
+                                          .join(" · ")}
+                                      </p>
+                                    )}
+                                    {movement.current && (
+                                      <p className="nb-insight-date">
+                                        Latest · {date(movement.current.date)} ·{" "}
+                                        {movement.current.exercise.gym ||
+                                          "Unspecified gym"}{" "}
+                                        · {movement.current.exercise.equipment}
+                                        <br />
+                                        {movement.current.exercise.sets
+                                          .map((set) =>
+                                            actual(
+                                              set,
+                                              movement.current!.exercise.unit,
+                                            ),
+                                          )
+                                          .join(" · ")}
+                                      </p>
+                                    )}
+                                  </div>
+                                ))}
+                              </>
+                            }
+                          />
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                )}
+                {state.history.map((w) => (
+                  <article className="personal-progress-card" key={w.id}>
+                    <h2>
+                      {date(w.finishedAt || w.startedAt)}{" "}
+                      <small>{w.groups.join(" + ")}</small>
+                    </h2>
+                    {w.exercises.map((x) => (
+                      <div key={x.id}>
+                        <h3>
+                          {x.name}{" "}
+                          <small>
+                            {x.sets.length < x.plannedSets ? "Partial" : ""}
+                          </small>
+                        </h3>
+                        <p>
+                          {x.sets.length
+                            ? x.sets
+                                .map(
+                                  (s) =>
+                                    `${actual(s, x.unit)}${s.repsInReserve !== undefined ? ` (${effortLabel(s.repsInReserve)})` : ""}`,
+                                )
+                                .join(" · ")
+                            : "No sets logged"}
+                        </p>
+                        <small className="personal-muted">
+                          {x.gym || "Unspecified gym"} · {x.equipment}
+                        </small>
+                        {x.sets.length > 0 && (
+                          <DSDisclosure title="Correct a set">
+                            {x.sets.map((set, index) => (
+                              <div className="personal-receipt" key={set.id}>
+                                {edit?.set === set.id &&
+                                edit.workout === w.id ? (
+                                  <DSSetRow
+                                    state="editing"
+                                    className="nb-history-correction"
+                                    number={index + 1}
+                                    name={x.name}
+                                    unit={x.unit}
+                                    weight={edit.weight}
+                                    reps={edit.reps}
+                                    weightLabel="Correct history weight"
+                                    repsLabel="Correct history reps"
+                                    commitLabel="Save correction"
+                                    onWeightChange={(weight) =>
+                                      setEdit({ ...edit, weight })
+                                    }
+                                    onRepsChange={(reps) =>
+                                      setEdit({ ...edit, reps })
+                                    }
+                                    onCommit={() => void saveEdit()}
+                                    onCancel={() => setEdit(null)}
+                                    disabled={busy || status === "error"}
+                                  />
+                                ) : (
+                                  <>
+                                    <span>Set {index + 1}</span>
+                                    <strong>{actual(set, x.unit)}</strong>
+                                    <DSButton
+                                      variant="text"
+                                      disabled={busy || status === "error"}
+                                      aria-label={`Correct ${x.name} set ${index + 1}`}
+                                      onClick={() =>
+                                        setEdit({
+                                          workout: w.id,
+                                          exercise: x.id,
+                                          set: set.id,
+                                          weight: String(set.weight),
+                                          reps: String(set.reps),
+                                        })
+                                      }
+                                    >
+                                      Edit
+                                    </DSButton>
+                                  </>
+                                )}
                                 <DSButton
                                   variant="text"
+                                  className="nb-effort-history"
                                   disabled={busy || status === "error"}
-                                  aria-label={`Correct ${x.name} set ${index + 1}`}
-                                  onClick={() =>
-                                    setEdit({
-                                      workout: w.id,
-                                      exercise: x.id,
-                                      set: set.id,
-                                      weight: String(set.weight),
-                                      reps: String(set.reps),
-                                    })
-                                  }
+                                  aria-label={`${set.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
+                                  onClick={() => openEffort(x, set, w.id)}
                                 >
-                                  Edit
+                                  {set.repsInReserve === undefined
+                                    ? "Add effort"
+                                    : effortLabel(set.repsInReserve)}
                                 </DSButton>
-                              </>
-                            )}
-                            <DSButton
-                              variant="text"
-                              className="nb-effort-history"
-                              disabled={busy || status === "error"}
-                              aria-label={`${set.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
-                              onClick={() => openEffort(x, set, w.id)}
-                            >
-                              {set.repsInReserve === undefined
-                                ? "Add effort"
-                                : effortLabel(set.repsInReserve)}
-                            </DSButton>
-                          </div>
-                        ))}
-                        {effortPanel(x, w.id)}
-                      </DSDisclosure>
-                    )}
-                  </div>
+                              </div>
+                            ))}
+                            {effortPanel(x, w.id)}
+                          </DSDisclosure>
+                        )}
+                      </div>
+                    ))}
+                  </article>
                 ))}
-              </article>
-            ))}
-          </>
-        )}
-        {tab === "backup" && (
-          <>
-            <DSScreenHeader
-              title="Protect your notebook"
-              description="On this device. Available offline. Recoverable with an external backup."
-            />
-            <DSSurface as="section" variant="utility" className="personal-card">
-              <ShieldCheck />
-              <h2>Saved locally, not in an account.</h2>
-              <p>
-                Your workouts survive sessions and browser restarts on this
-                device and this site. Clearing site data, private browsing, or
-                losing your device can erase them. Download regular backups.
-              </p>
-              <div className="personal-row">
-                <span>Browser storage protection</span>
-                <strong>{persistence}</strong>
-              </div>
-              <DSButton
-                variant="secondary"
-                className="personal-secondary"
-                onClick={() =>
-                  void requestPersistence()
-                    .then((p) => setPersistence(p ? "Granted" : "Not granted"))
-                    .catch(() => setPersistence("Unsupported"))
-                }
-              >
-                Protect local storage
-              </DSButton>
-              <p className="personal-muted">
-                {offline
-                  ? "Offline app available in this browser."
-                  : "Offline assets are not confirmed yet. Reopen after installation."}
-              </p>
-              <p className="personal-muted">
-                Pin this site: iPhone Safari → Share → Add to Home Screen.
-                Android Chrome → menu → Install / Add to Home screen.
-              </p>
-            </DSSurface>
-            <DSSurface as="section" variant="utility" className="personal-card">
-              <h2>Backup & restore</h2>
-              <p>
-                Last download started:{" "}
-                {state.lastExportAt
-                  ? new Date(state.lastExportAt).toLocaleString()
-                  : "No backup yet"}
-              </p>
-              <DSButton
-                variant="primary"
-                className="personal-primary"
-                disabled={busy}
-                onClick={() => void download()}
-              >
-                <Download size={18} /> Export backup
-              </DSButton>
-              <label className="personal-secondary">
-                <Upload size={18} /> Choose backup file
-                <DSInput
-                  aria-label="Choose backup file"
-                  type="file"
-                  accept="application/json,.json"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (!f) return;
-                    if (f.size > 30000000) {
-                      setError("This backup is too large (maximum 30 MB).");
-                      return;
-                    }
-                    void f.text().then(async (t) => {
-                      try {
-                        const preview = await inspectBackup(t);
-                        setBackupText(t);
-                        setBackupPreview({
-                          workouts: preview.state.history.length,
-                          draft: !!preview.state.current,
-                        });
-                        setError("");
-                      } catch (e) {
-                        setBackupText("");
-                        setBackupPreview(null);
-                        setError(
-                          e instanceof Error
-                            ? e.message
-                            : "Invalid backup. Existing records were kept.",
-                        );
-                      }
-                    });
-                  }}
+              </>
+            )}
+            {overlay === "backup" && (
+              <>
+                <DSScreenHeader
+                  title="Protect your notebook"
+                  description="On this device. Available offline. Recoverable with an external backup."
                 />
-              </label>
-              {backupText && (
-                <div className="personal-inline">
+                <DSSurface
+                  as="section"
+                  variant="utility"
+                  className="personal-card"
+                >
+                  <ShieldCheck />
+                  <h2>Saved locally, not in an account.</h2>
                   <p>
-                    This backup has {backupPreview?.workouts ?? 0} finished
-                    workouts
-                    {backupPreview?.draft ? " and an unfinished draft" : ""}.
-                    Merge into your notebook? Existing records are kept.
-                    Conflicting records are rejected rather than overwritten.
+                    Your workouts survive sessions and browser restarts on this
+                    device and this site. Clearing site data, private browsing,
+                    or losing your device can erase them. Download regular
+                    backups.
+                  </p>
+                  <div className="personal-row">
+                    <span>Browser storage protection</span>
+                    <strong>{persistence}</strong>
+                  </div>
+                  <DSButton
+                    variant="secondary"
+                    className="personal-secondary"
+                    onClick={() =>
+                      void requestPersistence()
+                        .then((p) =>
+                          setPersistence(p ? "Granted" : "Not granted"),
+                        )
+                        .catch(() => setPersistence("Unsupported"))
+                    }
+                  >
+                    Protect local storage
+                  </DSButton>
+                  <p className="personal-muted">
+                    {offline
+                      ? "Offline app available in this browser."
+                      : "Offline assets are not confirmed yet. Reopen after installation."}
+                  </p>
+                  <p className="personal-muted">
+                    Pin this site: iPhone Safari → Share → Add to Home Screen.
+                    Android Chrome → menu → Install / Add to Home screen.
+                  </p>
+                </DSSurface>
+                <DSSurface
+                  as="section"
+                  variant="utility"
+                  className="personal-card"
+                >
+                  <h2>Backup & restore</h2>
+                  <p>
+                    Last download started:{" "}
+                    {state.lastExportAt
+                      ? new Date(state.lastExportAt).toLocaleString()
+                      : "No backup yet"}
                   </p>
                   <DSButton
                     variant="primary"
-                    disabled={busy}
                     className="personal-primary"
-                    onClick={() => void restore()}
+                    disabled={busy}
+                    onClick={() => void download()}
                   >
-                    Validate & merge backup
+                    <Download size={18} /> Export backup
                   </DSButton>
-                  <DSButton variant="text" onClick={() => setBackupText("")}>
-                    Cancel import
-                  </DSButton>
-                </div>
-              )}
-            </DSSurface>
-            <DSSurface as="section" variant="utility" className="personal-card">
-              <h2>My defaults</h2>
-              <label>
-                Weight unit
-                <select
-                  value={state.settings.unit}
-                  onChange={(e) =>
-                    void update((s) => ({
-                      ...s,
-                      settings: { ...s.settings, unit: e.target.value as Unit },
-                    }))
-                  }
+                  <label className="personal-secondary">
+                    <Upload size={18} /> Choose backup file
+                    <DSInput
+                      aria-label="Choose backup file"
+                      type="file"
+                      accept="application/json,.json"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (!f) return;
+                        if (f.size > 30000000) {
+                          setError("This backup is too large (maximum 30 MB).");
+                          return;
+                        }
+                        void f.text().then(async (t) => {
+                          try {
+                            const preview = await inspectBackup(t);
+                            setBackupText(t);
+                            setBackupPreview({
+                              workouts: preview.state.history.length,
+                              draft: !!preview.state.current,
+                            });
+                            setError("");
+                          } catch (e) {
+                            setBackupText("");
+                            setBackupPreview(null);
+                            setError(
+                              e instanceof Error
+                                ? e.message
+                                : "Invalid backup. Existing records were kept.",
+                            );
+                          }
+                        });
+                      }}
+                    />
+                  </label>
+                  {backupText && (
+                    <div className="personal-inline">
+                      <p>
+                        This backup has {backupPreview?.workouts ?? 0} finished
+                        workouts
+                        {backupPreview?.draft ? " and an unfinished draft" : ""}
+                        . Merge into your notebook? Existing records are kept.
+                        Conflicting records are rejected rather than
+                        overwritten.
+                      </p>
+                      <DSButton
+                        variant="primary"
+                        disabled={busy}
+                        className="personal-primary"
+                        onClick={() => void restore()}
+                      >
+                        Validate & merge backup
+                      </DSButton>
+                      <DSButton
+                        variant="text"
+                        onClick={() => setBackupText("")}
+                      >
+                        Cancel import
+                      </DSButton>
+                    </div>
+                  )}
+                </DSSurface>
+                <DSSurface
+                  as="section"
+                  variant="utility"
+                  className="personal-card"
                 >
-                  <option value="kg">kg</option>
-                  <option value="lb">lb</option>
-                </select>
-              </label>
-              <p className="personal-muted">
-                Applies to new workouts. Old values are never relabeled or
-                converted.
-              </p>
-              <label>
-                Gym label
-                <DSInput
-                  value={state.settings.gym}
-                  maxLength={120}
-                  placeholder="My gym"
-                  onChange={(e) =>
-                    void update((s) => ({
-                      ...s,
-                      settings: { ...s.settings, gym: e.target.value },
-                    }))
-                  }
-                />
-              </label>
-              <label className="personal-row">
-                <span>Show double-progression hints</span>
-                <input
-                  type="checkbox"
-                  checked={state.settings.progressionEnabled}
-                  onChange={(e) =>
-                    void update((s) => ({
-                      ...s,
-                      settings: {
-                        ...s.settings,
-                        progressionEnabled: e.target.checked,
-                      },
-                    }))
-                  }
-                />
-              </label>
-              <p className="personal-muted">
-                Optional context, not a command. A small load increase is
-                considered only after all intended sets reach the rep ceiling in
-                the same setup. Never auto-logs sets.
-              </p>
-            </DSSurface>
-          </>
+                  <h2>My defaults</h2>
+                  <label>
+                    Weight unit
+                    <select
+                      value={state.settings.unit}
+                      onChange={(e) =>
+                        void update((s) => ({
+                          ...s,
+                          settings: {
+                            ...s.settings,
+                            unit: e.target.value as Unit,
+                          },
+                        }))
+                      }
+                    >
+                      <option value="kg">kg</option>
+                      <option value="lb">lb</option>
+                    </select>
+                  </label>
+                  <p className="personal-muted">
+                    Applies to new workouts. Old values are never relabeled or
+                    converted.
+                  </p>
+                  <label>
+                    Gym label
+                    <DSInput
+                      value={state.settings.gym}
+                      maxLength={120}
+                      placeholder="My gym"
+                      onChange={(e) =>
+                        void update((s) => ({
+                          ...s,
+                          settings: { ...s.settings, gym: e.target.value },
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className="personal-row">
+                    <span>Show double-progression hints</span>
+                    <input
+                      type="checkbox"
+                      checked={state.settings.progressionEnabled}
+                      onChange={(e) =>
+                        void update((s) => ({
+                          ...s,
+                          settings: {
+                            ...s.settings,
+                            progressionEnabled: e.target.checked,
+                          },
+                        }))
+                      }
+                    />
+                  </label>
+                  <p className="personal-muted">
+                    Optional context, not a command. A small load increase is
+                    considered only after all intended sets reach the rep
+                    ceiling in the same setup. Never auto-logs sets.
+                  </p>
+                </DSSurface>
+              </>
+            )}
+          </dialog>
         )}
       </main>
-      <nav className="personal-tabs" aria-label="Main navigation">
-        {(["today", "progress", "backup"] as const).map((t) => (
-          <DSButton
-            variant="text"
-            key={t}
-            className={`personal-tab ${tab === t ? "active" : ""}`}
-            aria-current={tab === t ? "page" : undefined}
-            onClick={() => setTab(t)}
-          >
-            <span className="personal-tab-label">
-              {t === "today" ? (
-                <Dumbbell size={20} />
-              ) : t === "progress" ? (
-                <Check size={20} />
-              ) : (
-                <ShieldCheck size={20} />
-              )}
-              <span>{t[0].toUpperCase() + t.slice(1)}</span>
-            </span>
-          </DSButton>
-        ))}
-      </nav>
     </div>
   );
 }
