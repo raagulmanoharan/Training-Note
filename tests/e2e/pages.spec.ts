@@ -57,6 +57,18 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     async () => (await navigator.serviceWorker.ready).scope,
   );
   expect(new URL(scope).pathname).toBe("/gym-notebook/");
+  const fontPaths = await page.evaluate(async () => {
+    const names = await caches.keys();
+    const paths: string[] = [];
+    for (const name of names) {
+      const cache = await caches.open(name);
+      for (const request of await cache.keys())
+        paths.push(new URL(request.url).pathname);
+    }
+    return paths;
+  });
+  expect(fontPaths).toContain("/gym-notebook/fonts/manrope-latin-variable.ttf");
+  expect(fontPaths).toContain("/gym-notebook/fonts/ibm-plex-mono-regular.ttf");
   await context.setOffline(true);
   await page.reload();
   await expect(
@@ -70,6 +82,16 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
   ).toBeVisible();
+  expect(
+    await page.evaluate(async () => {
+      await document.fonts.load('14px "Notebook Sans"');
+      await document.fonts.load('14px "Notebook Mono"');
+      return (
+        document.fonts.check('14px "Notebook Sans"') &&
+        document.fonts.check('14px "Notebook Mono"')
+      );
+    }),
+  ).toBe(true);
   expect(requests).toEqual([]);
   await page.screenshot({
     path: "tests/artifacts/pages-mobile.png",

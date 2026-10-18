@@ -98,6 +98,9 @@ export default function PersonalApp() {
     const dialog = overlayRef.current;
     if (overlay && dialog && !dialog.open) dialog.showModal();
   }, [overlay]);
+  useEffect(() => {
+    if (tab === "home") window.scrollTo({ top: 0, behavior: "instant" });
+  }, [tab]);
   const [selected, setSelected] = useState<MuscleGroup[]>([]),
     [count, setCount] = useState(4),
     [plan, setPlan] = useState<PersonalWorkout | null>(null),
@@ -672,7 +675,13 @@ export default function PersonalApp() {
     ) {
       setFinishing(false);
       setTab("home");
-      setNotice("Workout saved. Export a backup to protect this session.");
+      const finishedSets = done.exercises.reduce(
+        (total, x) => total + x.sets.length,
+        0,
+      );
+      setNotice(
+        `Workout finished · ${finishedSets} ${finishedSets === 1 ? "set" : "sets"} recorded. Export a backup to protect it.`,
+      );
       setUndo(null);
     }
     setBusy(false);
@@ -861,13 +870,25 @@ export default function PersonalApp() {
         </div>
         <div className="two-header-actions">
           <DSStatus state={status} className={`personal-status ${status}`} />
-          <DSButton
-            variant="text"
-            aria-label="Settings and backup"
-            onClick={() => openOverlay("backup")}
-          >
-            <Settings size={20} /> <span>Settings</span>
-          </DSButton>
+          {workout && tab === "today" ? (
+            <DSButton
+              ref={finishTrigger}
+              variant="secondary"
+              className="nb-header-finish"
+              onClick={() => setFinishing(true)}
+            >
+              Finish
+            </DSButton>
+          ) : (
+            <DSButton
+              variant="text"
+              aria-label="Settings and backup"
+              onClick={() => openOverlay("backup")}
+            >
+              <Settings size={20} />{" "}
+              <span className="visually-hidden">Settings</span>
+            </DSButton>
+          )}
         </div>
       </header>
       <main className="personal-main">
@@ -952,7 +973,7 @@ export default function PersonalApp() {
                   <section className="personal-setup">
                     <DSScreenHeader
                       title="What are you training?"
-                      description="Choose your focus. Build a session, then record the work."
+                      description="Pick one or more muscle groups."
                     />
                     <div className="nb-muscle-grid">
                       {groups.map((g) => (
@@ -1060,7 +1081,8 @@ export default function PersonalApp() {
                               </p>
                             </div>
                             <span className="nb-lineup-prescription">
-                              {x.plannedSets} sets · {x.repMin}–{x.repMax} reps
+                              {x.equipment} · {x.repMin}–{x.repMax} reps ·{" "}
+                              {x.sets.length}/{x.plannedSets} sets
                             </span>
                           </div>
                           <div className="nb-lineup-actions">
@@ -1147,7 +1169,7 @@ export default function PersonalApp() {
                     </DSDisclosure>
                     <DSButton
                       variant="primary"
-                      className="personal-primary"
+                      className="personal-primary nb-review-start"
                       disabled={busy || status === "error"}
                       onClick={() => void start()}
                     >
@@ -1159,24 +1181,20 @@ export default function PersonalApp() {
             )}
             {workout && exercise && (
               <>
-                <DSScreenHeader
-                  className="personal-session-heading"
-                  title={workout.groups
+                <p className="nb-session-context">
+                  {workout.groups
                     .map((g) => groups.find((x) => x.id === g)?.name)
                     .join(" + ")}
-                  register={`${date(workout.startedAt)} · ${recordedCount} ${recordedCount === 1 ? "set" : "sets"} recorded`}
-                  action={
-                    <DSButton
-                      ref={finishTrigger}
-                      variant="text"
-                      onClick={() => setFinishing(true)}
-                    >
-                      Finish
-                    </DSButton>
-                  }
-                />
+                  <span aria-hidden="true"> · </span>
+                  {recordedCount} {recordedCount === 1 ? "set" : "sets"} saved
+                </p>
                 <div className="personal-exercise-stack">
-                  {workout.exercises.map((x, i) => (
+                  {[
+                    exercise,
+                    ...workout.exercises.filter(
+                      (item) => item.id !== exercise.id,
+                    ),
+                  ].map((x) => (
                     <DSSurface
                       as="article"
                       variant={x.id === exercise.id ? "worksheet" : "plain"}
@@ -1208,10 +1226,12 @@ export default function PersonalApp() {
                             >
                               {x.name}
                             </span>
-                            <span className="nb-exercise-meta">
-                              {x.sets.length} / {x.plannedSets} sets ·{" "}
-                              {x.equipment}
-                            </span>
+                            {x.id !== exercise.id && (
+                              <span className="nb-exercise-meta">
+                                {x.sets.length} / {x.plannedSets} sets ·{" "}
+                                {x.equipment}
+                              </span>
+                            )}
                           </span>
                         </DSButton>
                         <DSButton
@@ -1236,7 +1256,8 @@ export default function PersonalApp() {
                       {x.id === exercise.id && (
                         <>
                           <p className="nb-target">
-                            {x.plannedSets} sets · {x.repMin}–{x.repMax} reps
+                            {x.equipment} · {x.plannedSets} sets · {x.repMin}–
+                            {x.repMax} reps
                           </p>
                           {hint?.previous && (
                             <p className="nb-last-time">
@@ -1266,83 +1287,101 @@ export default function PersonalApp() {
                                 )}
                             </p>
                           )}
+                          {x.equipment.toLowerCase().includes("dumbbell") && (
+                            <p className="nb-weight-convention">
+                              Keep the same weight convention each visit: per
+                              dumbbell or combined.
+                            </p>
+                          )}
                           {hint?.kind === "increase" && (
                             <p className="nb-progression">{hint.message}</p>
                           )}
                           {swapId === x.id && swapOptions(workout)}
-                          <DSSetColumnLabels unit={x.unit} />
+                          {x.sets.length > 0 && (
+                            <DSSetColumnLabels unit={x.unit} />
+                          )}
                           <div className="personal-sets">
-                            {x.sets.map((s, index) =>
-                              edit?.set === s.id ? (
-                                <div className="nb-set-editor" key={s.id}>
-                                  <DSSetRow
-                                    state="editing"
-                                    className="nb-set-row is-editing"
-                                    number={index + 1}
-                                    name={x.name}
-                                    unit={x.unit}
-                                    weight={edit.weight}
-                                    reps={edit.reps}
-                                    weightLabel="Edit weight"
-                                    repsLabel="Edit reps"
-                                    commitLabel="Save changes"
-                                    onWeightChange={(weight) =>
-                                      setEdit({ ...edit, weight })
-                                    }
-                                    onRepsChange={(reps) =>
-                                      setEdit({ ...edit, reps })
-                                    }
-                                    onCommit={() => void saveEdit()}
-                                    onCancel={() => setEdit(null)}
-                                    onDelete={() => void removeSet(s, index)}
-                                    disabled={busy || status === "error"}
-                                  />
-                                  <DSButton
-                                    variant="text"
-                                    disabled={busy || status === "error"}
-                                    aria-label={`${s.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
-                                    onClick={() => openEffort(x, s)}
-                                  >
-                                    {s.repsInReserve === undefined
-                                      ? "Add effort"
-                                      : "Change effort"}
-                                  </DSButton>
-                                </div>
-                              ) : (
-                                <div className="nb-saved-set" key={s.id}>
-                                  <DSSetRow
-                                    state="saved"
-                                    className="nb-set-row is-saved"
-                                    number={index + 1}
-                                    name={x.name}
-                                    unit={x.unit}
-                                    weight={s.weight}
-                                    reps={s.reps}
-                                    onEdit={() =>
-                                      setEdit({
-                                        exercise: x.id,
-                                        set: s.id,
-                                        weight: String(s.weight),
-                                        reps: String(s.reps),
-                                      })
-                                    }
-                                    editLabel={`Edit set ${index + 1}`}
-                                    disabled={busy || status === "error"}
-                                  />
-                                  {s.repsInReserve !== undefined && (
-                                    <DSButton
-                                      variant="text"
-                                      className="nb-effort-caption"
-                                      aria-label={`Change effort for set ${index + 1} of ${x.name}`}
-                                      onClick={() => openEffort(x, s)}
-                                    >
-                                      Set {index + 1} ·{" "}
-                                      {effortLabel(s.repsInReserve)}
-                                    </DSButton>
-                                  )}
-                                </div>
-                              ),
-                            )}
+                            <div
+                              className="nb-saved-ledger"
+                              aria-label="Recorded sets, latest first"
+                            >
+                              {x.sets
+                                .map((s, index) => ({ s, index }))
+                                .reverse()
+                                .map(({ s, index }) =>
+                                  edit?.set === s.id ? (
+                                    <div className="nb-set-editor" key={s.id}>
+                                      <DSSetRow
+                                        state="editing"
+                                        className="nb-set-row is-editing"
+                                        number={index + 1}
+                                        name={x.name}
+                                        unit={x.unit}
+                                        weight={edit.weight}
+                                        reps={edit.reps}
+                                        weightLabel="Edit weight"
+                                        repsLabel="Edit reps"
+                                        commitLabel="Save changes"
+                                        onWeightChange={(weight) =>
+                                          setEdit({ ...edit, weight })
+                                        }
+                                        onRepsChange={(reps) =>
+                                          setEdit({ ...edit, reps })
+                                        }
+                                        onCommit={() => void saveEdit()}
+                                        onCancel={() => setEdit(null)}
+                                        onDelete={() =>
+                                          void removeSet(s, index)
+                                        }
+                                        disabled={busy || status === "error"}
+                                      />
+                                      <DSButton
+                                        variant="text"
+                                        disabled={busy || status === "error"}
+                                        aria-label={`${s.repsInReserve === undefined ? "Add" : "Change"} effort for set ${index + 1} of ${x.name}`}
+                                        onClick={() => openEffort(x, s)}
+                                      >
+                                        {s.repsInReserve === undefined
+                                          ? "Add effort"
+                                          : "Change effort"}
+                                      </DSButton>
+                                    </div>
+                                  ) : (
+                                    <div className="nb-saved-set" key={s.id}>
+                                      <DSSetRow
+                                        state="saved"
+                                        className="nb-set-row is-saved"
+                                        number={index + 1}
+                                        name={x.name}
+                                        unit={x.unit}
+                                        weight={s.weight}
+                                        reps={s.reps}
+                                        onEdit={() =>
+                                          setEdit({
+                                            exercise: x.id,
+                                            set: s.id,
+                                            weight: String(s.weight),
+                                            reps: String(s.reps),
+                                          })
+                                        }
+                                        editLabel={`Edit set ${index + 1}`}
+                                        disabled={busy || status === "error"}
+                                      />
+                                      {s.repsInReserve !== undefined && (
+                                        <DSButton
+                                          variant="text"
+                                          className="nb-effort-caption"
+                                          aria-label={`Change effort for set ${index + 1} of ${x.name}`}
+                                          onClick={() => openEffort(x, s)}
+                                        >
+                                          Set {index + 1} ·{" "}
+                                          {effortLabel(s.repsInReserve)}
+                                        </DSButton>
+                                      )}
+                                    </div>
+                                  ),
+                                )}
+                            </div>
                             {(x.sets.length < x.plannedSets ||
                               extraRow === x.id ||
                               !!x.pendingWeight ||
@@ -1394,24 +1433,6 @@ export default function PersonalApp() {
                                 }}
                               />
                             )}
-                            {Array.from(
-                              {
-                                length: Math.max(
-                                  0,
-                                  x.plannedSets - x.sets.length - 1,
-                                ),
-                              },
-                              (_, n) => (
-                                <DSSetRow
-                                  key={`future-${n}`}
-                                  state="future"
-                                  className="nb-set-row is-future"
-                                  number={x.sets.length + n + 2}
-                                  name={x.name}
-                                  unit={x.unit}
-                                />
-                              ),
-                            )}
                           </div>
                           <div className="nb-set-actions">
                             {x.sets.length >= x.plannedSets &&
@@ -1420,7 +1441,7 @@ export default function PersonalApp() {
                               !x.pendingReps && (
                                 <DSButton
                                   variant="secondary"
-                                  className="personal-secondary"
+                                  className="personal-secondary nb-add-set"
                                   onClick={() => setExtraRow(x.id)}
                                 >
                                   <Plus size={15} /> Add set
@@ -1443,7 +1464,33 @@ export default function PersonalApp() {
                                 }
                                 onClick={() => void log(x.sets.at(-1))}
                               >
-                                Repeat {actual(x.sets.at(-1)!, x.unit)}
+                                Log {actual(x.sets.at(-1)!, x.unit)} again
+                              </DSButton>
+                            )}
+                            {workout.exercises.length > 1 && (
+                              <DSButton
+                                variant="secondary"
+                                className="personal-secondary nb-next-exercise"
+                                onClick={() => {
+                                  const i = workout.exercises.findIndex(
+                                    (x) => x.id === exercise.id,
+                                  );
+                                  const next =
+                                    workout.exercises[
+                                      (i + 1) % workout.exercises.length
+                                    ];
+                                  setEdit(null);
+                                  setSwapId(null);
+                                  void update((s) => ({
+                                    ...s,
+                                    current: {
+                                      ...s.current!,
+                                      activeExerciseId: next.id,
+                                    },
+                                  }));
+                                }}
+                              >
+                                Next exercise <ChevronRight size={18} />
                               </DSButton>
                             )}
                           </div>
@@ -1636,27 +1683,6 @@ export default function PersonalApp() {
                     </DSSurface>
                   ))}
                 </div>
-                {workout.exercises.length > 1 && (
-                  <DSButton
-                    variant="secondary"
-                    className="personal-secondary nb-next-exercise"
-                    onClick={() => {
-                      const i = workout.exercises.findIndex(
-                        (x) => x.id === exercise.id,
-                      );
-                      const next =
-                        workout.exercises[(i + 1) % workout.exercises.length];
-                      setEdit(null);
-                      setSwapId(null);
-                      void update((s) => ({
-                        ...s,
-                        current: { ...s.current!, activeExerciseId: next.id },
-                      }));
-                    }}
-                  >
-                    Next exercise <ChevronRight size={18} />
-                  </DSButton>
-                )}
                 {finishing && (
                   <section
                     className="personal-inline"

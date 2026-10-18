@@ -720,51 +720,65 @@ export function DSSetRow(props: DSSetRowProps) {
         data-testid={props["data-testid"]}
         aria-label={`${base}: ${busy ? "saving, not yet recorded" : editing ? "correction draft" : "draft, not recorded"}`}
       >
-        <span className="ds-set-ordinal">{props.number}</span>
-        <DSField
-          hideLabel
-          label={
-            props.weightLabel ||
-            `${editing ? "Edit " : ""}${base} weight (${props.unit})`
-          }
-          value={props.weight}
-          inputMode="decimal"
-          maxLength={30}
-          disabled={busy || props.disabled}
-          ref={props.weightRef}
-          onKeyDown={props.onWeightKeyDown}
-          aria-invalid={!!props.error || undefined}
-          aria-describedby={props.error ? `${id}-error` : undefined}
-          onChange={(e) => props.onWeightChange(e.target.value)}
-          enterKeyHint="next"
-        />
-        <DSField
-          hideLabel
-          label={props.repsLabel || `${editing ? "Edit " : ""}${base} reps`}
-          value={props.reps}
-          inputMode="numeric"
-          maxLength={30}
-          disabled={busy || props.disabled}
-          ref={props.repsRef}
-          onKeyDown={props.onRepsKeyDown}
-          aria-invalid={!!props.error || undefined}
-          aria-describedby={props.error ? `${id}-error` : undefined}
-          onChange={(e) => props.onRepsChange(e.target.value)}
-          enterKeyHint="done"
-        />
-        <DSCommitControl
-          state={busy ? "saving" : props.state === "error" ? "error" : "ready"}
+        <span className="ds-set-ordinal ds-entry-ordinal">
+          {editing ? "Correct set" : "Set"} {props.number}
+        </span>
+        <div className="ds-entry-field">
+          <span aria-hidden="true" className="ds-entry-label">
+            Weight · {props.unit}
+          </span>
+          <DSField
+            hideLabel
+            label={
+              props.weightLabel ||
+              `${editing ? "Edit " : ""}${base} weight (${props.unit})`
+            }
+            value={props.weight}
+            inputMode="decimal"
+            maxLength={30}
+            disabled={busy || props.disabled}
+            ref={props.weightRef}
+            onKeyDown={props.onWeightKeyDown}
+            aria-invalid={!!props.error || undefined}
+            aria-describedby={props.error ? `${id}-error` : undefined}
+            onChange={(e) => props.onWeightChange(e.target.value)}
+            enterKeyHint="next"
+          />
+        </div>
+        <div className="ds-entry-field">
+          <span aria-hidden="true" className="ds-entry-label">
+            Reps
+          </span>
+          <DSField
+            hideLabel
+            label={props.repsLabel || `${editing ? "Edit " : ""}${base} reps`}
+            value={props.reps}
+            inputMode="numeric"
+            maxLength={30}
+            disabled={busy || props.disabled}
+            ref={props.repsRef}
+            onKeyDown={props.onRepsKeyDown}
+            aria-invalid={!!props.error || undefined}
+            aria-describedby={props.error ? `${id}-error` : undefined}
+            onChange={(e) => props.onRepsChange(e.target.value)}
+            enterKeyHint="done"
+          />
+        </div>
+        <DSButton
+          className="ds-set-log"
+          variant="primary"
+          loading={busy}
+          loadingLabel={`Saving set ${props.number}…`}
           disabled={props.commitDisabled || props.disabled}
-          label={
+          aria-label={
             props.commitLabel ||
-            (busy
-              ? `Saving set ${props.number}`
-              : editing
-                ? `Save correction for ${base}`
-                : `Log ${base}`)
+            (editing ? `Save correction for ${base}` : `Log ${base}`)
           }
-          onCommit={props.onCommit}
-        />
+          onClick={props.onCommit}
+          endIcon={<Check size={18} aria-hidden="true" />}
+        >
+          {editing ? "Save correction" : `Log set ${props.number}`}
+        </DSButton>
       </DSSetGridRow>
       {props.error && (
         <p className="ds-field__error" id={`${id}-error`} role="alert">

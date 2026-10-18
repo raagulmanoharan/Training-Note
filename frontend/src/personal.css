@@ -1078,3 +1078,25 @@ body {
 .personal-header > .personal-status.ds-status {
   max-width: 160px;
 }
+
+/* Neutral page surface also surrounds the mobile safe areas. */
+:root,
+body {
+  background: #f5f4ef;
+  color-scheme: light;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.personal-app .nb-muscle-card .personal-muscle-glyph {
+  width: 48px;
+  height: 76px;
+}
+.personal-app .personal-header .two-header-actions {
+  gap: 8px;
+}

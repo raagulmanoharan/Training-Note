@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CalendarDays,
-  Plus,
-  Play,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
 import type { PersonalState, PersonalWorkout } from "./personalStore";
 import { groups } from "./personalCatalog";
 import { groupInsights } from "./personalInsights";
@@ -46,60 +40,32 @@ export default function TrainingHome({
     active?.exercises.reduce((n, e) => n + e.sets.length, 0) || 0;
   return (
     <div className="training-home">
-      <div className="home-intro">
-        <h1>Training</h1>
-      </div>
-      <section
-        className="home-attendance"
-        aria-label="Recorded gym visits in the last four weeks"
-      >
-        <div className="home-attendance-heading">
-          <div>
-            <strong>
-              {count}
-              <span> gym {count === 1 ? "visit" : "visits"}</span>
-            </strong>
-            <p>Last 4 weeks</p>
-          </div>
-          <CalendarDays size={23} />
-        </div>
-        <div className="home-visit-grid">
-          {days.map((d, i) => (
-            <span
-              key={i}
-              className={`home-day ${visits.has(localDay(d)) ? "visited" : ""} ${i === 27 ? "is-today" : ""}`}
-              title={`${d.toLocaleDateString()}: ${visits.has(localDay(d)) ? "recorded gym visit" : "no recorded visit"}`}
-              aria-label={`${d.toLocaleDateString()}: ${visits.has(localDay(d)) ? "recorded gym visit" : "no recorded visit"}`}
-            >
-              {visits.has(localDay(d)) ? "•" : ""}
-            </span>
-          ))}
-        </div>
-        <div className="home-chart-legend">
-          <span>
-            {days[0].toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-            })}
-          </span>
-          <span>Each dot is a recorded visit</span>
-          <span>Today</span>
-        </div>
-      </section>
       <section
         className="home-next"
         aria-label={active ? "Current workout" : "Next workout suggestion"}
       >
-        <h2>
-          {active ? title(active) : next ? title(next) : "Plan your workout"}
-        </h2>
-        <p>
-          {active
-            ? `${recorded} sets recorded · your session is saved as you go`
-            : next
-              ? "Repeat the work you logged last time. Adjust before starting."
-              : "Choose the muscles you want to train."}
-        </p>
+        <div className="home-next-heading">
+          <div>
+            <h1>
+              {active
+                ? title(active)
+                : next
+                  ? title(next)
+                  : "What are you training?"}
+            </h1>
+            <p>
+              {active
+                ? `${recorded} sets saved · ready when you are`
+                : next
+                  ? `${next.exercises.length} exercises · adjust before you start`
+                  : "Choose muscle groups to get started."}
+            </p>
+          </div>
+          <MuscleGlyph
+            group={active?.groups[0] || next?.groups[0] || "chest"}
+            selected
+          />
+        </div>
         <button
           className="home-start"
           onClick={active ? onResume : next ? () => onRepeat(next) : onPlan}
@@ -121,6 +87,42 @@ export default function TrainingHome({
             <ArrowUpRight size={15} />
           </button>
         )}
+      </section>
+      <section
+        className="home-attendance"
+        aria-label="Recorded gym visits in the last four weeks"
+      >
+        <div className="home-attendance-heading">
+          <div>
+            <strong>
+              {count}
+              <span> gym {count === 1 ? "visit" : "visits"}</span>
+            </strong>
+            <p>Last 4 weeks</p>
+          </div>
+        </div>
+        <div className="home-visit-grid">
+          {days.map((d, i) => (
+            <span
+              key={i}
+              className={`home-day ${visits.has(localDay(d)) ? "visited" : ""} ${i === 27 ? "is-today" : ""}`}
+              title={`${d.toLocaleDateString()}: ${visits.has(localDay(d)) ? "recorded gym visit" : "no recorded visit"}`}
+              aria-label={`${d.toLocaleDateString()}: ${visits.has(localDay(d)) ? "recorded gym visit" : "no recorded visit"}`}
+            >
+              {visits.has(localDay(d)) ? "•" : ""}
+            </span>
+          ))}
+        </div>
+        <div className="home-chart-legend">
+          <span>
+            {days[0].toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            })}
+          </span>
+          <span>28 days</span>
+          <span>Today</span>
+        </div>
       </section>
       <section
         className="home-performance"
@@ -228,10 +230,6 @@ export default function TrainingHome({
           <p className="home-caption">No workouts recorded yet.</p>
         )}
       </section>
-      <button className="home-new-session" hidden={!!active} onClick={onPlan}>
-        <Plus size={18} />
-        {active ? "Back to your workout" : "Build a different workout"}
-      </button>
     </div>
   );
 }

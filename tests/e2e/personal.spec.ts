@@ -208,7 +208,7 @@ test("personal store: verified backup restores history, draft, settings after sy
 async function startPersonal(page: any, groups = ["Chest", "Back"], count = 4) {
   await page.goto("/");
   await page
-    .getByRole("button", { name: "Build a different workout", exact: true })
+    .getByRole("button", { name: /^(Plan a workout|Train something else)$/ })
     .click();
   await expect(
     page.getByRole("heading", { name: "What are you training?" }),
@@ -258,7 +258,7 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
   });
   await logActual(page);
   await page
-    .getByRole("button", { name: "Repeat 40 kg × 10", exact: true })
+    .getByRole("button", { name: "Log 40 kg × 10 again", exact: true })
     .click();
   await expect(
     page.getByRole("button", { name: "Edit set 2", exact: true }),
@@ -467,6 +467,7 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
 }) => {
   await startPersonal(page, ["Chest"], 1);
   await logActual(page);
+  await page.getByRole("button", { name: "Back to Home", exact: true }).click();
   await page
     .getByRole("button", { name: "Settings and backup", exact: true })
     .click();
@@ -497,6 +498,9 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
       .getByRole("alert"),
   ).toContainText("invalid");
   await page.getByRole("button", { name: "Close panel", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Continue workout", exact: true })
+    .click();
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
@@ -694,7 +698,7 @@ test("redesign: compact lineup can be revised before explicit session start", as
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page
-    .getByRole("button", { name: "Build a different workout", exact: true })
+    .getByRole("button", { name: "Plan a workout", exact: true })
     .click();
   await page.getByRole("button", { name: "Chest", exact: true }).click();
   await page.getByRole("button", { name: "Back", exact: true }).click();
@@ -725,7 +729,7 @@ test("redesign: compact lineup can be revised before explicit session start", as
   ).toHaveCount(0);
 });
 
-test("redesign: next-set row stays aligned, thumb-sized and draft survives exercise switching", async ({
+test("redesign: paired inputs and full-width Log remain thumb-sized and draft survives exercise switching", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 740 });
@@ -747,7 +751,9 @@ test("redesign: next-set row stays aligned, thumb-sized and draft survives exerc
     r = await reps.boundingBox(),
     c = await check.boundingBox();
   expect(Math.abs(w!.y - r!.y)).toBeLessThan(5);
-  expect(Math.abs(w!.y - c!.y)).toBeLessThan(5);
+  expect(c!.y).toBeGreaterThanOrEqual(w!.y + w!.height);
+  expect(c!.width).toBeGreaterThanOrEqual(w!.width + r!.width);
+  expect(c!.y + c!.height).toBeLessThanOrEqual(740);
   await weight.fill("12.5");
   await reps.fill("8");
   await expect(page.locator(".personal-status")).toHaveText(
@@ -858,7 +864,7 @@ test("redesign: invalid input explains blocked completion and Repeat cannot disc
     page.getByRole("button", { name: /^Log set \d+ for / }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Repeat 40 kg × 10", exact: true }),
+    page.getByRole("button", { name: "Log 40 kg × 10 again", exact: true }),
   ).toBeDisabled();
   await weight.fill("42.5");
   await reps.fill("8.5");

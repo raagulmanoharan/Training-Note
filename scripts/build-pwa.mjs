@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const assets = (await readdir("dist/assets")).map((name) => `/assets/${name}`);
+const fonts = (await readdir("dist/fonts")).map((name) => `/fonts/${name}`);
 const files = [
   "/",
   "/index.html",
@@ -8,6 +9,7 @@ const files = [
   "/icon-192.png",
   "/icon-512.png",
   ...assets,
+  ...fonts,
 ];
 const hash = createHash("sha256");
 for (const file of files.filter((f) => f !== "/"))

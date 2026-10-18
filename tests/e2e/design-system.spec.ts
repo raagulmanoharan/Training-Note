@@ -181,7 +181,7 @@ test("design set molecule: pending cannot impersonate recorded and failed values
     .click();
   await expect(row).toHaveAttribute("data-state", "saving");
   await expect(
-    row.getByRole("button", { name: "Saving set 2", exact: true }),
+    row.getByRole("button", { name: "Saving set 2…", exact: true }),
   ).toBeDisabled();
   await expect(
     row.getByRole("img", { name: "Recorded set 2", exact: true }),

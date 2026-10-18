@@ -1,3 +1,17 @@
+@font-face {
+  font-family: "Notebook Sans";
+  src: url("/fonts/manrope-latin-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Notebook Mono";
+  src: url("/fonts/ibm-plex-mono-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 /* Training ledger foundations: scoped to the workbench or a future deliberate DS boundary. */
 :where(.design-workbench, .ds-theme) {
   --ds-canvas: #141713;
@@ -903,4 +917,167 @@
 
 :where(.ds-theme, .design-workbench) :is(h1, h2, h3, h4, strong, b) {
   font-weight: 600;
+}
+
+/* Production dot-language foundations. Historic workbench keeps its isolated palette. */
+.ds-theme {
+  --ds-canvas: #f6f5f1;
+  --ds-sheet: #ffffff;
+  --ds-raised: #eeede8;
+  --ds-ink: #252624;
+  --ds-secondary: #60625d;
+  --ds-muted: #686b64;
+  --ds-rule: #d6d7cf;
+  --ds-control-border: #bfc2b8;
+  --ds-accent: #b73720;
+  --ds-accent-surface: #fbe8e1;
+  --ds-danger: #b62623;
+  --ds-danger-surface: #fff0ed;
+  --ds-warning: #785314;
+  --ds-warning-surface: #fff5df;
+  --ds-focus: #252624;
+  --ds-action-ink: #ffffff;
+  --ds-font: "Notebook Sans", sans-serif;
+  --ds-mono: "Notebook Mono", monospace;
+  color-scheme: light;
+  font-family: var(--ds-font);
+}
+.ds-theme .ds-button {
+  border-radius: 14px;
+  transition:
+    background-color 0.12s,
+    border-color 0.12s;
+}
+.ds-theme .ds-button--primary {
+  background: #d83b22;
+  border-color: #d83b22;
+  color: #fff;
+}
+.ds-theme .ds-button--secondary {
+  background: var(--ds-sheet);
+}
+.ds-theme .ds-button--text,
+.ds-theme .ds-button--danger {
+  border-color: transparent;
+}
+.ds-theme .ds-input {
+  font-size: 16px;
+  border-radius: 12px;
+  background: #fff;
+}
+.ds-theme .ds-screen-header h1 {
+  letter-spacing: -0.9px;
+  font-weight: 700;
+}
+.ds-theme .ds-choice {
+  border-radius: 16px;
+  background: var(--ds-sheet);
+}
+.ds-theme .ds-choice--selected {
+  background: var(--ds-accent-surface);
+  border-color: var(--ds-accent);
+}
+.ds-theme .ds-choice--selected::before {
+  display: none;
+}
+.ds-theme .ds-surface--worksheet {
+  border-radius: 20px;
+}
+.ds-theme .ds-surface--worksheet > :is(h2, h3, .ds-screen-header):first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.ds-theme .ds-status--saved {
+  color: #37634b;
+}
+.ds-theme .ds-set-grid-row--saved .ds-set-ordinal,
+.ds-theme .ds-commit--saved {
+  color: #37634b;
+}
+.ds-theme .ds-commit--saved {
+  background: #e8eee6;
+}
+.ds-theme .ds-set-value {
+  font-family: var(--ds-mono);
+  font-weight: 400;
+}
+.ds-theme .ds-set-entry .ds-set-grid-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 0 8px;
+  border: 0;
+}
+.ds-theme .ds-entry-ordinal {
+  grid-column: 1/-1;
+  font-family: var(--ds-font);
+  color: var(--ds-secondary);
+}
+.ds-theme .ds-entry-field {
+  min-width: 0;
+}
+.ds-theme .ds-entry-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ds-secondary);
+  text-align: center;
+}
+.ds-theme .ds-set-entry .ds-input {
+  height: 72px;
+  font: 400 32px/40px var(--ds-mono);
+  background: #fff;
+  border: 1px solid var(--ds-control-border);
+  border-radius: 14px;
+}
+.ds-theme .ds-set-log {
+  grid-column: 1/-1;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 4px;
+}
+.ds-theme .ds-set-record__actions {
+  padding-left: 0;
+}
+.ds-theme .ds-set-record {
+  border-bottom: 1px solid var(--ds-rule);
+}
+.ds-theme .ds-set-record .ds-set-grid-row {
+  border-bottom: 0;
+}
+.ds-theme .ds-effort__choices {
+  gap: 8px;
+}
+.ds-theme .ds-surface--inset {
+  border-radius: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-theme .ds-button {
+    transition: none;
+  }
+}
+.ds-theme .ds-button--primary:disabled {
+  color: #686b64;
+  background: #eeede8;
+  border-color: #d6d7cf;
+}
+/* Keep the reusable entry molecule structurally complete in the isolated library too. */
+.ds-set-entry .ds-set-grid-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.ds-entry-ordinal {
+  grid-column: 1 / -1;
+}
+.ds-entry-field {
+  min-width: 0;
+}
+.ds-entry-label {
+  display: block;
+  margin-bottom: 8px;
+  text-align: center;
+  color: var(--ds-secondary);
+}
+.ds-set-log {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 52px;
 }

@@ -8,10 +8,10 @@
   --ds-muted: #626d69;
   --ds-rule: #d9ded8;
   --ds-control-border: #7b8680;
-  --ds-accent: #254cf4;
-  --ds-accent-surface: #e8edff;
+  --ds-accent: #d83b22;
+  --ds-accent-surface: #f9e6df;
   --ds-action-ink: #fff;
-  --ds-focus: #254cf4;
+  --ds-focus: #b92e1b;
   --ds-warning: #775900;
   --ds-warning-surface: #fff4d2;
   --ds-danger: #a32c30;
@@ -426,10 +426,10 @@
   --ds-muted: #626d69;
   --ds-rule: #d9ded8;
   --ds-control-border: #7b8680;
-  --ds-accent: #254cf4;
-  --ds-accent-surface: #e8edff;
+  --ds-accent: #d83b22;
+  --ds-accent-surface: #f9e6df;
   --ds-action-ink: #fff;
-  --ds-focus: #254cf4;
+  --ds-focus: #b92e1b;
   --ds-warning: #775900;
   --ds-warning-surface: #fff4d2;
   --ds-danger: #a32c30;
@@ -524,4 +524,402 @@
 }
 .two-header-actions .ds-button__normal > span {
   display: none;
+}
+
+/* Gym-first composition: one launch action, then the evidence of past work. */
+.personal-app.two-home,
+.personal-app.two-workout {
+  --ds-canvas: #f5f4ef;
+  --ds-sheet: #fffefa;
+  --ds-raised: #e9e8e2;
+  --ds-ink: #242722;
+  --ds-secondary: #5b6258;
+  --ds-muted: #646b60;
+  --ds-rule: #d6d7cf;
+  --ds-control-border: #9fa596;
+  --ds-accent: #d83b22;
+  --ds-accent-surface: #f9e6df;
+  --ds-action-ink: #fffefa;
+  --ds-focus: #b92e1b;
+  --ds-warning: #775900;
+  --ds-warning-surface: #fff4d2;
+  --ds-danger: #a32c30;
+  --ds-danger-surface: #fff0ed;
+  color-scheme: light;
+  padding-left: 24px;
+  padding-right: 24px;
+  font-family: "Notebook Sans", sans-serif;
+}
+.personal-app .personal-header {
+  min-height: 64px;
+  padding-top: 8px;
+  margin-bottom: 16px;
+  border: 0;
+}
+.personal-app .personal-brand {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+}
+.personal-app .personal-main {
+  gap: 24px;
+}
+.training-home {
+  padding-top: 0;
+}
+.home-intro h1 {
+  margin: 0 0 24px;
+  letter-spacing: -1px;
+  font-weight: 600;
+}
+.home-next {
+  background: transparent;
+  border-radius: 0;
+  padding: 0 0 28px;
+  margin: 0 0 24px;
+  border-bottom: 1px solid var(--ds-rule);
+}
+.home-next-heading {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 110px;
+}
+.home-next-heading > div {
+  min-width: 0;
+}
+.home-next-heading > svg {
+  width: 64px;
+  height: 104px;
+  flex: none;
+}
+.home-next h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 34px;
+  letter-spacing: -1px;
+  font-weight: 600;
+}
+.home-next p {
+  color: var(--ds-secondary);
+  margin: 0;
+  max-width: 27ch;
+}
+.personal-app button.home-start {
+  background: var(--ds-accent);
+  border-radius: 12px;
+  margin-top: 16px;
+  font-weight: 600;
+  min-height: 54px;
+}
+.personal-app button.home-alternate {
+  color: var(--ds-ink);
+  margin-top: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--ds-control-border);
+  padding: 8px 12px;
+}
+.home-attendance {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--ds-rule);
+}
+.home-attendance-heading {
+  margin-bottom: 16px;
+}
+.home-attendance-heading strong {
+  font-family: "Notebook Mono", monospace;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+.home-attendance-heading strong span {
+  font-family: "Notebook Sans", sans-serif;
+  letter-spacing: 0;
+}
+.home-attendance-heading p,
+.home-chart-legend,
+.home-caption,
+.home-muscle-row span,
+.home-empty,
+.home-date-block,
+.home-section-title > span {
+  color: var(--ds-secondary);
+}
+.home-visit-grid {
+  gap: 8px;
+}
+.home-day {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  background: #dcded4;
+  color: transparent;
+}
+.home-day.visited {
+  background: var(--ds-accent);
+  color: transparent;
+}
+.home-day.is-today {
+  outline-color: var(--ds-ink);
+  outline-width: 1px;
+}
+.home-chart-legend {
+  font-size: 14px;
+  margin-top: 12px;
+}
+.home-chart-legend span:nth-child(2) {
+  display: none;
+}
+.home-performance {
+  margin-bottom: 24px;
+}
+.home-section-title {
+  margin-bottom: 12px;
+}
+.home-caption {
+  margin-bottom: 16px;
+}
+.personal-app button.home-muscle-row {
+  border-color: var(--ds-rule);
+  gap: 16px;
+  min-height: 94px;
+}
+.home-muscle-row > svg:first-child {
+  width: 40px;
+  height: 64px;
+}
+.home-comparison-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ds-rule);
+}
+.home-comparison-dots i.improved {
+  background: var(--ds-accent);
+}
+.home-comparison-dots i.comparable {
+  background: var(--ds-secondary);
+}
+.home-empty,
+.personal-app button.home-recent-row {
+  border-color: var(--ds-rule);
+}
+.personal-app .personal-tab.active {
+  color: var(--ds-accent);
+}
+.two-workout .personal-session-heading {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ds-rule);
+}
+.two-workout .personal-session-heading h1 {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+}
+.two-workout .personal-session-heading p {
+  margin: 0;
+  color: var(--ds-secondary);
+}
+.two-workout .personal-session-heading .ds-button {
+  border: 1px solid var(--ds-control-border);
+  border-radius: 12px;
+  min-height: 44px;
+}
+.two-workout .nb-exercise-card.is-active.ds-surface {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.two-workout .nb-exercise-top {
+  gap: 12px;
+  align-items: center;
+}
+.two-workout .nb-exercise-top > svg {
+  width: 40px;
+  height: 64px;
+  flex: none;
+}
+.two-workout .nb-exercise-title {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+  letter-spacing: -0.9px;
+}
+.two-workout .nb-exercise-meta {
+  color: var(--ds-secondary);
+  margin-top: 4px;
+}
+.two-workout .nb-swapbutton.ds-button {
+  border: 1px solid var(--ds-control-border);
+  border-radius: 12px;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px;
+}
+.two-workout .nb-target {
+  margin: 8px 0 16px;
+  color: var(--ds-secondary);
+}
+.two-workout .nb-last-time {
+  background: var(--ds-raised);
+  color: var(--ds-ink);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.two-workout .nb-last-time .ds-button {
+  border: 1px solid var(--ds-control-border);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+.two-workout .personal-exercise-stack {
+  gap: 16px;
+}
+.two-workout .nb-exercise-card.is-collapsed {
+  border: 0;
+  border-top: 1px solid var(--ds-rule);
+  padding: 12px 0;
+  border-radius: 0;
+}
+.two-workout .is-collapsed .nb-exercise-title {
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.3px;
+}
+.two-workout .is-collapsed .nb-swapbutton {
+  display: none;
+}
+.two-workout .nb-effort-entry {
+  color: var(--ds-secondary);
+}
+.two-workout .nb-next-exercise {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 12px;
+}
+.personal-app .two-sheet {
+  background: var(--ds-canvas);
+}
+@media (max-width: 350px) {
+  .personal-app.two-home,
+  .personal-app.two-workout {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .two-workout .nb-exercise-top > svg {
+    display: none;
+  }
+  .two-workout .nb-exercise-title {
+    font-size: 28px;
+    line-height: 34px;
+  }
+  .home-visit-grid {
+    gap: 6px;
+  }
+}
+.personal-app .personal-lineup {
+  position: relative;
+  padding-bottom: 24px;
+}
+.personal-app .nb-review-start.ds-button {
+  position: sticky;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  width: 100%;
+  z-index: 3;
+  margin-top: 24px;
+  min-height: 54px;
+  box-shadow: 0 0 0 8px var(--ds-canvas);
+}
+.two-workout .nb-exercise-card.is-active .nb-exercise-top {
+  border-left: 0;
+  padding-left: 0;
+}
+.two-workout .nb-weight-convention {
+  color: var(--ds-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0 0 12px;
+}
+.two-workout .nb-next-exercise {
+  margin-top: 16px;
+}
+.home-next h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 34px;
+  letter-spacing: -1px;
+  font-weight: 600;
+}
+.home-attendance-heading strong span {
+  margin-left: 6px;
+}
+.two-workout .nb-saved-ledger {
+  max-height: 176px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin-bottom: 12px;
+}
+.two-workout .nb-saved-ledger:empty {
+  display: none;
+}
+.two-workout .nb-saved-ledger:has(.nb-set-editor) {
+  max-height: none;
+}
+/* Keep the next action beside explicit repeat logging, ahead of optional controls. */
+.two-workout .nb-set-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.two-workout .nb-set-actions .ds-button {
+  min-height: 48px;
+  padding: 8px 10px;
+}
+.two-workout .nb-set-actions .nb-add-set,
+.two-workout .nb-set-actions .ds-button:only-child {
+  grid-column: 1 / -1;
+}
+.two-workout .nb-set-actions .nb-next-exercise {
+  margin-top: 0;
+}
+.two-workout .nb-saved-ledger {
+  max-height: 132px;
+}
+/* One session line leaves the working set, rather than page chrome, in focus. */
+.two-workout.is-session .personal-header {
+  margin-bottom: 8px;
+}
+.nb-session-context {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ds-secondary);
+  margin: 0;
+}
+.two-workout.is-session .personal-main {
+  gap: 16px;
+}
+.two-workout .nb-header-finish {
+  min-height: 44px;
+  border-radius: 12px;
+}
+.two-workout.is-session .two-header-actions {
+  flex-wrap: nowrap;
+}
+.two-workout.is-session .personal-status {
+  min-width: 0;
+  max-width: 160px;
+}
+.two-workout .nb-target {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+@media (max-width: 350px) {
+  .two-workout.is-session .personal-status {
+    max-width: 116px;
+    white-space: normal;
+    line-height: 18px;
+  }
 }

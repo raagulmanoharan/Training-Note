@@ -1,0 +1,69 @@
+{
+  "actualProduction": true,
+  "fixture": "12 synthetic history sessions in isolated browser context",
+  "viewportChecks": [
+    {
+      "width": 320,
+      "log": {
+        "x": 18,
+        "y": 464,
+        "width": 284,
+        "height": 56
+      },
+      "withinInitialViewport": true
+    },
+    {
+      "width": 390,
+      "log": {
+        "x": 24,
+        "y": 464,
+        "width": 342,
+        "height": 56
+      },
+      "withinInitialViewport": true
+    }
+  ],
+  "latestCorrection": {
+    "x": 24,
+    "y": 324,
+    "width": 102.546875,
+    "height": 44
+  },
+  "longSession": [
+    {
+      "width": 320,
+      "log": {
+        "x": 18,
+        "y": 600,
+        "width": 284,
+        "height": 56
+      },
+      "next": {
+        "x": 164,
+        "y": 676,
+        "width": 138,
+        "height": 58
+      }
+    },
+    {
+      "width": 390,
+      "log": {
+        "x": 24,
+        "y": 580,
+        "width": 342,
+        "height": 56
+      },
+      "next": {
+        "x": 199,
+        "y": 656,
+        "width": 167,
+        "height": 48
+      }
+    }
+  ],
+  "fontFamily": "\"Notebook Sans\", sans-serif",
+  "selfHostedFontsLoaded": true,
+  "reloadKeptRecordedSet": true,
+  "pageErrors": [],
+  "externalRequests": []
+}

@@ -66,3 +66,7 @@ User selected Teenage Engineering as the new visual reference. UX and graphic de
 ## Visual correction: dot-based editorial language
 
 The user clarified that Teenage Engineering was a reference for clean visual communication, not physical hardware. The instrument/keycap metaphor is superseded. Graphic design pickup: create a coherent nine-target dot-based muscle contact sheet and reusable SVG assets, then compose a flat two-screen proposal using them at workout selection and logging touchpoints. UX reviewed essential versus redundant labels and the need to preserve target names, units, reference context and explicit actions. No human testing is claimed. This is design-system exploration; production integration remains pending.
+
+## Production usability / visual redesign delivery
+
+The dot direction is now integrated into the actual React logger, following a fresh-context synthetic browser evaluation, UX/graphic handoffs, a screenshot-fed image-generation exploration and a second real-app walkthrough. `PROFESSIONAL-REDESIGN-SPRINT.md` tracks completed work; `REDESIGN-DELIVERY.md` records actual test evidence and limitations. This completes the visual/composition portion of S1-06 and regression for this change; it does not mark the separate saved-routine/domain-model stories as implemented.

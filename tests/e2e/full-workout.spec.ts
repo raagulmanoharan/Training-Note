@@ -61,8 +61,11 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
   for (const id of ids) {
     const w = (await read(page)).current;
     const index = w.exercises.findIndex((x: any) => x.id === id);
-    await page.locator(".nb-exercise-heading").nth(index).click();
     const x = w.exercises[index];
+    await page
+      .locator(".nb-exercise-heading")
+      .filter({ has: page.getByRole("heading", { name: x.name, exact: true }) })
+      .click();
     for (let n = x.sets.length; n < x.plannedSets; n++)
       await log(page, "30", "10");
   }
@@ -123,7 +126,7 @@ test("typography: three readable roles, no decorative eyebrow, and narrow workou
 }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Training", exact: true }),
+    page.getByRole("heading", { name: "What are you training?", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".home-eyebrow")).toHaveCount(0);
   await expect(
@@ -182,6 +185,7 @@ test("typography: three readable roles, no decorative eyebrow, and narrow workou
 test("finish states: cancel and discard empty session; partial finish drops only explicitly unlogged input", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   async function start() {
     await page
       .getByRole("button", { name: "Plan a workout", exact: true })
@@ -205,7 +209,7 @@ test("finish states: cancel and discard empty session; partial finish drops only
     .getByRole("button", { name: "Discard empty draft", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Training", exact: true }),
+    page.getByRole("heading", { name: "What are you training?", exact: true }),
   ).toBeVisible();
   expect((await read(page)).history).toEqual([]);
   await start();
@@ -229,6 +233,15 @@ test("finish states: cancel and discard empty session; partial finish drops only
       exact: true,
     })
     .click();
+  await expect(
+    page
+      .locator(".personal-notice")
+      .filter({
+        hasText:
+          "Workout finished · 1 set recorded. Export a backup to protect it.",
+      }),
+  ).toBeInViewport();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   const state = await read(page);
   expect(state.current).toBeNull();
   expect(state.history).toHaveLength(1);
