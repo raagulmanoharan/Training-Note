@@ -58,6 +58,15 @@ assert.equal(
   true,
 );
 await page.waitForTimeout(200);
+for (const width of [320, 390]) {
+  await page.setViewportSize({ width, height: 844 });
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+}
 await page.screenshot({ path: output + "/home.png", fullPage: true });
 await page
   .getByRole("button", { name: "Repeat this workout", exact: true })

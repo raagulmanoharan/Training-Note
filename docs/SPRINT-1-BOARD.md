@@ -74,3 +74,7 @@ The dot direction is now integrated into the actual React logger, following a fr
 ## Session hierarchy refinement
 
 Completed persistent session card with a strong Finish action, wall-clock elapsed time derived from saved start, and remembered hide/show preference. Secondary setup remains collapsed; inactive exercise tap targets are larger. `SESSION-CARD.md` records the full journey and verification. Workout data schema and saving semantics are unchanged.
+
+## Card-based information organization
+
+Completed four Home content cards (launch, attendance, progress, latest workout), one active exercise worksheet card, and compact selectable exercise cards. The existing sticky session card remains distinct. Rebalanced padding so the new surfaces do not push logging/navigation out of small-screen view. Build, five targeted workflow/timer tests and320/390 real-app layout checks passed. No data-model changes. See `CARD-LAYOUT.md`.

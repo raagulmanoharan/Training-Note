@@ -1030,3 +1030,89 @@
     padding: 8px 10px;
   }
 }
+/* Content cards: one surface per task, rather than one box per datum. */
+.personal-app.two-home,
+.personal-app.two-workout {
+  --ds-canvas: #f1f2ed;
+  --ds-sheet: #fffefa;
+}
+.training-home {
+  display: grid;
+  gap: 16px;
+}
+.training-home
+  > :is(.home-next, .home-attendance, .home-performance, .home-recent) {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid #e0e2d9;
+  border-radius: 22px;
+  background: var(--ds-sheet);
+}
+.training-home .home-next {
+  border-top: 0;
+}
+.training-home .home-next-heading {
+  padding-top: 0;
+}
+.training-home .home-muscle-list {
+  border: 0;
+}
+.training-home .home-muscle-row {
+  background: transparent;
+}
+.training-home .home-recent-row {
+  border-bottom: 0;
+}
+.training-home .home-caption:last-child {
+  margin-bottom: 0;
+}
+.training-home .home-visit-grid {
+  gap: 5px;
+}
+.two-workout .personal-exercise-stack {
+  gap: 12px;
+}
+.two-workout .nb-exercise-card.is-active.ds-surface {
+  background: var(--ds-sheet);
+  border: 1px solid #e0e2d9;
+  border-radius: 22px;
+  padding: 16px;
+}
+.two-workout .nb-exercise-card.is-active .ds-set-entry .ds-set-grid-row {
+  padding-top: 4px;
+  gap: 8px;
+}
+.two-workout .nb-exercise-card.is-active .ds-entry-label {
+  margin-bottom: 4px;
+}
+.two-workout .nb-exercise-card.is-active .nb-last-time {
+  margin-bottom: 8px;
+}
+.two-workout .nb-exercise-card.is-active .nb-saved-ledger {
+  margin-bottom: 4px;
+}
+.two-workout .nb-exercise-card.is-active .ds-input {
+  background: #f6f7f2;
+}
+.two-workout .nb-exercise-card.is-collapsed {
+  padding: 8px 16px;
+  background: var(--ds-sheet);
+  border: 1px solid #e0e2d9;
+  border-radius: 18px;
+}
+.nb-session-card {
+  border-color: #d3d7cb;
+  margin-bottom: 12px;
+}
+@media (max-width: 350px) {
+  .training-home
+    > :is(.home-next, .home-attendance, .home-performance, .home-recent) {
+    padding: 16px;
+  }
+  .two-workout .nb-exercise-card.is-active.ds-surface {
+    padding: 12px;
+  }
+  .two-workout .nb-exercise-card.is-collapsed {
+    padding: 6px 12px;
+  }
+}
