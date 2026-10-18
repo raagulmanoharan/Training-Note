@@ -1,0 +1,327 @@
+[
+  {
+    "day": 0,
+    "calendarDate": "2026-07-10T12:00:00.000Z",
+    "kind": "actual first-session UI walkthrough",
+    "defaults": {
+      "unit": "kg",
+      "gym": "",
+      "progressionEnabled": false
+    },
+    "exercises": [
+      "Bench press",
+      "Lat pulldown"
+    ],
+    "recordedSets": 6,
+    "historyCount": 1,
+    "homeText": "Training\n1 gym visit\n\nLast 4 weeks\n\n•\nJun 13\nToday\nChest + Back\n\nRepeat the work you logged last time. Adjust before starting.\n\nRepeat this workout\nTrain something else\nProgress\nDetails\n\nRecorded performance, compared in the same setup.\n\nChest\nNo matching sessions yet\nBack\nNo matching sessions yet\n\nThese are lift comparisons, not a measurement of muscle growth.\n\nLast workout\n1 workout total\n10\nJul\nChest + Back\n6 sets recorded\nBuild a different workout",
+    "errors": []
+  },
+  {
+    "day": 5,
+    "calendarDate": "2026-07-15T12:00:00.000Z",
+    "kind": "accelerated seeded snapshot with gym and hints explicitly configured",
+    "sessionCount": 3,
+    "setCount": 54,
+    "backupBytes": 24327,
+    "latestGroups": [
+      "chest",
+      "back",
+      "shoulders"
+    ],
+    "expectedNextGroups": [
+      "legs",
+      "arms",
+      "core"
+    ],
+    "benchHint": {
+      "kind": "hold",
+      "message": "Repeat a manageable load and build toward 12 controlled reps on every planned set. No increase is required.",
+      "previous": {
+        "id": "ce3fa820-1e9e-4b41-93b0-6be402aa8827",
+        "catalogId": "bench",
+        "name": "Bench press",
+        "group": "chest",
+        "target": "horizontal press",
+        "equipment": "Barbell",
+        "gym": "Neighborhood gym",
+        "unit": "kg",
+        "sets": [
+          {
+            "id": "b0ac4b88-cf09-4af8-b02f-962836930b7d",
+            "weight": 60,
+            "reps": 11,
+            "loggedAt": "2026-07-14T11:00:00.000Z",
+            "repsInReserve": 2
+          },
+          {
+            "id": "c33f6417-2fc6-4a5b-86b5-6add98d066d2",
+            "weight": 60,
+            "reps": 11,
+            "loggedAt": "2026-07-14T11:00:00.000Z",
+            "repsInReserve": 2
+          },
+          {
+            "id": "ff504cf5-bea3-42c7-9d65-eb48998e2e9e",
+            "weight": 60,
+            "reps": 11,
+            "loggedAt": "2026-07-14T11:00:00.000Z",
+            "repsInReserve": 2
+          }
+        ],
+        "plannedSets": 3,
+        "repMin": 8,
+        "repMax": 12,
+        "increment": 2.5,
+        "pendingWeight": "",
+        "pendingReps": ""
+      }
+    },
+    "benchLatest": {
+      "name": "Bench press",
+      "weight": 60,
+      "reps": 11,
+      "rir": 2,
+      "plannedSets": 3,
+      "repMin": 8,
+      "repMax": 12
+    },
+    "benchBaseline": {
+      "name": "Bench press",
+      "weight": 60,
+      "reps": 10,
+      "rir": 2,
+      "plannedSets": 3,
+      "repMin": 8,
+      "repMax": 12
+    },
+    "missingGymComparable": 0,
+    "catalogSize": 31,
+    "hasBarbellBackSquat": false,
+    "hasConventionalDeadlift": false,
+    "homeText": "Training\n3 gym visits\n\nLast 4 weeks\n\n•\n•\n•\nJun 18\nToday\nChest + Back + Shoulders\n\nRepeat the work you logged last time. Adjust before starting.\n\nRepeat this workout\nTrain something else\nProgress\nDetails\n\nRecorded performance, compared in the same setup.\n\nChest\n2 of 2 lifts improved\nBack\n2 of 2 lifts improved\nShoulders\n2 of 2 lifts improved\nLegs\nNo matching sessions yet\nArms\nNo matching sessions yet\nCore\nNo matching sessions yet\n\nThese are lift comparisons, not a measurement of muscle growth.\n\nLast workout\n3 workouts total\n14\nJul\nChest + Back + Shoulders\n18 sets recorded\nBuild a different workout",
+    "active": "Bench press\n0 / 3 sets · Barbell\nSwap\n\n3 sets · 8–12 reps\n\nLast time: 60 kg × 11 · 60 kg × 11 · 60 kg × 11\nUse last time\n\nSet\nkg\nReps\nRecord\n1\nWeight (kg)\nReps\n2\n—\n—\n—\nPlanned only\n3\n—\n—\n—\nPlanned only\nSetup & next-time settings",
+    "resumePreservedActual": true,
+    "history": {
+      "cards": 3,
+      "scrollHeight": 5544,
+      "viewportHeight": 844,
+      "domElements": 939,
+      "searchFields": 0
+    },
+    "homeReadyElapsedMs": 145,
+    "historyReadyElapsedMs": 146,
+    "timingLimit": "Single desktop Chromium run including automation; not a mobile performance benchmark.",
+    "overflow": false,
+    "backupVerification": {
+      "historyCount": 3,
+      "currentActuals": 1
+    },
+    "errors": []
+  },
+  {
+    "day": 10,
+    "calendarDate": "2026-07-20T12:00:00.000Z",
+    "kind": "accelerated seeded snapshot with gym and hints explicitly configured",
+    "sessionCount": 6,
+    "setCount": 108,
+    "backupBytes": 48196,
+    "latestGroups": [
+      "legs",
+      "arms",
+      "core"
+    ],
+    "expectedNextGroups": [
+      "chest",
+      "back",
+      "shoulders"
+    ],
+    "benchHint": {
+      "kind": "increase",
+      "message": "You logged all 3 sets at 8+ reps. If form was controlled and it felt appropriate, consider 62.5 kg; otherwise repeat.",
+      "previous": {
+        "id": "79311ee2-08d6-49f7-b50a-519462dfd863",
+        "catalogId": "bench",
+        "name": "Bench press",
+        "group": "chest",
+        "target": "horizontal press",
+        "equipment": "Barbell",
+        "gym": "Neighborhood gym",
+        "unit": "kg",
+        "sets": [
+          {
+            "id": "be0b8493-44d2-4c8c-ba6a-ad01460ce37f",
+            "weight": 60,
+            "reps": 8,
+            "loggedAt": "2026-07-18T11:00:00.000Z",
+            "repsInReserve": 0
+          },
+          {
+            "id": "67220260-9e02-416c-b522-1ca104637503",
+            "weight": 60,
+            "reps": 8,
+            "loggedAt": "2026-07-18T11:00:00.000Z",
+            "repsInReserve": 0
+          },
+          {
+            "id": "fb5db44b-c1ce-4d0b-aa16-442917841b6f",
+            "weight": 60,
+            "reps": 8,
+            "loggedAt": "2026-07-18T11:00:00.000Z",
+            "repsInReserve": 0
+          }
+        ],
+        "plannedSets": 3,
+        "repMin": 6,
+        "repMax": 8,
+        "increment": 2.5,
+        "pendingWeight": "",
+        "pendingReps": ""
+      },
+      "suggestedWeight": 62.5
+    },
+    "benchLatest": {
+      "name": "Bench press",
+      "weight": 60,
+      "reps": 8,
+      "rir": 0,
+      "plannedSets": 3,
+      "repMin": 6,
+      "repMax": 8
+    },
+    "benchBaseline": {
+      "name": "Bench press",
+      "weight": 60,
+      "reps": 10,
+      "rir": 2,
+      "plannedSets": 3,
+      "repMin": 8,
+      "repMax": 12
+    },
+    "missingGymComparable": 0,
+    "catalogSize": 31,
+    "hasBarbellBackSquat": false,
+    "hasConventionalDeadlift": false,
+    "homeText": "Training\n6 gym visits\n\nLast 4 weeks\n\n•\n•\n•\n•\n•\n•\nJun 23\nToday\nLegs + Arms + Core\n\nRepeat the work you logged last time. Adjust before starting.\n\nRepeat this workout\nTrain something else\nProgress\nDetails\n\nRecorded performance, compared in the same setup.\n\nLegs\nSame recorded weights and reps\nArms\nSame recorded weights and reps\nCore\nSame recorded weights and reps\nChest\nSame recorded weights and reps\nBack\nSame recorded weights and reps\nShoulders\nSame recorded weights and reps\n\nThese are lift comparisons, not a measurement of muscle growth.\n\nLast workout\n6 workouts total\n19\nJul\nLegs + Arms + Core\n18 sets recorded\nBuild a different workout",
+    "active": "Bench press\n0 / 3 sets · Barbell\nSwap\n\n3 sets · 6–8 reps\n\nLast time: 60 kg × 8 · 60 kg × 8 · 60 kg × 8\nUse last time\n\nYou logged all 3 sets at 8+ reps. If form was controlled and it felt appropriate, consider 62.5 kg; otherwise repeat.\n\nSet\nkg\nReps\nRecord\n1\nWeight (kg)\nReps\n2\n—\n—\n—\nPlanned only\n3\n—\n—\n—\nPlanned only\nSetup & next-time settings",
+    "resumePreservedActual": true,
+    "history": {
+      "cards": 6,
+      "scrollHeight": 9150,
+      "viewportHeight": 844,
+      "domElements": 1644,
+      "searchFields": 0
+    },
+    "homeReadyElapsedMs": 138,
+    "historyReadyElapsedMs": 223,
+    "timingLimit": "Single desktop Chromium run including automation; not a mobile performance benchmark.",
+    "overflow": false,
+    "backupVerification": {
+      "historyCount": 6,
+      "currentActuals": 1
+    },
+    "errors": []
+  },
+  {
+    "day": 100,
+    "calendarDate": "2026-10-18T12:00:00.000Z",
+    "kind": "accelerated seeded snapshot with gym and hints explicitly configured",
+    "sessionCount": 55,
+    "setCount": 990,
+    "backupBytes": 439267,
+    "latestGroups": [
+      "chest",
+      "back",
+      "shoulders"
+    ],
+    "expectedNextGroups": [
+      "legs",
+      "arms",
+      "core"
+    ],
+    "benchHint": {
+      "kind": "hold",
+      "message": "Repeat a manageable load and build toward 12 controlled reps on every planned set. No increase is required.",
+      "previous": {
+        "id": "faba4ab1-03e6-44eb-83b6-b7290b3dfe3d",
+        "catalogId": "bench",
+        "name": "Bench press",
+        "group": "chest",
+        "target": "horizontal press",
+        "equipment": "Barbell",
+        "gym": "Neighborhood gym",
+        "unit": "kg",
+        "sets": [
+          {
+            "id": "5fa94c71-b3a6-4116-85af-e493dcf65711",
+            "weight": 65,
+            "reps": 10,
+            "loggedAt": "2026-10-16T11:00:00.000Z",
+            "repsInReserve": 2
+          },
+          {
+            "id": "dd5414d6-17be-4c42-9499-9714f22d5d2c",
+            "weight": 65,
+            "reps": 10,
+            "loggedAt": "2026-10-16T11:00:00.000Z",
+            "repsInReserve": 2
+          },
+          {
+            "id": "9235c1e2-124a-4004-9429-f5ffc907aca0",
+            "weight": 65,
+            "reps": 10,
+            "loggedAt": "2026-10-16T11:00:00.000Z",
+            "repsInReserve": 2
+          }
+        ],
+        "plannedSets": 3,
+        "repMin": 8,
+        "repMax": 12,
+        "increment": 2.5,
+        "pendingWeight": "",
+        "pendingReps": ""
+      }
+    },
+    "benchLatest": {
+      "name": "Bench press",
+      "weight": 65,
+      "reps": 10,
+      "rir": 2,
+      "plannedSets": 3,
+      "repMin": 8,
+      "repMax": 12
+    },
+    "benchBaseline": {
+      "name": "Bench press",
+      "weight": 60,
+      "reps": 10,
+      "rir": 2,
+      "plannedSets": 3,
+      "repMin": 8,
+      "repMax": 12
+    },
+    "missingGymComparable": 0,
+    "catalogSize": 31,
+    "hasBarbellBackSquat": false,
+    "hasConventionalDeadlift": false,
+    "homeText": "Training\n14 gym visits\n\nLast 4 weeks\n\n•\n•\n•\n•\n•\n•\n•\n•\n•\n•\n•\n•\n•\n•\nSep 21\nToday\nChest + Back + Shoulders\n\nRepeat the work you logged last time. Adjust before starting.\n\nRepeat this workout\nTrain something else\nProgress\nDetails\n\nRecorded performance, compared in the same setup.\n\nChest\nMixed results · see details\nBack\nMixed results · see details\nShoulders\nMixed results · see details\nLegs\nSame recorded weights and reps\nArms\nSame recorded weights and reps\nCore\nSame recorded weights and reps\n\nEffort was missing or harder in some comparisons. Open Details to see the matched sets.\n\nThese are lift comparisons, not a measurement of muscle growth.\n\nLast workout\n55 workouts total\n16\nOct\nChest + Back + Shoulders\n18 sets recorded\nBuild a different workout",
+    "active": "Bench press\n0 / 3 sets · Barbell\nSwap\n\n3 sets · 8–12 reps\n\nLast time: 65 kg × 10 · 65 kg × 10 · 65 kg × 10\nUse last time\n\nSet\nkg\nReps\nRecord\n1\nWeight (kg)\nReps\n2\n—\n—\n—\nPlanned only\n3\n—\n—\n—\nPlanned only\nSetup & next-time settings",
+    "resumePreservedActual": true,
+    "history": {
+      "cards": 55,
+      "scrollHeight": 66932,
+      "viewportHeight": 844,
+      "domElements": 12963,
+      "searchFields": 0
+    },
+    "homeReadyElapsedMs": 144,
+    "historyReadyElapsedMs": 509,
+    "timingLimit": "Single desktop Chromium run including automation; not a mobile performance benchmark.",
+    "overflow": false,
+    "backupVerification": {
+      "historyCount": 55,
+      "currentActuals": 1
+    },
+    "errors": []
+  }
+]
