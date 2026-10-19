@@ -194,7 +194,7 @@ test("two screens: mixed or harder performance never becomes a steady or growth 
   await page.reload();
   await expect(page.locator(".home-muscle-row")).toContainText("Mixed results");
   await expect(page.locator(".home-performance")).toContainText(
-    "Effort was missing or harder",
+    "Mixed results · see details",
   );
   await expect(page.locator(".home-muscle-row")).not.toContainText(
     "Holding steady",
@@ -203,5 +203,7 @@ test("two screens: mixed or harder performance never becomes a steady or growth 
     .getByRole("button", { name: "View progress details", exact: true })
     .click();
   await page.getByText("Lift comparisons", { exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText("Some work felt harder");
+  await expect(page.getByRole("dialog")).toContainText(
+    "Some work felt harder. Effort is subjective; inspect the matched records.",
+  );
 });

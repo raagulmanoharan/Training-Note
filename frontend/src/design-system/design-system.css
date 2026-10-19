@@ -921,25 +921,25 @@
 
 /* Production dot-language foundations. Historic workbench keeps its isolated palette. */
 .ds-theme {
-  --ds-canvas: #f6f5f1;
-  --ds-sheet: #ffffff;
-  --ds-raised: #eeede8;
-  --ds-ink: #252624;
-  --ds-secondary: #60625d;
-  --ds-muted: #686b64;
-  --ds-rule: #d6d7cf;
-  --ds-control-border: #bfc2b8;
-  --ds-accent: #b73720;
-  --ds-accent-surface: #fbe8e1;
-  --ds-danger: #b62623;
-  --ds-danger-surface: #fff0ed;
-  --ds-warning: #785314;
-  --ds-warning-surface: #fff5df;
-  --ds-focus: #252624;
-  --ds-action-ink: #ffffff;
+  --ds-canvas: #111413;
+  --ds-sheet: #1b201d;
+  --ds-raised: #232a25;
+  --ds-ink: #f2f1e9;
+  --ds-secondary: #adb6aa;
+  --ds-muted: #adb6aa;
+  --ds-rule: #394239;
+  --ds-control-border: #576354;
+  --ds-accent: #d9f279;
+  --ds-accent-surface: #2b3522;
+  --ds-danger: #ffaca0;
+  --ds-danger-surface: #382520;
+  --ds-warning: #eaca8a;
+  --ds-warning-surface: #362f21;
+  --ds-focus: #f2f1e9;
+  --ds-action-ink: #172014;
   --ds-font: "Notebook Sans", sans-serif;
   --ds-mono: "Notebook Mono", monospace;
-  color-scheme: light;
+  color-scheme: dark;
   font-family: var(--ds-font);
 }
 .ds-theme .ds-button {
@@ -949,9 +949,9 @@
     border-color 0.12s;
 }
 .ds-theme .ds-button--primary {
-  background: #d83b22;
-  border-color: #d83b22;
-  color: #fff;
+  background: #d9f279;
+  border-color: #d9f279;
+  color: var(--ds-action-ink);
 }
 .ds-theme .ds-button--secondary {
   background: var(--ds-sheet);
@@ -963,7 +963,7 @@
 .ds-theme .ds-input {
   font-size: 16px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--ds-raised);
 }
 .ds-theme .ds-screen-header h1 {
   letter-spacing: -0.9px;
@@ -988,14 +988,14 @@
   padding-left: 0;
 }
 .ds-theme .ds-status--saved {
-  color: #37634b;
+  color: #91d5b0;
 }
 .ds-theme .ds-set-grid-row--saved .ds-set-ordinal,
 .ds-theme .ds-commit--saved {
-  color: #37634b;
+  color: #91d5b0;
 }
 .ds-theme .ds-commit--saved {
-  background: #e8eee6;
+  background: #24392d;
 }
 .ds-theme .ds-set-value {
   font-family: var(--ds-mono);
@@ -1024,7 +1024,7 @@
 .ds-theme .ds-set-entry .ds-input {
   height: 72px;
   font: 400 32px/40px var(--ds-mono);
-  background: #fff;
+  background: var(--ds-raised);
   border: 1px solid var(--ds-control-border);
   border-radius: 14px;
 }
@@ -1055,9 +1055,9 @@
   }
 }
 .ds-theme .ds-button--primary:disabled {
-  color: #686b64;
-  background: #eeede8;
-  border-color: #d6d7cf;
+  color: #adb6aa;
+  background: #232a25;
+  border-color: #394239;
 }
 /* Keep the reusable entry molecule structurally complete in the isolated library too. */
 .ds-set-entry .ds-set-grid-row {

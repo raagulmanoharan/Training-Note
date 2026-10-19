@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Play,
-  Check,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, Play, Check } from "lucide-react";
 import type { PersonalState, PersonalWorkout } from "./personalStore";
 import { groups } from "./personalCatalog";
 import { groupInsights } from "./personalInsights";
@@ -53,18 +47,27 @@ export default function TrainingHome({
         <div className="home-next-heading">
           <div>
             <h1>
-              {active
-                ? title(active)
-                : next
-                  ? title(next)
-                  : "What are you training?"}
+              {active || next ? (
+                (active || next)!.groups.map((group, i) => (
+                  <span className="home-title-line" key={group}>
+                    {i > 0 && <span className="home-title-plus">+ </span>}
+                    {groups.find((item) => item.id === group)?.name}
+                  </span>
+                ))
+              ) : (
+                <>
+                  Your next
+                  <br />
+                  workout.
+                </>
+              )}
             </h1>
             <p>
               {active
                 ? `${recorded} ${recorded === 1 ? "set" : "sets"} saved · ready when you are`
                 : next
                   ? `${next.exercises.length} exercises · adjust before you start`
-                  : "Your workout. Your pace. Every set in one place."}
+                  : "Pick your exercises. Log your sets. See what changes."}
             </p>
           </div>
           <MuscleGlyph
@@ -75,8 +78,11 @@ export default function TrainingHome({
         </div>
         {(active || next) && (
           <div className="home-workout-preview" aria-label="Workout exercises">
-            {(active || next)!.exercises.slice(0, 3).map((exercise) => (
+            {(active || next)!.exercises.slice(0, 3).map((exercise, index) => (
               <div key={exercise.id}>
+                <span className="home-exercise-number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <span>{exercise.name}</span>
                 <span>
                   {active
@@ -95,7 +101,6 @@ export default function TrainingHome({
           className="home-start"
           onClick={active ? onResume : next ? () => onRepeat(next) : onPlan}
         >
-          <Play size={17} fill="currentColor" />
           {active
             ? "Continue workout"
             : next
@@ -115,14 +120,11 @@ export default function TrainingHome({
       </section>
       {!history.length ? (
         <section className="home-first-note" aria-label="Getting started">
-          <div className="home-first-symbol" aria-hidden="true">
-            <TrendingUp size={24} />
-          </div>
           <div>
-            <h2>A little stronger, every visit.</h2>
+            <h2>Your next visit starts here.</h2>
             <p>
-              Log the weight and reps you actually do. Next time, your last
-              session is right there.
+              Your last weights and reps will be here when you come back. No
+              account. Just your training.
             </p>
             <span>
               <Check size={14} /> Saved on this device as you go.
@@ -199,7 +201,6 @@ export default function TrainingHome({
                     key={g.group}
                     onClick={onEvidence}
                   >
-                    <MuscleGlyph group={g.group} />
                     <div>
                       <strong>
                         {groups.find((x) => x.id === g.group)?.name}
@@ -237,19 +238,6 @@ export default function TrainingHome({
                   </button>
                 ))}
               </div>
-            )}
-            {insights.some((g) =>
-              g.movements.some((m) => m.comparable && !m.effortComparable),
-            ) && (
-              <p className="home-caption">
-                Effort was missing or harder in some comparisons. Open Details
-                to see the matched sets.
-              </p>
-            )}
-            {insights.length > 0 && (
-              <p className="home-caption">
-                These are lift comparisons, not a measurement of muscle growth.
-              </p>
             )}
           </section>
           <section className="home-recent">

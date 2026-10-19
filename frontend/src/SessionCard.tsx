@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useState } from "react";
-import { Clock3, EyeOff, Square } from "lucide-react";
+import { Clock3, EyeOff, Square, MoreHorizontal } from "lucide-react";
 import { DSButton } from "./design-system";
 const preferenceKey = "gym-notebook:hide-session-time";
 export function sessionClock(startedAt: string, now: number) {
@@ -16,8 +16,13 @@ export function sessionClock(startedAt: string, now: number) {
 }
 export default forwardRef<
   HTMLButtonElement,
-  { startedAt: string; savedSets: number; onFinish: () => void }
->(function SessionCard({ startedAt, savedSets, onFinish }, ref) {
+  {
+    startedAt: string;
+    savedSets: number;
+    onFinish: () => void;
+    onOptions: () => void;
+  }
+>(function SessionCard({ startedAt, savedSets, onFinish, onOptions }, ref) {
   const [now, setNow] = useState(Date.now);
   const [hidden, setHidden] = useState(() => {
     try {
@@ -84,6 +89,15 @@ export default forwardRef<
           startIcon={<Square size={14} fill="currentColor" />}
         >
           Finish
+        </DSButton>
+        <DSButton
+          variant="text"
+          className="nb-session-more"
+          aria-label="Workout options"
+          aria-haspopup="dialog"
+          onClick={onOptions}
+        >
+          <MoreHorizontal size={20} />
         </DSButton>
       </div>
     </section>

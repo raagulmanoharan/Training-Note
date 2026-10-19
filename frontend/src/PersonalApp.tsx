@@ -34,6 +34,7 @@ import "./personal.css";
 import MuscleGlyph from "./MuscleGlyph";
 import TrainingHome from "./TrainingHome";
 import SessionCard from "./SessionCard";
+import ExerciseSettings from "./ExerciseSettings";
 import { effortLabel, groupInsights } from "./personalInsights";
 import {
   DSButton,
@@ -65,6 +66,13 @@ import {
 } from "./personalLogic";
 
 type WorkoutAction =
+  | {
+      kind: "exercise-options" | "swap" | "setup" | "effort";
+      exerciseId: string;
+      scope: "plan" | "current";
+    }
+  | { kind: "session-options" }
+  | { kind: "history-options"; workoutId: string }
   | { kind: "add"; scope: "plan" | "current" }
   | { kind: "remove-exercise"; exerciseId: string }
   | { kind: "delete-workout"; workoutId: string }
@@ -118,15 +126,17 @@ export default function PersonalApp() {
     [tab, setTab] = useState<"home" | "today">("home");
   const [overlay, setOverlay] = useState<"progress" | "backup" | null>(null);
   const [action, setAction] = useState<WorkoutAction | null>(null);
+  const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});
   const [actionSearch, setActionSearch] = useState("");
   const [actionGroup, setActionGroup] = useState<MuscleGroup | "all">("all");
   const [removedItem, setRemovedItem] = useState<RemovedItem | null>(null);
-  const [exerciseMenu, setExerciseMenu] = useState<string | null>(null);
   const actionRef = useRef<HTMLDialogElement>(null);
   const actionTrigger = useRef<HTMLElement | null>(null);
   const pendingActionSuccess = useRef<(() => void) | null>(null);
   function openAction(value: WorkoutAction) {
-    actionTrigger.current = document.activeElement as HTMLElement | null;
+    if (blockWhileEditing()) return;
+    if (!action)
+      actionTrigger.current = document.activeElement as HTMLElement | null;
     if (status !== "error") setError("");
     setActionSearch("");
     setActionGroup("all");
@@ -134,8 +144,13 @@ export default function PersonalApp() {
   }
   function closeAction() {
     setAction(null);
+    setSwapId(null);
+    setPendingSwap(null);
+    if (action?.kind === "effort") setEffortEdit(null);
+    if (status !== "error") setError("");
     requestAnimationFrame(() => {
-      if (actionTrigger.current?.isConnected) actionTrigger.current.focus();
+      if (actionTrigger.current?.isConnected)
+        actionTrigger.current.focus({ preventScroll: true });
       else if (overlayRef.current?.open)
         overlayRef.current.querySelector<HTMLElement>("button")?.focus();
       else
@@ -147,8 +162,11 @@ export default function PersonalApp() {
     });
   }
   useEffect(() => {
-    if (action && actionRef.current && !actionRef.current.open)
-      actionRef.current.showModal();
+    const dialog = actionRef.current;
+    if (!action || !dialog) return;
+    if (!dialog.open) dialog.showModal();
+    else
+      dialog.querySelector<HTMLElement>(".nb-action-sheet-header h2")?.focus();
   }, [action]);
   const overlayRef = useRef<HTMLDialogElement>(null);
   const firstLoad = useRef(true);
@@ -168,6 +186,13 @@ export default function PersonalApp() {
   useEffect(() => {
     if (tab === "home") window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab]);
+  useEffect(() => {
+    if (tab !== "today" || !state?.current?.activeExerciseId) return;
+    const frame = requestAnimationFrame(() =>
+      window.scrollTo({ top: 0, behavior: "instant" }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [tab, state?.current?.activeExerciseId]);
   const [manualSelection, setManualSelection] = useState(false);
   const [pickedExercises, setPickedExercises] = useState<string[]>([]);
   const [exerciseSearch, setExerciseSearch] = useState("");
@@ -176,7 +201,6 @@ export default function PersonalApp() {
     [plan, setPlan] = useState<PersonalWorkout | null>(null),
     [swapId, setSwapId] = useState<string | null>(null),
     [reviewing, setReviewing] = useState(false),
-    [customize, setCustomize] = useState<string | null>(null),
     [extraRow, setExtraRow] = useState<string | null>(null),
     [pendingSwap, setPendingSwap] = useState<{
       exercise: string;
@@ -208,6 +232,20 @@ export default function PersonalApp() {
       set: PersonalSet;
       index: number;
     } | null>(null);
+  const [editNotice, setEditNotice] = useState("");
+  useEffect(() => setEditNotice(""), [edit?.set]);
+  function blockWhileEditing() {
+    if (!edit || edit.workout || tab !== "today") return false;
+    setEditNotice("Save or cancel this correction before changing exercises.");
+    requestAnimationFrame(() =>
+      document
+        .querySelector<HTMLInputElement>(
+          `.nb-set-editor[data-set-id="${CSS.escape(edit.set)}"] input`,
+        )
+        ?.focus(),
+    );
+    return true;
+  }
   const [effortEdit, setEffortEdit] = useState<{
     exercise: string;
     set: string;
@@ -261,13 +299,16 @@ export default function PersonalApp() {
     blocked = useRef(false),
     repsRef = useRef<HTMLInputElement>(null),
     effortTrigger = useRef<HTMLElement | null>(null),
-    finishTrigger = useRef<HTMLButtonElement>(null);
+    finishTrigger = useRef<HTMLButtonElement>(null),
+    finishDialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    if (!finishing) return;
-    const panel = document.getElementById("finish-confirmation");
-    panel?.scrollIntoView({ block: "start" });
-    panel?.focus({ preventScroll: true });
+    if (finishing && finishDialog.current && !finishDialog.current.open)
+      finishDialog.current.showModal();
   }, [finishing]);
+  function closeFinish() {
+    setFinishing(false);
+    requestAnimationFrame(() => finishTrigger.current?.focus());
+  }
   function installState(s: PersonalState) {
     stateRef.current = s;
     revision.current = s.revision;
@@ -492,7 +533,6 @@ export default function PersonalApp() {
       index,
     });
     setSwapId(null);
-    setCustomize(null);
   }
   async function addExercise(candidate: CatalogExercise) {
     if (action?.kind !== "add" || busy || blocked.current) return;
@@ -524,17 +564,11 @@ export default function PersonalApp() {
       (s) => ({ ...s, current: next }),
       () => {
         closeAction();
-        setExerciseMenu(null);
         setSwapId(null);
         setEdit(null);
         setEffortEdit(null);
         setExtraRow(null);
         setNotice(`${added.name} added.`);
-        requestAnimationFrame(() =>
-          document
-            .querySelector<HTMLElement>(".nb-exercise-card.is-active")
-            ?.scrollIntoView({ block: "start" }),
-        );
       },
     );
   }
@@ -577,7 +611,6 @@ export default function PersonalApp() {
         setUndo(null);
         setEdit(null);
         setEffortEdit(null);
-        setExerciseMenu(null);
         setSwapId(null);
         closeAction();
         if (!next.length) {
@@ -626,7 +659,6 @@ export default function PersonalApp() {
         setUndo(null);
         setEdit(null);
         setEffortEdit(null);
-        setExerciseMenu(null);
         setSwapId(null);
         setFinishing(false);
         setNotice("");
@@ -840,10 +872,7 @@ export default function PersonalApp() {
         x.increment > 50,
     );
     if (invalid) {
-      setCustomize(invalid.id);
-      requestAnimationFrame(() =>
-        document.getElementById(`plan-sets-${invalid.id}`)?.focus(),
-      );
+      openAction({ kind: "setup", scope: "plan", exerciseId: invalid.id });
       setError(
         "Use 1–20 sets, a valid 1–100 rep range, and an increment from 0.1 to 50.",
       );
@@ -856,8 +885,6 @@ export default function PersonalApp() {
       }),
       () => {
         setPlan(null);
-        setExerciseMenu(null);
-        setCustomize(null);
         setSwapId(null);
         setPendingSwap(null);
         if (removedItem?.kind === "exercise" && removedItem.scope === "plan")
@@ -971,7 +998,7 @@ export default function PersonalApp() {
       activeExerciseId: replacement.id,
     };
     const complete = () => {
-      setSwapId(null);
+      closeAction();
       setNotice(
         old.sets.length
           ? "Previous sets kept under their original exercise."
@@ -1045,6 +1072,10 @@ export default function PersonalApp() {
   }
   function closeEffort() {
     setEffortEdit(null);
+    if (action?.kind === "effort") {
+      closeAction();
+      return;
+    }
     requestAnimationFrame(() => {
       if (effortTrigger.current?.isConnected) effortTrigger.current.focus();
     });
@@ -1220,6 +1251,8 @@ export default function PersonalApp() {
       }),
       () => {
         setFinishing(false);
+        setEdit(null);
+        setEffortEdit(null);
         setTab("home");
         const finishedSets = done.exercises.reduce(
           (total, x) => total + x.sets.length,
@@ -1286,10 +1319,9 @@ export default function PersonalApp() {
         role="group"
         aria-label={`Alternatives for ${x.name}`}
       >
-        <strong>Swap {x.name}</strong>
         <p className="personal-muted">
-          Choose a different machine or movement. Logged sets keep their
-          original name.
+          Alternatives to {x.name}. Recorded sets stay with their original
+          exercise.
         </p>
         {pendingSwap?.exercise === x.id ? (
           <div
@@ -1314,8 +1346,7 @@ export default function PersonalApp() {
             <DSButton
               variant="text"
               onClick={() => {
-                setPendingSwap(null);
-                setSwapId(null);
+                closeAction();
               }}
             >
               Keep entry
@@ -1359,13 +1390,7 @@ export default function PersonalApp() {
             </DSButton>
           </div>
         )}
-        <DSButton
-          variant="text"
-          onClick={() => {
-            setSwapId(null);
-            setPendingSwap(null);
-          }}
-        >
+        <DSButton variant="text" onClick={closeAction}>
           Cancel swap
         </DSButton>
       </div>
@@ -1416,6 +1441,33 @@ export default function PersonalApp() {
           0,
         )
       : null;
+  const actionExercise =
+    action && "exerciseId" in action
+      ? ("scope" in action && action.scope === "plan"
+          ? plan
+          : workout
+        )?.exercises.find((item) => item.id === action.exerciseId)
+      : null;
+  const actionTitle = !action
+    ? ""
+    : action.kind === "exercise-options"
+      ? `Options for ${actionExercise?.name || "exercise"}`
+      : action.kind === "swap"
+        ? "Swap exercise"
+        : action.kind === "setup"
+          ? "Edit exercise"
+          : action.kind === "effort"
+            ? "How did that set feel?"
+            : action.kind === "session-options" ||
+                action.kind === "history-options"
+              ? "Workout options"
+              : action.kind === "add"
+                ? "Add exercise"
+                : action.kind === "remove-exercise"
+                  ? "Remove exercise"
+                  : action.kind === "discard-workout"
+                    ? "Discard workout"
+                    : "Delete workout";
   return (
     <div
       className={`personal-app ds-theme ${tab === "today" ? "two-workout" : "two-home"} ${workout && tab === "today" ? "is-session" : ""}`}
@@ -1454,6 +1506,7 @@ export default function PersonalApp() {
           startedAt={workout.startedAt}
           savedSets={recordedCount}
           onFinish={() => setFinishing(true)}
+          onOptions={() => openAction({ kind: "session-options" })}
         />
       )}
       <main className="personal-main">
@@ -1784,104 +1837,18 @@ export default function PersonalApp() {
                               variant="text"
                               className="nb-exercise-more"
                               aria-label={`More options for ${x.name}`}
-                              aria-expanded={exerciseMenu === x.id}
+                              aria-haspopup="dialog"
                               onClick={() =>
-                                setExerciseMenu(
-                                  exerciseMenu === x.id ? null : x.id,
-                                )
+                                openAction({
+                                  kind: "exercise-options",
+                                  scope: "plan",
+                                  exerciseId: x.id,
+                                })
                               }
                             >
                               <MoreHorizontal size={20} />
                             </DSButton>
                           </div>
-                          {exerciseMenu === x.id && (
-                            <div
-                              className="nb-lineup-actions nb-exercise-tools"
-                              aria-label={`Options for ${x.name}`}
-                            >
-                              <DSButton
-                                variant="text"
-                                aria-label={`Customize ${x.name}`}
-                                onClick={() =>
-                                  setCustomize(customize === x.id ? null : x.id)
-                                }
-                              >
-                                Customize
-                              </DSButton>
-                              <DSButton
-                                variant="text"
-                                aria-label={`Swap ${x.name}`}
-                                onClick={() =>
-                                  setSwapId((s) => (s === x.id ? null : x.id))
-                                }
-                              >
-                                <ArrowLeftRight size={15} /> Swap
-                              </DSButton>
-                              <DSButton
-                                variant="text"
-                                aria-label={`Remove ${x.name}`}
-                                onClick={() => removeFromPlan(x.id)}
-                              >
-                                <Trash2 size={16} /> Remove
-                              </DSButton>
-                              <DSButton
-                                variant="text"
-                                aria-label={`Close options for ${x.name}`}
-                                onClick={() => setExerciseMenu(null)}
-                              >
-                                <X size={16} /> Close
-                              </DSButton>
-                            </div>
-                          )}
-                          {customize === x.id && (
-                            <div className="personal-grid">
-                              <label>
-                                Sets
-                                <DSInput
-                                  id={`plan-sets-${x.id}`}
-                                  aria-label={`${x.name} planned sets`}
-                                  type="number"
-                                  min="1"
-                                  max="20"
-                                  value={x.plannedSets}
-                                  onChange={(e) =>
-                                    patchPlan(x.id, {
-                                      plannedSets: Number(e.target.value),
-                                    })
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Min reps
-                                <DSInput
-                                  type="number"
-                                  min="1"
-                                  max="100"
-                                  value={x.repMin}
-                                  onChange={(e) =>
-                                    patchPlan(x.id, {
-                                      repMin: Number(e.target.value),
-                                    })
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Max reps
-                                <DSInput
-                                  type="number"
-                                  min="1"
-                                  max="100"
-                                  value={x.repMax}
-                                  onChange={(e) =>
-                                    patchPlan(x.id, {
-                                      repMax: Number(e.target.value),
-                                    })
-                                  }
-                                />
-                              </label>
-                            </div>
-                          )}
-                          {swapId === x.id && swapOptions(plan)}
                         </article>
                       ))}
                     </div>
@@ -1951,9 +1918,9 @@ export default function PersonalApp() {
                           className="nb-exercise-heading"
                           aria-expanded={x.id === exercise.id}
                           onClick={() => {
-                            setEdit(null);
+                            if (x.id === exercise.id || blockWhileEditing())
+                              return;
                             setSwapId(null);
-                            setExerciseMenu(null);
                             void update((s) => ({
                               ...s,
                               current: {
@@ -1989,84 +1956,25 @@ export default function PersonalApp() {
                           variant="text"
                           className="nb-exercise-more"
                           aria-label={`More options for ${x.name}`}
-                          aria-expanded={exerciseMenu === x.id}
+                          aria-haspopup="dialog"
                           onClick={() =>
-                            setExerciseMenu(exerciseMenu === x.id ? null : x.id)
+                            openAction({
+                              kind: "exercise-options",
+                              scope: "current",
+                              exerciseId: x.id,
+                            })
                           }
                         >
                           <MoreHorizontal size={20} />
                         </DSButton>
                       </div>
-                      {exerciseMenu === x.id && (
-                        <div
-                          className="nb-exercise-tools"
-                          aria-label={`Options for ${x.name}`}
-                        >
-                          {x.id !== exercise.id && (
-                            <DSButton
-                              variant="secondary"
-                              aria-label={`Swap ${x.name}`}
-                              disabled={busy || status === "error"}
-                              onClick={() => {
-                                void update((s) => ({
-                                  ...s,
-                                  current: {
-                                    ...s.current!,
-                                    activeExerciseId: x.id,
-                                  },
-                                }));
-                                setExerciseMenu(null);
-                                setSwapId(x.id);
-                                setEdit(null);
-                              }}
-                            >
-                              <ArrowLeftRight size={16} /> Swap
-                            </DSButton>
-                          )}
-                          <DSButton
-                            variant="danger"
-                            disabled={busy || status === "error"}
-                            aria-label={`Remove ${x.name}`}
-                            onClick={() =>
-                              openAction({
-                                kind: "remove-exercise",
-                                exerciseId: x.id,
-                              })
-                            }
-                          >
-                            <Trash2 size={16} /> Remove exercise
-                          </DSButton>
-                          <DSButton
-                            variant="text"
-                            aria-label={`Close options for ${x.name}`}
-                            onClick={() => setExerciseMenu(null)}
-                          >
-                            <X size={16} /> Close
-                          </DSButton>
-                        </div>
-                      )}
                       {x.id === exercise.id && (
                         <>
                           <div className="nb-exercise-summary">
                             <p className="nb-target">
-                              {x.equipment} · {x.plannedSets} sets · {x.repMin}–
-                              {x.repMax} reps
+                              {x.equipment} · Target {x.plannedSets} ×{" "}
+                              {x.repMin}–{x.repMax} reps
                             </p>
-                            <DSButton
-                              variant="secondary"
-                              className="nb-swapbutton"
-                              aria-label={`Swap ${x.name}`}
-                              disabled={busy || status === "error"}
-                              onClick={() => {
-                                setEdit(null);
-                                setExerciseMenu(null);
-                                setSwapId((current) =>
-                                  current === x.id ? null : x.id,
-                                );
-                              }}
-                            >
-                              <ArrowLeftRight size={16} /> Swap
-                            </DSButton>
                           </div>
                           {hint?.previous && (
                             <p className="nb-last-time">
@@ -2096,22 +2004,16 @@ export default function PersonalApp() {
                                 )}
                             </p>
                           )}
-                          {x.equipment.toLowerCase().includes("dumbbell") && (
-                            <p className="nb-weight-convention">
-                              Keep the same weight convention each visit: per
-                              dumbbell or combined.
-                            </p>
-                          )}
                           {hint?.kind === "increase" && (
                             <p className="nb-progression">{hint.message}</p>
                           )}
-                          {swapId === x.id && swapOptions(workout)}
                           {x.sets.length > 0 && (
                             <DSSetColumnLabels unit={x.unit} />
                           )}
                           <div className="personal-sets">
                             <div
                               className="nb-saved-ledger"
+                              id={`recorded-${x.id}`}
                               aria-label="Recorded sets, latest first"
                             >
                               {x.sets
@@ -2127,6 +2029,14 @@ export default function PersonalApp() {
                                       <p className="nb-editing-label">
                                         Editing set {index + 1}
                                       </p>
+                                      {editNotice && (
+                                        <p
+                                          className="nb-field-error"
+                                          role="alert"
+                                        >
+                                          {editNotice}
+                                        </p>
+                                      )}
                                       <DSSetRow
                                         state="editing"
                                         className="nb-set-row is-editing"
@@ -2165,6 +2075,10 @@ export default function PersonalApp() {
                                   ) : (
                                     <div
                                       className="nb-saved-set"
+                                      hidden={
+                                        !expandedSets[x.id] &&
+                                        index < x.sets.length - 2
+                                      }
                                       data-set-id={s.id}
                                       key={s.id}
                                     >
@@ -2202,6 +2116,32 @@ export default function PersonalApp() {
                                   ),
                                 )}
                             </div>
+                            {x.sets.length > 2 && (
+                              <DSButton
+                                variant="text"
+                                className="nb-show-sets"
+                                aria-expanded={Boolean(expandedSets[x.id])}
+                                aria-controls={`recorded-${x.id}`}
+                                disabled={
+                                  busy ||
+                                  Boolean(
+                                    edit &&
+                                    !edit.workout &&
+                                    edit.exercise === x.id,
+                                  )
+                                }
+                                onClick={() =>
+                                  setExpandedSets((previous) => ({
+                                    ...previous,
+                                    [x.id]: !previous[x.id],
+                                  }))
+                                }
+                              >
+                                {expandedSets[x.id]
+                                  ? "Show fewer sets"
+                                  : `Show all ${x.sets.length} sets`}
+                              </DSButton>
+                            )}
                             {!(
                               edit &&
                               !edit.workout &&
@@ -2326,25 +2266,7 @@ export default function PersonalApp() {
                               )}
                             </div>
                           )}
-                          {x.sets.length > 0 &&
-                            !(
-                              edit &&
-                              !edit.workout &&
-                              edit.exercise === x.id
-                            ) &&
-                            x.sets.at(-1)!.repsInReserve === undefined &&
-                            !effortEdit && (
-                              <DSButton
-                                variant="text"
-                                className="personal-text-button nb-effort-entry"
-                                endIcon={<Plus size={16} aria-hidden="true" />}
-                                disabled={busy || status === "error"}
-                                onClick={() => openEffort(x, x.sets.at(-1)!)}
-                              >
-                                How did that set feel?
-                              </DSButton>
-                            )}
-                          {effortPanel(x)}
+                          {action?.kind !== "effort" && effortPanel(x)}
                           {comparison !== null && (
                             <p className="personal-muted">
                               Across {x.sets.length} recorded sets:{" "}
@@ -2361,195 +2283,64 @@ export default function PersonalApp() {
                               <RotateCcw size={16} /> Undo deleted set
                             </DSButton>
                           )}
-                          <DSDisclosure title="Setup & next-time settings">
-                            <p className="personal-muted">
-                              0 weight = bodyweight or no added load. Actuals
-                              are never filled from your plan.
-                            </p>
-                            {hint?.message && (
-                              <p className="personal-muted">{hint.message}</p>
-                            )}
-                            {hint?.previous && (
-                              <small className="personal-muted">
-                                Previous setup:{" "}
-                                {hint.previous.gym || "Unspecified gym"} ·{" "}
-                                {hint.previous.equipment} · {hint.previous.unit}
-                              </small>
-                            )}
-                            <p className="personal-muted">
-                              Comparisons use this exact movement, gym,
-                              equipment and unit.
-                            </p>
-                            <label>
-                              Gym / setup label
-                              <DSInput
-                                value={exercise.gym}
-                                maxLength={120}
-                                placeholder="My gym"
-                                onChange={(e) =>
-                                  void patchExercise(exercise.id, {
-                                    gym: e.target.value,
-                                  })
-                                }
-                              />
-                            </label>
-                            <label>
-                              Equipment label
-                              <DSInput
-                                value={exercise.equipment}
-                                maxLength={120}
-                                onChange={(e) =>
-                                  void patchExercise(exercise.id, {
-                                    equipment: e.target.value,
-                                  })
-                                }
-                              />
-                            </label>
-                            <div className="personal-grid">
-                              <label>
-                                Planned sets
-                                <DSInput
-                                  aria-label="Working sets target"
-                                  type="number"
-                                  min="1"
-                                  max="20"
-                                  defaultValue={exercise.plannedSets}
-                                  key={"sets" + exercise.id}
-                                  onBlur={(e) => {
-                                    const n = Number(e.target.value);
-                                    if (
-                                      Number.isInteger(n) &&
-                                      n >= 1 &&
-                                      n <= 20
-                                    )
-                                      void patchExercise(exercise.id, {
-                                        plannedSets: n,
-                                      });
-                                    else {
-                                      e.target.value = String(
-                                        exercise.plannedSets,
-                                      );
-                                      setError("Use 1–20 planned sets.");
-                                    }
-                                  }}
-                                />
-                              </label>
-                              <label>
-                                Min reps
-                                <DSInput
-                                  aria-label="Lower rep target"
-                                  type="number"
-                                  min="1"
-                                  max={exercise.repMax}
-                                  defaultValue={exercise.repMin}
-                                  key={"min" + exercise.id}
-                                  onBlur={(e) => {
-                                    const n = Number(e.target.value);
-                                    if (
-                                      Number.isInteger(n) &&
-                                      n >= 1 &&
-                                      n <= exercise.repMax
-                                    )
-                                      void patchExercise(exercise.id, {
-                                        repMin: n,
-                                      });
-                                    else {
-                                      e.target.value = String(exercise.repMin);
-                                      setError(
-                                        "Lower rep target must be positive and no greater than the upper target.",
-                                      );
-                                    }
-                                  }}
-                                />
-                              </label>
-                              <label>
-                                Max reps
-                                <DSInput
-                                  aria-label="Upper rep target"
-                                  type="number"
-                                  min={exercise.repMin}
-                                  max="100"
-                                  defaultValue={exercise.repMax}
-                                  key={"max" + exercise.id}
-                                  onBlur={(e) => {
-                                    const n = Number(e.target.value);
-                                    if (
-                                      Number.isInteger(n) &&
-                                      n >= exercise.repMin &&
-                                      n <= 100
-                                    )
-                                      void patchExercise(exercise.id, {
-                                        repMax: n,
-                                      });
-                                    else {
-                                      e.target.value = String(exercise.repMax);
-                                      setError(
-                                        "Upper rep target must be at least the lower target and no greater than 100.",
-                                      );
-                                    }
-                                  }}
-                                />
-                              </label>
-                            </div>
-                            <label>
-                              Available weight increment ({exercise.unit})
-                              <DSInput
-                                type="number"
-                                min="0.1"
-                                max="50"
-                                step="0.1"
-                                defaultValue={exercise.increment}
-                                key={"increment" + exercise.id}
-                                onBlur={(e) => {
-                                  const n = Number(e.target.value);
-                                  if (Number.isFinite(n) && n >= 0.1 && n <= 50)
-                                    void patchExercise(exercise.id, {
-                                      increment: n,
-                                    });
-                                  else {
-                                    e.target.value = String(exercise.increment);
-                                    setError(
-                                      "Use a load increment from 0.1 to 50.",
-                                    );
-                                  }
-                                }}
-                              />
-                            </label>
-                          </DSDisclosure>
                         </>
                       )}
                     </DSSurface>
                   ))}
                 </div>
-                <div className="nb-session-tools">
-                  <DSButton
-                    variant="secondary"
-                    className="nb-add-exercise"
-                    disabled={busy || status === "error"}
-                    onClick={() =>
-                      openAction({ kind: "add", scope: "current" })
-                    }
-                  >
-                    <Plus size={18} /> Add exercise
-                  </DSButton>
-                  <DSDisclosure title="Workout options">
-                    <DSButton
-                      variant="danger"
-                      disabled={busy || status === "error"}
-                      onClick={() => openAction({ kind: "discard-workout" })}
-                    >
-                      <Trash2 size={16} /> Discard current workout
-                    </DSButton>
-                  </DSDisclosure>
-                </div>
+                <DSButton
+                  className="nb-add-exercise nb-session-add"
+                  variant="text"
+                  disabled={busy || status === "error"}
+                  onClick={() => openAction({ kind: "add", scope: "current" })}
+                >
+                  <Plus size={18} /> Add exercise
+                </DSButton>
                 {finishing && (
-                  <section
-                    className="personal-inline"
+                  <dialog
+                    ref={finishDialog}
+                    className="nb-action-sheet nb-finish-sheet ds-theme"
                     id="finish-confirmation"
-                    tabIndex={-1}
                     aria-label="Finish workout"
+                    onCancel={(event) => {
+                      event.preventDefault();
+                      if (!busy) closeFinish();
+                    }}
                   >
-                    <h2>Finish this workout?</h2>
+                    <div className="nb-action-sheet-header">
+                      <h2>Finish this workout?</h2>
+                      <DSButton
+                        variant="text"
+                        aria-label="Close dialog"
+                        disabled={busy}
+                        onClick={closeFinish}
+                      >
+                        <X size={22} />
+                      </DSButton>
+                    </div>
+                    {error && (
+                      <DSInlineNotice
+                        tone="error"
+                        title="Changes need attention"
+                      >
+                        {error}
+                        {status === "error" && (
+                          <DSButton
+                            variant="secondary"
+                            disabled={busy}
+                            onClick={() => void retry()}
+                          >
+                            Retry save
+                          </DSButton>
+                        )}
+                      </DSInlineNotice>
+                    )}
+                    {edit && !edit.workout && (
+                      <p className="nb-finish-warning">
+                        Your unsaved set correction will not be included. Choose
+                        Keep logging to save or cancel that correction first.
+                      </p>
+                    )}
                     {workout.exercises.some(
                       (x) => x.pendingWeight.trim() || x.pendingReps.trim(),
                     ) && (
@@ -2595,14 +2386,12 @@ export default function PersonalApp() {
                     )}
                     <DSButton
                       variant="text"
-                      onClick={() => {
-                        setFinishing(false);
-                        finishTrigger.current?.focus();
-                      }}
+                      disabled={busy}
+                      onClick={closeFinish}
                     >
                       Keep logging
                     </DSButton>
-                  </section>
+                  </dialog>
                 )}
               </>
             )}
@@ -2791,15 +2580,16 @@ export default function PersonalApp() {
                       <DSButton
                         variant="text"
                         disabled={busy || status === "error"}
-                        aria-label={`Delete workout from ${date(w.finishedAt || w.startedAt)}`}
+                        aria-label={`More options for workout from ${date(w.finishedAt || w.startedAt)}`}
+                        aria-haspopup="dialog"
                         onClick={() =>
                           openAction({
-                            kind: "delete-workout",
+                            kind: "history-options",
                             workoutId: w.id,
                           })
                         }
                       >
-                        <Trash2 size={18} />
+                        <MoreHorizontal size={20} />
                       </DSButton>
                     </div>
                     {w.exercises.map((x) => (
@@ -3106,30 +2896,14 @@ export default function PersonalApp() {
           <dialog
             ref={actionRef}
             className="nb-action-sheet ds-theme"
-            aria-label={
-              action.kind === "add"
-                ? "Add exercise"
-                : action.kind === "remove-exercise"
-                  ? "Remove exercise"
-                  : action.kind === "discard-workout"
-                    ? "Discard workout"
-                    : "Delete workout"
-            }
+            aria-label={actionTitle}
             onCancel={(event) => {
               event.preventDefault();
               if (!busy) closeAction();
             }}
           >
             <div className="nb-action-sheet-header">
-              <h2>
-                {action.kind === "add"
-                  ? "Add exercise"
-                  : action.kind === "remove-exercise"
-                    ? "Remove exercise"
-                    : action.kind === "discard-workout"
-                      ? "Discard workout"
-                      : "Delete workout"}
-              </h2>
+              <h2 tabIndex={-1}>{actionTitle}</h2>
               <DSButton
                 variant="text"
                 disabled={busy}
@@ -3152,6 +2926,192 @@ export default function PersonalApp() {
                   </DSButton>
                 )}
               </DSInlineNotice>
+            )}
+            {action.kind === "exercise-options" && actionExercise && (
+              <div className="nb-menu-list">
+                <DSButton
+                  variant="text"
+                  disabled={busy || status === "error"}
+                  aria-label={`Swap ${actionExercise.name}`}
+                  onClick={() => {
+                    setSwapId(actionExercise.id);
+                    setPendingSwap(null);
+                    setAction({ ...action, kind: "swap" });
+                  }}
+                >
+                  <ArrowLeftRight size={20} />
+                  <span>
+                    Swap exercise
+                    <small>Choose another movement for this target</small>
+                  </span>
+                  <ChevronRight size={18} />
+                </DSButton>
+                <DSButton
+                  variant="text"
+                  disabled={busy || status === "error"}
+                  aria-label={`Edit ${actionExercise.name}`}
+                  onClick={() => setAction({ ...action, kind: "setup" })}
+                >
+                  <Settings size={20} />
+                  <span>
+                    Edit exercise<small>Sets, rep targets and equipment</small>
+                  </span>
+                  <ChevronRight size={18} />
+                </DSButton>
+                {action.scope === "current" &&
+                  actionExercise.sets.length > 0 && (
+                    <DSButton
+                      variant="text"
+                      aria-label="How did that set feel?"
+                      disabled={busy || status === "error"}
+                      onClick={() => {
+                        const target = actionExercise;
+                        openEffort(target, target.sets.at(-1)!);
+                        setAction({ ...action, kind: "effort" });
+                      }}
+                    >
+                      <Plus size={20} />
+                      <span>
+                        How did that set feel?
+                        <small>Optional effort for your latest set</small>
+                      </span>
+                      <ChevronRight size={18} />
+                    </DSButton>
+                  )}
+                <DSButton
+                  variant="danger"
+                  aria-label={`Remove ${actionExercise.name}`}
+                  disabled={busy || status === "error"}
+                  onClick={() => {
+                    if (action.scope === "plan") {
+                      removeFromPlan(actionExercise.id);
+                      closeAction();
+                    } else
+                      setAction({
+                        kind: "remove-exercise",
+                        exerciseId: actionExercise.id,
+                      });
+                  }}
+                >
+                  <Trash2 size={20} />
+                  <span>Remove exercise</span>
+                </DSButton>
+              </div>
+            )}
+            {action.kind === "history-options" &&
+              (() => {
+                const target = state.history.find(
+                  (item) => item.id === action.workoutId,
+                );
+                if (!target)
+                  return <p>This workout is no longer in your history.</p>;
+                return (
+                  <div className="nb-menu-list">
+                    <p className="personal-muted">
+                      {date(target.finishedAt || target.startedAt)} ·{" "}
+                      {target.exercises.length} exercises
+                    </p>
+                    {!workout && (
+                      <DSButton
+                        variant="text"
+                        aria-label="Repeat workout"
+                        onClick={() => {
+                          closeAction();
+                          closeOverlay();
+                          repeatWorkout(target);
+                        }}
+                      >
+                        <RotateCcw size={20} />
+                        <span>
+                          Repeat workout
+                          <small>
+                            Review these exercises for your next visit
+                          </small>
+                        </span>
+                        <ChevronRight size={18} />
+                      </DSButton>
+                    )}
+                    <DSButton
+                      variant="danger"
+                      disabled={busy || status === "error"}
+                      aria-label={`Delete workout from ${date(target.finishedAt || target.startedAt)}`}
+                      onClick={() =>
+                        setAction({
+                          kind: "delete-workout",
+                          workoutId: target.id,
+                        })
+                      }
+                    >
+                      <Trash2 size={20} />
+                      <span>Delete workout</span>
+                    </DSButton>
+                  </div>
+                );
+              })()}
+            {action.kind === "session-options" && (
+              <div className="nb-menu-list">
+                <DSButton
+                  variant="text"
+                  aria-label="Add exercise"
+                  disabled={busy || status === "error"}
+                  onClick={() => openAction({ kind: "add", scope: "current" })}
+                >
+                  <Plus size={20} />
+                  <span>
+                    Add exercise
+                    <small>Choose a movement from the library</small>
+                  </span>
+                  <ChevronRight size={18} />
+                </DSButton>
+                <DSButton
+                  variant="danger"
+                  disabled={busy || status === "error"}
+                  onClick={() => setAction({ kind: "discard-workout" })}
+                >
+                  <Trash2 size={20} />
+                  <span>Discard current workout</span>
+                </DSButton>
+              </div>
+            )}
+            {action.kind === "swap" &&
+              (action.scope === "plan" ? plan : workout) &&
+              swapOptions((action.scope === "plan" ? plan : workout)!)}
+            {action.kind === "effort" &&
+              actionExercise &&
+              effortPanel(actionExercise)}
+            {action.kind === "setup" && actionExercise && (
+              <ExerciseSettings
+                key={actionExercise.id}
+                exercise={actionExercise}
+                busy={busy}
+                disabled={status === "error"}
+                onCancel={closeAction}
+                onSave={(patch) => {
+                  const id = actionExercise.id;
+                  if (action.scope === "plan") {
+                    patchPlan(id, patch);
+                    closeAction();
+                  } else
+                    void commitAction(
+                      (current) => ({
+                        ...current,
+                        current: current.current
+                          ? {
+                              ...current.current,
+                              exercises: current.current.exercises.map(
+                                (item) =>
+                                  item.id === id ? { ...item, ...patch } : item,
+                              ),
+                            }
+                          : null,
+                      }),
+                      () => {
+                        closeAction();
+                        setNotice("Exercise updated.");
+                      },
+                    );
+                }}
+              />
             )}
             {action.kind === "add" &&
               (() => {

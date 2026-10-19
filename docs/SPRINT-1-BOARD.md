@@ -88,3 +88,15 @@ Completed four Home content cards (launch, attendance, progress, latest workout)
 | Modern cards, typography, compact controls and contextual sheets | Root integration | Done | MODERN-DESIGN-PASS.md; actual mobile captures |
 | Full workout state and regression verification | QA agent + root | Done | MODERN-QA.md;48browserchecks passed |
 | Publish to existing Training-Note Pages origin | Root | Done | Pages run39258128485 succeeded; live offline/reload and add/remove/Undo verified |
+
+## 19 October 2026 — Focus edition (fresh visual direction)
+
+| Story | Owner | Status | Evidence |
+| --- | --- | --- | --- |
+| Recompose Home and Workout with a clear primary action | Astra design director + root | Done | ASTRA-DESIGN-DIRECTION.md; actual mobile screenshots |
+| Consolidate occasional actions into contextual sheets | Hierarchy engineer | Done | FOCUS-FLOWS.md; explicit target editor and Finish confirmation |
+| Remove hidden scrolling and prevent lost corrections | Engineer + root | Done | Latest-two receipt disclosure, correction guard, active-title scrolling |
+| Verify fresh gym persona, long labels, enlarged text and recovery | Fresh QA + regression agent | Done | FOCUS-QA.md; actual Chromium hit-testing and transaction assertions |
+| Publish on existing Pages origin | Root | Ready to publish | DEPLOYMENT.md will record release evidence |
+
+This replaces the previous pale-card visual direction. It does not claim the independent saved-routine/domain-model backlog is implemented.

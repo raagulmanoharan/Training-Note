@@ -278,6 +278,9 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
     .locator(".nb-exercise-card.is-active .nb-exercise-title")
     .innerText();
   await page
+    .getByRole("button", { name: `More options for ${before}`, exact: true })
+    .click();
+  await page
     .getByRole("button", { name: `Swap ${before}`, exact: true })
     .click();
   await page.locator(".personal-inline .personal-secondary").first().click();
@@ -290,7 +293,7 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
     page.locator(".nb-exercise-card.is-active .nb-last-time"),
   ).toHaveCount(0);
   await expect(page.locator(".nb-exercise-card.is-active")).toContainText(
-    "1 sets",
+    /Target 1 × \d+–\d+ reps/,
   );
   await expect(
     page.getByRole("button", { name: "Edit set 1", exact: true }),
@@ -815,6 +818,9 @@ test("redesign: swapping an unperformed exercise requires explicit draft discard
     .locator(".nb-exercise-card.is-active .nb-exercise-title")
     .innerText();
   await page
+    .getByRole("button", { name: `More options for ${title}`, exact: true })
+    .click();
+  await page
     .getByRole("button", { name: `Swap ${title}`, exact: true })
     .click();
   await page.locator(".personal-inline .personal-secondary").first().click();
@@ -827,6 +833,9 @@ test("redesign: swapping an unperformed exercise requires explicit draft discard
   await expect(
     page.locator(".nb-exercise-card.is-active .nb-exercise-title"),
   ).toHaveText(title);
+  await page
+    .getByRole("button", { name: `More options for ${title}`, exact: true })
+    .click();
   await page
     .getByRole("button", { name: `Swap ${title}`, exact: true })
     .click();

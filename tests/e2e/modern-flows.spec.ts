@@ -103,19 +103,32 @@ test("review removal is reversible; draft reload and set corrections preserve ac
     name: "More options for Preacher curl",
     exact: true,
   });
-  if ((await previewMore.getAttribute("aria-expanded")) !== "true")
-    await previewMore.click();
+  await previewMore.click();
+  await expect(
+    page.getByRole("dialog", {
+      name: "Options for Preacher curl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(previewMore).toBeFocused();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page
     .getByRole("button", { name: "Start workout", exact: true })
     .click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(
+    page.getByRole("dialog", {
+      name: "Options for Preacher curl",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(
     page.getByRole("button", {
       name: "More options for Preacher curl",
       exact: true,
     }),
-  ).toHaveAttribute("aria-expanded", "false");
+  ).toHaveAttribute("aria-haspopup", "dialog");
   await enter(page, "20", "9");
   const draft = (await read(page)).current!;
   expect(draft.exercises[0].sets).toHaveLength(0);
@@ -169,7 +182,13 @@ test("mid-session add preserves another exercise draft; removing actual work req
   await start(page);
   await enter(page, "17.5", "11");
   const original = (await read(page)).current!.exercises[0];
-  await page.getByRole("button", { name: "Add exercise", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Workout options", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Workout options", exact: true })
+    .getByRole("button", { name: "Add exercise", exact: true })
+    .click();
   const picker = page.getByRole("dialog", {
     name: "Add exercise",
     exact: true,
@@ -263,6 +282,12 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
   const before = (await read(page)).current!;
   const original = before.exercises[0];
   await page
+    .getByRole("button", {
+      name: "More options for Dumbbell curl",
+      exact: true,
+    })
+    .click();
+  await page
     .getByRole("button", { name: "Swap Dumbbell curl", exact: true })
     .click();
   await narrow(page);
@@ -278,6 +303,9 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
   expect(workout.activeExerciseId).toBe(replacement.id);
   await enter(page, "15", "12");
   const withDraft = (await read(page)).current!;
+  await page
+    .getByRole("button", { name: "More options for Hammer curl", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Swap Hammer curl", exact: true })
     .click();
@@ -295,6 +323,9 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
     .getByRole("button", { name: "Keep entry", exact: true })
     .click();
   expect((await read(page)).current).toEqual(withDraft);
+  await page
+    .getByRole("button", { name: "More options for Hammer curl", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Swap Hammer curl", exact: true })
     .click();
@@ -320,11 +351,13 @@ test("finish, correct history, cancel workout deletion, delete, and undo retain 
   await start(page, ["Dumbbell curl"]);
   await log(page, "20", "10");
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  const finish = page.getByRole("region", {
+  const finish = page.getByRole("dialog", {
     name: "Finish workout",
     exact: true,
   });
-  await expect(finish).toBeFocused();
+  await expect(
+    finish.getByRole("button", { name: "Close dialog", exact: true }),
+  ).toBeFocused();
   await narrow(page);
   await page.getByRole("button", { name: "Keep logging", exact: true }).click();
   await expect(
@@ -375,7 +408,13 @@ test("finish, correct history, cancel workout deletion, delete, and undo retain 
     .click();
   await saved(page);
   expect((await read(page)).history).toEqual(beforeDelete);
-  await history.getByRole("button", { name: /^Delete workout from / }).click();
+  await history
+    .getByRole("button", { name: /^More options for workout from / })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Workout options", exact: true })
+    .getByRole("button", { name: /^Delete workout from / })
+    .click();
   let confirm = page.getByRole("dialog", {
     name: "Delete workout",
     exact: true,
@@ -388,7 +427,13 @@ test("finish, correct history, cancel workout deletion, delete, and undo retain 
     .getByRole("button", { name: "Keep workout", exact: true })
     .click();
   expect((await read(page)).history).toEqual(beforeDelete);
-  await history.getByRole("button", { name: /^Delete workout from / }).click();
+  await history
+    .getByRole("button", { name: /^More options for workout from / })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Workout options", exact: true })
+    .getByRole("button", { name: /^Delete workout from / })
+    .click();
   confirm = page.getByRole("dialog", { name: "Delete workout", exact: true });
   await confirm
     .getByRole("button", { name: "Delete workout", exact: true })
@@ -523,7 +568,9 @@ test("whole-session discard confirms recorded and typed work, cancels safely, an
   await log(page, "20", "10");
   await enter(page, "22.5", "9");
   const before = (await read(page)).current!;
-  await page.getByText("Workout options", { exact: true }).click();
+  await page
+    .getByRole("button", { name: "Workout options", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Discard current workout", exact: true })
     .click();
@@ -539,8 +586,11 @@ test("whole-session discard confirms recorded and typed work, cancels safely, an
     .click();
   expect((await read(page)).current).toEqual(before);
   await expect(
-    page.getByRole("button", { name: "Discard current workout", exact: true }),
+    page.getByRole("button", { name: "Workout options", exact: true }),
   ).toBeFocused();
+  await page
+    .getByRole("button", { name: "Workout options", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Discard current workout", exact: true })
     .click();

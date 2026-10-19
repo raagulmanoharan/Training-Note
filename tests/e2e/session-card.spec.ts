@@ -4,6 +4,7 @@ test("persistent session card: elapsed clock, compact preference, scrolling and 
   page,
 }) => {
   await page.clock.install({ time: new Date("2026-10-18T10:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-18T10:00:01Z"));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.evaluate(async () => {
@@ -42,6 +43,7 @@ test("persistent session card: elapsed clock, compact preference, scrolling and 
     .getByRole("button", { name: "Show elapsed time", exact: true })
     .click();
   await expect(timer).toHaveText("02:07");
+  await page.clock.resume();
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 740 });
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
@@ -56,10 +58,12 @@ test("persistent session card: elapsed clock, compact preference, scrolling and 
     ).toBe(false);
     await page.getByRole("button", { name: "Finish", exact: true }).click();
     await expect(
-      page.getByRole("region", { name: "Finish workout", exact: true }),
+      page.getByRole("dialog", { name: "Finish workout", exact: true }),
     ).toBeInViewport();
     await expect(
-      page.getByRole("region", { name: "Finish workout", exact: true }),
+      page
+        .getByRole("dialog", { name: "Finish workout", exact: true })
+        .getByRole("button", { name: "Close dialog", exact: true }),
     ).toBeFocused();
     await page
       .getByRole("button", { name: "Keep logging", exact: true })

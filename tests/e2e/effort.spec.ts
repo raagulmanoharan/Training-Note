@@ -261,6 +261,10 @@ test("effort UI: optional add change remove, correction and undo preserve stable
   expect(original.repsInReserve).toBeUndefined();
   await expect(page.locator(".nb-effort-picker")).toHaveCount(0);
   await page
+    .locator(".nb-exercise-card.is-active")
+    .getByRole("button", { name: /^More options for / })
+    .click();
+  await page
     .getByRole("button", { name: "How did that set feel?", exact: true })
     .click();
   const choice = page.getByRole("button", {
@@ -323,6 +327,10 @@ test("effort UI: failed edit retains prior committed effort and proposed choice,
   page,
 }) => {
   await start(page);
+  await page
+    .locator(".nb-exercise-card.is-active")
+    .getByRole("button", { name: /^More options for / })
+    .click();
   await page
     .getByRole("button", { name: "How did that set feel?", exact: true })
     .click();

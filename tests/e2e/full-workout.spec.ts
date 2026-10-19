@@ -47,6 +47,12 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
   const original = state.current.exercises[0],
     originalSet = original.sets[0];
   await page
+    .getByRole("button", {
+      name: `More options for ${original.name}`,
+      exact: true,
+    })
+    .click();
+  await page
     .getByRole("button", { name: `Swap ${original.name}`, exact: true })
     .click();
   await page.locator(".personal-inline .personal-secondary").first().click();
@@ -85,10 +91,12 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
   expect((await read(page)).current).toEqual(expected);
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(
-    page.getByRole("region", { name: "Finish workout", exact: true }),
+    page.getByRole("dialog", { name: "Finish workout", exact: true }),
   ).toBeInViewport();
   await expect(
-    page.getByRole("region", { name: "Finish workout", exact: true }),
+    page
+      .getByRole("dialog", { name: "Finish workout", exact: true })
+      .getByRole("button", { name: "Close dialog", exact: true }),
   ).toBeFocused();
   await page.getByRole("button", { name: "Keep logging", exact: true }).click();
   await expect(
@@ -121,43 +129,62 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
   await expect(page.locator(".nb-last-time")).toContainText("42.5 kg × 10");
 });
 
-test("typography: three readable roles, no decorative eyebrow, and narrow workout stays within viewport", async ({
+test("readability: Home and Workout retain readable type, touch targets and narrow viewport fit", async ({
   page,
 }) => {
-  await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: "What are you training?", exact: true }),
-  ).toBeVisible();
-  await expect(page.locator(".home-eyebrow")).toHaveCount(0);
-  await expect(
-    page
-      .getByRole("button", { name: "Settings and backup", exact: true })
-      .locator("svg"),
-  ).toBeVisible();
-  const sizes = await page
-    .locator(".training-home")
-    .evaluate((el) =>
-      [
-        ...new Set(
-          [...el.querySelectorAll("*")]
-            .filter(
-              (e) =>
-                e.children.length === 0 &&
-                e.textContent?.trim() &&
-                e.getBoundingClientRect().height,
-            )
-            .map((e) => getComputedStyle(e).fontSize),
-        ),
-      ].sort(),
-    );
-  expect(sizes).toEqual(["14px", "18px", "28px"]);
-  for (const width of [320, 390]) {
-    await page.setViewportSize({ width, height: 844 });
+  async function readableScreen() {
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    const visibleText = await page.locator("main").evaluate((root) =>
+      [...root.querySelectorAll("*")]
+        .filter((element) => {
+          const bounds = element.getBoundingClientRect();
+          return (
+            [...element.childNodes].some(
+              (node) =>
+                node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+            ) &&
+            bounds.width > 1 &&
+            bounds.height > 1 &&
+            getComputedStyle(element).visibility !== "hidden"
+          );
+        })
+        .map((element) => ({
+          text: element.textContent,
+          size: parseFloat(getComputedStyle(element).fontSize),
+        })),
+    );
+    expect(visibleText.length).toBeGreaterThan(3);
+    for (const text of visibleText)
+      expect(text.size, `Readable text: ${text.text}`).toBeGreaterThanOrEqual(
+        12,
+      );
+    for (const button of await page.getByRole("button").all()) {
+      if (!(await button.isVisible())) continue;
+      const bounds = await button.boundingBox();
+      expect(bounds!.height, await button.innerText()).toBeGreaterThanOrEqual(
+        44,
+      );
+      expect(bounds!.width, await button.innerText()).toBeGreaterThanOrEqual(
+        44,
+      );
+    }
+  }
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Your next workout.", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: "Settings and backup", exact: true })
+      .locator("svg"),
+  ).toBeVisible();
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await readableScreen();
   }
   await page
     .getByRole("button", { name: "Plan a workout", exact: true })
@@ -169,11 +196,7 @@ test("typography: three readable roles, no decorative eyebrow, and narrow workou
     .click();
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
+    await readableScreen();
   }
   expect(
     await page
@@ -209,7 +232,7 @@ test("finish states: cancel and discard empty session; partial finish drops only
     .getByRole("button", { name: "Discard empty draft", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "What are you training?", exact: true }),
+    page.getByRole("heading", { name: "Your next workout.", exact: true }),
   ).toBeVisible();
   expect((await read(page)).history).toEqual([]);
   await start();
@@ -220,7 +243,7 @@ test("finish states: cancel and discard empty session; partial finish drops only
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("9");
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(
-    page.getByRole("region", { name: "Finish workout", exact: true }),
+    page.getByRole("dialog", { name: "Finish workout", exact: true }),
   ).toContainText("unlogged input");
   await page.getByRole("button", { name: "Keep logging", exact: true }).click();
   await expect(
@@ -234,12 +257,10 @@ test("finish states: cancel and discard empty session; partial finish drops only
     })
     .click();
   await expect(
-    page
-      .locator(".personal-notice")
-      .filter({
-        hasText:
-          "Workout finished · 1 set recorded. Export a backup to protect it.",
-      }),
+    page.locator(".personal-notice").filter({
+      hasText:
+        "Workout finished · 1 set recorded. Export a backup to protect it.",
+    }),
   ).toBeInViewport();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   const state = await read(page);

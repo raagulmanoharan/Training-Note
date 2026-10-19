@@ -359,6 +359,10 @@ test("integrated design states: effort saving never pretends another actual set 
     page.getByRole("button", { name: "Edit set 1", exact: true }),
   ).toBeVisible();
   await page
+    .locator(".nb-exercise-card.is-active")
+    .getByRole("button", { name: /^More options for / })
+    .click();
+  await page
     .getByRole("button", { name: "How did that set feel?", exact: true })
     .click();
   await page.evaluate(() => {
@@ -381,14 +385,22 @@ test("integrated design states: effort saving never pretends another actual set 
     page.getByText("Saving effort estimate…", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Saving set", exact: true }),
+    page.getByRole("button", {
+      name: "Saving set",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toHaveCount(0);
   await expect(page.locator(".nb-set-row.is-current")).toHaveAttribute(
     "data-state",
     "draft",
   );
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", {
+      name: "Edit set 1",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeVisible();
   await expect(page.locator(".personal-status")).toHaveText(
     "Saved on this device",

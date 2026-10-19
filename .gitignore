@@ -27,3 +27,7 @@ tests/artifacts/
 
 # Private user-supplied design references (do not publish)
 references/
+
+# Keep intentional visual review evidence; ignore transient runner output.
+/artifacts/*
+!/artifacts/focus-qa/
