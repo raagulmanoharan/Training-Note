@@ -1,6 +1,6 @@
 # Gym Notebook
 
-Publication prepared for `raagulmanoharan/gym-notebook`. Remote repository creation is currently blocked by GitHub integration permissions; the intended Pages URL is not live yet.
+Deployment target: [`raagulmanoharan/Training-Note`](https://github.com/raagulmanoharan/Training-Note). GitHub Pages address: https://raagulmanoharan.github.io/Training-Note/. Deployment is managed by the Pages workflow; see its latest result before assuming a release is live.
 
 A personal, mobile-first gym log. No account, backend, analytics or subscription. Your workout records live in this browser's IndexedDB database.
 
@@ -39,12 +39,12 @@ The suite uses isolated synthetic browser data; production offline checks use a 
 
 ## GitHub Pages deployment
 
-The workflow in `.github/workflows/pages.yml` builds with Node 22 and deploys `dist`. Relative asset URLs, the manifest and the scoped service worker support project hosting at `/gym-notebook/`. No secrets, private records or backend are required.
+The workflow in `.github/workflows/pages.yml` builds with Node 22 and deploys `dist`. Relative asset URLs, the manifest and the scoped service worker support project hosting at `/Training-Note/`. No secrets, private records or backend are required.
 
-Pages-path smoke check (against a server mounting dist at /gym-notebook/):
+Pages-path smoke check (against a server mounting dist at /Training-Note/):
 
 ```sh
-PAGES_URL=http://127.0.0.1:5178/gym-notebook/ npm run test:pages
+PAGES_URL=http://127.0.0.1:5178/Training-Note/ npm run test:pages
 ```
 
 You can also use the published URL after deployment. The test writes only isolated synthetic browser records.

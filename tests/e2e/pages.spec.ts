@@ -4,6 +4,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   context,
 }) => {
   const appURL = process.env.PAGES_URL || "http://127.0.0.1:5178/gym-notebook/";
+  const projectPath = new URL(appURL).pathname;
   const requests: string[] = [];
   page.on("request", (r) => {
     if (r.url().includes("/api/")) requests.push(r.url());
@@ -23,7 +24,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   expect(manifestResponse.ok()).toBe(true);
   const manifest = await manifestResponse.json();
   expect(new URL(manifest.scope, manifestResponse.url()).pathname).toBe(
-    "/gym-notebook/",
+    projectPath,
   );
   for (const icon of manifest.icons)
     expect(
@@ -56,7 +57,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   const scope = await page.evaluate(
     async () => (await navigator.serviceWorker.ready).scope,
   );
-  expect(new URL(scope).pathname).toBe("/gym-notebook/");
+  expect(new URL(scope).pathname).toBe(projectPath);
   const fontPaths = await page.evaluate(async () => {
     const names = await caches.keys();
     const paths: string[] = [];
@@ -67,8 +68,8 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
     }
     return paths;
   });
-  expect(fontPaths).toContain("/gym-notebook/fonts/manrope-latin-variable.ttf");
-  expect(fontPaths).toContain("/gym-notebook/fonts/ibm-plex-mono-regular.ttf");
+  expect(fontPaths).toContain(`${projectPath}fonts/manrope-latin-variable.ttf`);
+  expect(fontPaths).toContain(`${projectPath}fonts/ibm-plex-mono-regular.ttf`);
   await context.setOffline(true);
   await page.reload();
   await expect(

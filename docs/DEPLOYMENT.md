@@ -12,3 +12,7 @@ Loading/failure: GitHub Actions builds and uploads static dist; a failed build d
 - One Chromium Pages-subpath journey passed: assets/manifest/icons, /gym-notebook/ service-worker scope, explicit actual logging, reload persistence, offline reopen and additional offline actuals; zero API requests.
 - GitHub identified account raagulmanoharan successfully. Both GraphQL createRepository and REST POST /user/repos returned Resource not accessible by integration (REST 403). No remote repository or Pages deployment was created. This is a GitHub authorization limitation, not an automatic approval-review rejection.
 - Remaining action: an empty accessible repository must exist before pushing and enabling Pages. After publication verify the actual HTTPS URL with the same smoke test before calling the release live.
+
+## 19 October2026 — user-provided destination
+
+The user supplied `raagulmanoharan/Training-Note` and authorized deployment for a same-day gym trial. Repository access and admin/push permissions verified; remote is empty. Current release is the real card-based React app with local IndexedDB, backup, offline fonts and the persistent collapsible session clock. Relative assets and manifest scope work with `/Training-Note/`; the production smoke test now derives its expected scope from PAGES_URL. No private browser data or secrets are published. Earlier repository-creation failure above is historical. Live verification results will follow.
