@@ -261,18 +261,29 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
     .getByRole("button", { name: "Log 40 kg × 10 again", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await page.getByLabel("Edit weight", { exact: true }).fill("42.5");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
-  await page.getByRole("button", { name: "Edit set 2", exact: true }).click();
-  await page.getByRole("button", { name: "Delete set", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 2", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 2 options", exact: true })
+    .getByRole("button", { name: "Delete set 2", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Undo deleted set", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toBeVisible();
   const before = await page
     .locator(".nb-exercise-card.is-active .nb-exercise-title")
@@ -296,7 +307,7 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
     /Target 1 × \d+–\d+ reps/,
   );
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await logActual(page, "20", "8");
   await page.screenshot({
@@ -326,7 +337,11 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
   const savedIds = await notebookIds(page);
   await page.getByText("Correct a set", { exact: true }).first().click();
   await page
-    .getByRole("button", { name: `Correct ${before} set 1`, exact: true })
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
     .click();
   await page.getByLabel("Correct history weight", { exact: true }).fill("45");
   await page
@@ -415,12 +430,12 @@ test("personal UI: offline production shell restores draft without API requests"
     page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
   ).toHaveValue("42.5");
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toBeVisible();
   expect(api).toEqual([]);
 });
@@ -450,7 +465,7 @@ test("personal UI: storage failure never claims a logged set is saved and retry 
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(page.locator(".personal-status")).toHaveText("Not saved");
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await page.evaluate(() => (window as any).restoreTransactions());
   await page.getByRole("button", { name: "Retry save", exact: true }).click();
@@ -458,10 +473,10 @@ test("personal UI: storage failure never claims a logged set is saved and retry 
     "Saved on this device",
   );
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toHaveCount(0);
 });
 
@@ -505,7 +520,7 @@ test("personal UI: backup preview verifies file and corrupt selection preserves 
     .getByRole("button", { name: "Continue workout", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
 });
 
@@ -614,18 +629,18 @@ test("personal UI: earlier typing acknowledgement cannot reveal a later failed s
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(page.locator(".personal-status")).toHaveText("Not saved");
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await page.evaluate(() => (window as any).restoreTransactions());
   await page.getByRole("button", { name: "Retry save", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".personal-status")).toHaveText(
     "Saved on this device",
   );
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toHaveCount(0);
 });
 
@@ -691,7 +706,7 @@ test("personal UI: all-set history shows two more reps without automatically add
     page.getByRole("button", { name: "Add set", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Edit set 4", exact: true }),
+    page.getByRole("button", { name: "Options for set 4", exact: true }),
   ).toHaveCount(0);
 });
 
@@ -728,7 +743,7 @@ test("redesign: compact lineup can be revised before explicit session start", as
     .click();
   await expect(page.locator(".nb-exercise-card")).toHaveCount(4);
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
 });
 
@@ -789,14 +804,14 @@ test("redesign: paired inputs and full-width Log remain thumb-sized and draft su
   ).toBe(true);
   await check.click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await logActual(page, "12.5", "8");
   await logActual(page, "12.5", "8");
   await page.getByRole("button", { name: "Add set", exact: true }).click();
   await expect(weight).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Edit set 4", exact: true }),
+    page.getByRole("button", { name: "Options for set 4", exact: true }),
   ).toHaveCount(0);
 });
 
@@ -908,6 +923,6 @@ test("redesign: invalid input explains blocked completion and Repeat cannot disc
   await expect(weight).toHaveValue("42.5");
   await expect(reps).toHaveValue("8");
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
 });

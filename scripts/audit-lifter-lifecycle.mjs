@@ -47,7 +47,10 @@ for (const day of [0, 5, 10, 100]) {
           .fill("10");
         await page.getByRole("button", { name: /^Log set \d+ for / }).click();
         await page
-          .getByRole("button", { name: `Edit set ${set + 1}`, exact: true })
+          .getByRole("button", {
+            name: `Options for set ${set + 1}`,
+            exact: true,
+          })
           .waitFor();
       }
     }
@@ -201,15 +204,13 @@ for (const day of [0, 5, 10, 100]) {
       .getByRole("button", { name: "View progress details", exact: true })
       .click();
     await page.locator(".personal-progress-card").last().waitFor();
-    const history = await page
-      .getByRole("dialog")
-      .evaluate((el) => ({
-        cards: el.querySelectorAll(".personal-progress-card").length,
-        scrollHeight: el.scrollHeight,
-        viewportHeight: el.clientHeight,
-        domElements: el.querySelectorAll("*").length,
-        searchFields: el.querySelectorAll("input[type=search]").length,
-      }));
+    const history = await page.getByRole("dialog").evaluate((el) => ({
+      cards: el.querySelectorAll(".personal-progress-card").length,
+      scrollHeight: el.scrollHeight,
+      viewportHeight: el.clientHeight,
+      domElements: el.querySelectorAll("*").length,
+      searchFields: el.querySelectorAll("input[type=search]").length,
+    }));
     const historyReadyElapsed =
       (await page.evaluate(() => performance.now())) - start;
     await page
@@ -257,7 +258,7 @@ for (const day of [0, 5, 10, 100]) {
     }
     await page.getByRole("button", { name: /^Log set \d+ for / }).click();
     await page
-      .getByRole("button", { name: "Edit set 1", exact: true })
+      .getByRole("button", { name: "Options for set 1", exact: true })
       .waitFor();
     const performed = await page.evaluate(async () =>
       (await import("/frontend/src/personalStore.ts")).readState(),
@@ -273,7 +274,7 @@ for (const day of [0, 5, 10, 100]) {
       .click();
     await page.reload();
     await page
-      .getByRole("button", { name: "Edit set 1", exact: true })
+      .getByRole("button", { name: "Options for set 1", exact: true })
       .waitFor();
     const resumed = await page.evaluate(async () =>
       (await import("/frontend/src/personalStore.ts")).readState(),

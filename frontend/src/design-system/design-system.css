@@ -1082,49 +1082,44 @@
   min-height: 52px;
 }
 
-/* Recorded values are a single edit target, with their saved receipt intact. */
-.ds-saved-row-button {
+/* Receipts share aligned columns; only the ellipsis is an action target. */
+.ds-saved-receipt,
+.ds-set-column-labels {
+  grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr) 44px;
+}
+.ds-saved-receipt {
   width: 100%;
-  padding: 8px 0;
-  background: transparent;
-  color: var(--ds-ink);
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
   min-height: 52px;
-  grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr) 52px;
-  text-align: left;
+  padding: 4px 0;
 }
-.ds-saved-row-button .ds-set-ordinal {
-  display: flex;
-  flex-direction: column;
+.ds-saved-receipt .ds-set-ordinal {
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
   font-size: 14px;
-  line-height: 18px;
+  line-height: 20px;
+  color: var(--ds-secondary);
 }
-.ds-saved-row-button .ds-commit--saved {
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
+.ds-saved-receipt .ds-commit--saved {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
   padding: 0;
   border: 0;
   background: transparent;
 }
-.ds-saved-row-button .ds-commit--saved svg {
-  width: 14px;
-  height: 14px;
+.ds-saved-receipt .ds-commit--saved svg {
+  width: 12px;
+  height: 12px;
 }
-.ds-saved-edit {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  font: 600 14px/20px var(--ds-font);
+.ds-set-more {
   color: var(--ds-secondary);
+  border-radius: 50%;
 }
-.ds-saved-row-button:disabled {
-  cursor: default;
-  opacity: 0.65;
+.ds-set-more:hover:not(:disabled) {
+  background: var(--ds-raised);
 }
 .ds-set-record .ds-set-record__actions {
   min-height: 0;

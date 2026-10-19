@@ -163,6 +163,20 @@ async function sessionOptions(page: Page) {
     .getByRole("button", { name: "Workout options", exact: true })
     .click();
 }
+async function setOptions(page: Page, number: number) {
+  const trigger = page.getByRole("button", {
+    name: `Options for set ${number}`,
+    exact: true,
+  });
+  await reachable(trigger);
+  await trigger.click();
+  const dialog = page.getByRole("dialog", {
+    name: `Set ${number} options`,
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
 async function enter(page: Page, weight: string, reps: string) {
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
@@ -247,7 +261,13 @@ test("one-hand gym journey: six exercises, target edit, typo correction, busy eq
   await shot(page, "active");
   await log(page, "600", "5");
   const typo = (await read(page)).current!.exercises[0].sets[0];
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await page.getByLabel("Edit weight", { exact: true }).fill("60");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
   await saved(page);
@@ -517,14 +537,17 @@ test("older receipts expand as complete rows and correction drafts survive navig
   await log(page, "20", "7");
   const before = (await read(page)).current!;
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toHaveCount(0);
   for (const number of [3, 4])
     await reachable(
-      page.getByRole("button", { name: `Edit set ${number}`, exact: true }),
+      page.getByRole("button", {
+        name: `Options for set ${number}`,
+        exact: true,
+      }),
     );
   const reveal = page.getByRole("button", {
     name: "Show all 4 sets",
@@ -535,10 +558,19 @@ test("older receipts expand as complete rows and correction drafts survive navig
   await reveal.click();
   for (const number of [1, 2, 3, 4])
     await reachable(
-      page.getByRole("button", { name: `Edit set ${number}`, exact: true }),
+      page.getByRole("button", {
+        name: `Options for set ${number}`,
+        exact: true,
+      }),
     );
   await shot(page, "all-receipts-320");
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   const weight = page.getByLabel("Edit weight", { exact: true });
   await weight.fill("21");
   await expect(
@@ -572,7 +604,13 @@ test("older receipts expand as complete rows and correction drafts survive navig
     .getByRole("button", { name: "Cancel correction", exact: true })
     .click();
   expect((await read(page)).current).toEqual(before);
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await weight.fill("21");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
   await saved(page);
@@ -583,8 +621,199 @@ test("older receipts expand as complete rows and correction drafts survive navig
     .getByRole("button", { name: "Show fewer sets", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await page.reload();
   expect((await read(page)).current).toEqual(expected);
+});
+
+test("saved-set options preserve the next draft through cancel, correction, deletion, undo and failed-write retry", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("/");
+  await page.evaluate(async () => {
+    const store = await import("/frontend/src/personalStore.ts");
+    const logic = await import("/frontend/src/personalLogic.ts");
+    const state = store.defaultState();
+    state.current = logic.generateCustomPlan(["curl"], state.settings);
+    state.current.exercises[0].plannedSets = 5;
+    await store.saveState(state, 0);
+  });
+  await page.reload();
+  for (const [weight, reps] of [
+    ["20", "10"],
+    ["22.5", "9"],
+    ["25", "8"],
+    ["27.5", "7"],
+  ])
+    await log(page, weight, reps);
+  await enter(page, "30", "6");
+  const original = (await read(page)).current!;
+  const firstId = original.exercises[0].sets[0].id;
+  const firstTrigger = page.getByRole("button", {
+    name: "Options for set 1",
+    exact: true,
+  });
+  await expect(firstTrigger).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Show all 4 sets", exact: true })
+    .click();
+
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await noSideways(page);
+    const receipt = page.locator(`.nb-saved-set[data-set-id="${firstId}"]`);
+    await expect(receipt.locator(".ds-set-value")).toHaveText([
+      "Weight 20 kg",
+      "Reps 10",
+    ]);
+    await expect(
+      receipt.getByRole("img", { name: "Recorded set 1", exact: true }),
+    ).toBeVisible();
+    await expect(receipt.getByRole("button")).toHaveCount(1);
+    const aligned = await receipt
+      .locator(".ds-saved-receipt")
+      .evaluate((row) => {
+        const parts = [
+          row.querySelector(".ds-set-ordinal > span:first-child")!,
+          row.querySelector(".ds-commit--saved")!,
+          ...row.querySelectorAll(".ds-set-value"),
+          row.querySelector("button")!,
+        ].map((part) => part.getBoundingClientRect());
+        const centers = parts.map((part) => part.top + part.height / 2);
+        return Math.max(...centers) - Math.min(...centers);
+      });
+    expect(
+      aligned,
+      "Set number, tick, actuals and ellipsis share a row center",
+    ).toBeLessThanOrEqual(1);
+    let menu = await setOptions(page, 1);
+    await expect(firstTrigger).toHaveAttribute("aria-haspopup", "dialog");
+    await reachable(
+      menu.getByRole("button", { name: "Edit set 1", exact: true }),
+    );
+    await reachable(
+      menu.getByRole("button", { name: "Delete set 1", exact: true }),
+    );
+    await noSideways(page);
+    await page.screenshot({
+      path: `artifacts/set-actions/options-${width}.png`,
+      fullPage: true,
+    });
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveCount(0);
+    await expect(firstTrigger).toBeFocused();
+    expect((await read(page)).current).toEqual(original);
+    menu = await setOptions(page, 1);
+    await menu
+      .getByRole("button", { name: "Close dialog", exact: true })
+      .click();
+    await expect(firstTrigger).toBeFocused();
+    expect((await read(page)).current).toEqual(original);
+    await page.screenshot({
+      path: `artifacts/set-actions/receipts-${width}.png`,
+      fullPage: true,
+    });
+    await textScale(page, 2);
+    await noSideways(page);
+    menu = await setOptions(page, 1);
+    await textScale(page, 2);
+    await noSideways(page);
+    await reachable(
+      menu.getByRole("button", { name: "Edit set 1", exact: true }),
+    );
+    await reachable(
+      menu.getByRole("button", { name: "Delete set 1", exact: true }),
+    );
+    await page.screenshot({
+      path: `artifacts/set-actions/options-${width}-text-2.png`,
+      fullPage: true,
+    });
+    await page.keyboard.press("Escape");
+    await expect(firstTrigger).toBeFocused();
+    await textScale(page, 1);
+    expect((await read(page)).current).toEqual(original);
+  }
+
+  let menu = await setOptions(page, 1);
+  await menu.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  const weight = page.getByLabel("Edit weight", { exact: true });
+  await expect(weight).toBeFocused();
+  await weight.fill("21");
+  await page
+    .getByRole("button", { name: "Cancel correction", exact: true })
+    .click();
+  await expect(firstTrigger).toBeFocused();
+  expect((await read(page)).current).toEqual(original);
+  menu = await setOptions(page, 1);
+  await menu.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await weight.fill("21");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await saved(page);
+  await expect(firstTrigger).toBeFocused();
+  const corrected = structuredClone(original);
+  corrected.exercises[0].sets[0].weight = 21;
+  expect((await read(page)).current).toEqual(corrected);
+
+  menu = await setOptions(page, 1);
+  await menu.getByRole("button", { name: "Delete set 1", exact: true }).click();
+  await saved(page);
+  await expect(menu).toHaveCount(0);
+  const deleted = structuredClone(corrected);
+  deleted.exercises[0].sets.shift();
+  expect((await read(page)).current).toEqual(deleted);
+  await page
+    .getByRole("button", { name: "Undo deleted set", exact: true })
+    .click();
+  await saved(page);
+  expect((await read(page)).current).toEqual(corrected);
+
+  menu = await setOptions(page, 1);
+  await page.evaluate(() => {
+    const transaction = IDBDatabase.prototype.transaction;
+    (window as any).restoreSetActionTransactions = () => {
+      IDBDatabase.prototype.transaction = transaction;
+    };
+    IDBDatabase.prototype.transaction = function (...args: any[]) {
+      if (args[1] === "readwrite")
+        throw new DOMException(
+          "Synthetic set deletion failure",
+          "QuotaExceededError",
+        );
+      return transaction.apply(this, args as any);
+    };
+  });
+  await menu.getByRole("button", { name: "Delete set 1", exact: true }).click();
+  await expect(menu).toBeVisible();
+  await expect(
+    menu.getByRole("button", { name: "Retry save", exact: true }),
+  ).toBeVisible();
+  await expect(
+    menu.getByRole("button", { name: "Delete set 1", exact: true }),
+  ).toBeDisabled();
+  await expect(page.locator(".personal-status")).not.toHaveText(
+    "Saved on this device",
+  );
+  expect((await read(page)).current).toEqual(corrected);
+  await expect(
+    page.locator(`.nb-saved-set[data-set-id="${firstId}"]`),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "artifacts/set-actions/delete-failed.png",
+    fullPage: true,
+  });
+  await page.evaluate(() => (window as any).restoreSetActionTransactions());
+  await menu.getByRole("button", { name: "Retry save", exact: true }).click();
+  await saved(page);
+  await expect(menu).toHaveCount(0);
+  expect((await read(page)).current).toEqual(deleted);
+  await page.reload();
+  expect((await read(page)).current).toEqual(deleted);
+  await expect(
+    page.getByRole("textbox", { name: "Weight (kg)", exact: true }),
+  ).toHaveValue("30");
+  await expect(
+    page.getByRole("textbox", { name: "Reps", exact: true }),
+  ).toHaveValue("6");
 });

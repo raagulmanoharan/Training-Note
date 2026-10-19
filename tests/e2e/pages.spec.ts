@@ -50,7 +50,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".personal-status")).toHaveText(
     "Saved on this device",
@@ -79,7 +79,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await context.setOffline(true);
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })
@@ -87,7 +87,7 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("8");
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 2", exact: true }),
+    page.getByRole("button", { name: "Options for set 2", exact: true }),
   ).toBeVisible();
   expect(
     await page.evaluate(async () => {

@@ -356,7 +356,7 @@ test("integrated design states: effort saving never pretends another actual set 
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   await page
     .locator(".nb-exercise-card.is-active")
@@ -397,7 +397,7 @@ test("integrated design states: effort saving never pretends another actual set 
   );
   await expect(
     page.getByRole("button", {
-      name: "Edit set 1",
+      name: "Options for set 1",
       exact: true,
       includeHidden: true,
     }),

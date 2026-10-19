@@ -894,7 +894,7 @@ body {
 .personal-app .ds-commit--saved {
   color: var(--ds-success);
 }
-.personal-app .ds-saved-row-button {
+.personal-app .ds-set-more {
   min-height: 48px;
 }
 .nb-editing-label {
@@ -1309,11 +1309,9 @@ body {
     border-color: #e8ff9b;
   }
   .personal-app
-    :is(
-      .ds-button--secondary,
-      .ds-saved-row-button,
-      .ds-button--text
-    ):hover:not(:disabled) {
+    :is(.ds-button--secondary, .ds-set-more, .ds-button--text):hover:not(
+      :disabled
+    ) {
     background: #303a30;
     text-decoration: none;
   }
@@ -1525,4 +1523,30 @@ body {
   width: 44px;
   height: 44px;
   padding: 0;
+}
+
+.two-workout .nb-saved-ledger {
+  padding-inline: 0;
+}
+.personal-app .ds-saved-receipt .ds-set-ordinal {
+  color: var(--ds-secondary);
+}
+.personal-app .ds-set-more {
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+}
+.personal-app .personal-receipt > .ds-set-record {
+  width: 100%;
+}
+.nb-set-menu-context {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 20px;
+}
+.nb-set-menu-context p {
+  margin: 0;
+}
+.nb-set-menu-context strong {
+  font: 400 24px/32px var(--ds-mono);
 }

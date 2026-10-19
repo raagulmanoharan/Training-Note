@@ -102,7 +102,7 @@ test("two screens: attendance counts distinct recent recorded days; repeat retai
   );
   expect((await read(page)).current.exercises[0].sets).toEqual([]);
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toHaveCount(0);
   await page
     .getByRole("textbox", { name: "Weight (kg)", exact: true })

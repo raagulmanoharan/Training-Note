@@ -100,3 +100,12 @@ Completed four Home content cards (launch, attendance, progress, latest workout)
 | Publish on existing Pages origin | Root | Done | Pages run39261992402; live offline and six-exercise checks passed |
 
 This replaces the previous pale-card visual direction. It does not claim the independent saved-routine/domain-model backlog is implemented.
+
+## 19 October 2026 — saved-set actions
+
+| Story | Owner | Status | Evidence |
+| --- | --- | --- | --- |
+| Align saved numbers and move correction/deletion into a row menu | Root | Done locally | SET-ACTIONS.md; shared current/history receipt and native options sheet |
+| Demonstrate the real Edit/Delete/Undo interaction in the workbench | Component agent | Done | Actual 320 px Chromium interaction check |
+| Verify correction, deletion, Undo, failure recovery and draft preservation | QA agent + root | Done | SET-ACTIONS-QA.md; 53 passed, 1 expected production-only skip; mobile and enlarged-text captures |
+| Publish and verify on the existing Pages origin | Root | In progress | Production build passed; live checks pending |

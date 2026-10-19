@@ -13,7 +13,7 @@ import {
   LoaderCircle,
   Minus,
   Plus,
-  Pencil,
+  MoreHorizontal,
   AlertCircle,
 } from "lucide-react";
 import "./design-system.css";
@@ -604,7 +604,7 @@ export function DSSetColumnLabels({ unit = "kg" }: { unit?: string }) {
       <span>Set</span>
       <span>{unit}</span>
       <span>Reps</span>
-      <span className="ds-visually-hidden">Edit</span>
+      <span className="ds-visually-hidden">Options</span>
     </div>
   );
 }
@@ -641,8 +641,8 @@ export type DSSetRowProps = RowBase &
         state: "saved";
         weight: number | string;
         reps: number | string;
-        onEdit: () => void;
-        editLabel?: string;
+        onOptions: () => void;
+        optionsLabel?: string;
         recordedLabel?: string;
         effort?: ReactNode;
       }
@@ -675,27 +675,25 @@ export function DSSetRow(props: DSSetRowProps) {
   if (props.state === "saved")
     return (
       <div className="ds-set-record">
-        <button
-          type="button"
+        <div
           data-state="saved"
           className={cx(
             "ds-set-grid-row",
             "ds-set-grid-row--saved",
-            "ds-saved-row-button",
+            "ds-saved-receipt",
             props.className,
           )}
           data-testid={props["data-testid"]}
-          aria-label={props.editLabel || `Edit set ${props.number}`}
+          role="group"
+          aria-label={base}
           aria-describedby={`${id}-actual`}
-          onClick={props.onEdit}
-          disabled={props.disabled}
         >
           <span className="ds-set-ordinal">
+            <span>{props.number}</span>
             <DSCommitControl
               state="saved"
               label={props.recordedLabel || `Recorded set ${props.number}`}
             />
-            {props.number}
           </span>
           <span className="ds-set-value">
             <span className="ds-visually-hidden">Weight </span>
@@ -706,10 +704,16 @@ export function DSSetRow(props: DSSetRowProps) {
             <span className="ds-visually-hidden">Reps </span>
             {props.reps}
           </span>
-          <span className="ds-saved-edit">
-            <Pencil size={13} aria-hidden="true" /> Edit
-          </span>
-        </button>
+          <DSIconButton
+            className="ds-set-more"
+            label={props.optionsLabel || `Options for set ${props.number}`}
+            icon={<MoreHorizontal size={20} aria-hidden="true" />}
+            aria-haspopup="dialog"
+            aria-describedby={`${id}-actual`}
+            onClick={props.onOptions}
+            disabled={props.disabled}
+          />
+        </div>
         <span id={`${id}-actual`} className="ds-visually-hidden">
           Recorded {props.weight} {props.unit}, {props.reps} reps.
         </span>

@@ -59,7 +59,7 @@ test("manual back and biceps selection keeps six chosen variations in order and 
   const saved = await read(page);
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
   expect((await read(page)).current).toEqual(saved.current);
 });

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MuscleGlyph from "../MuscleGlyph";
-import { ArrowRight, ArrowLeftRight, Pencil } from "lucide-react";
+import { ArrowRight, ArrowLeftRight, Pencil, Trash2 } from "lucide-react";
 import {
   DSBadge,
   DSButton,
@@ -38,8 +38,58 @@ export default function ComponentGallery() {
     [field, setField] = useState(""),
     [badReps, setBadReps] = useState("eight");
   const [firstEditing, setFirstEditing] = useState(false),
+    [firstDeleted, setFirstDeleted] = useState(false),
     [firstDraft, setFirstDraft] = useState({ weight: "40", reps: "10" }),
     [firstRecord, setFirstRecord] = useState({ weight: "40", reps: "10" });
+  const [optionsSet, setOptionsSet] = useState<1 | 2 | null>(null);
+  const optionsRef = useRef<HTMLDialogElement>(null);
+  const optionsTrigger = useRef<HTMLElement | null>(null);
+  const firstWeightRef = useRef<HTMLInputElement>(null);
+  const secondWeightRef = useRef<HTMLInputElement>(null);
+  const firstUndoRef = useRef<HTMLButtonElement>(null);
+  const secondUndoRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const dialog = optionsRef.current;
+    if (!optionsSet || !dialog) return;
+    if (!dialog.open) dialog.showModal();
+    dialog.querySelector<HTMLElement>("h2")?.focus();
+  }, [optionsSet]);
+  function openOptions(number: 1 | 2) {
+    optionsTrigger.current = document.activeElement as HTMLElement | null;
+    setOptionsSet(number);
+  }
+  function closeOptions(focusTarget?: () => HTMLElement | null) {
+    const trigger = optionsTrigger.current;
+    optionsRef.current?.close();
+    setOptionsSet(null);
+    requestAnimationFrame(() => {
+      const target = focusTarget ? focusTarget() : trigger;
+      if (target?.isConnected) target.focus({ preventScroll: true });
+    });
+  }
+  function editFixtureSet(number: 1 | 2) {
+    if (number === 1) {
+      setFirstDraft(firstRecord);
+      setFirstEditing(true);
+    } else {
+      setWeight(record.weight);
+      setReps(record.reps);
+      setPhase("editing");
+    }
+    closeOptions(() =>
+      number === 1 ? firstWeightRef.current : secondWeightRef.current,
+    );
+  }
+  function deleteFixtureSet(number: 1 | 2) {
+    if (number === 1) setFirstDeleted(true);
+    else {
+      setDeleted(true);
+      setRowError("");
+    }
+    closeOptions(() =>
+      number === 1 ? firstUndoRef.current : secondUndoRef.current,
+    );
+  }
   const [effort, setEffort] = useState<DSEffortValue | undefined>(),
     [effortPending, setEffortPending] = useState(false),
     [effortMessage, setEffortMessage] = useState(
@@ -318,13 +368,28 @@ export default function ComponentGallery() {
               description="Barbell · kg · Enter actuals, then deliberately record."
             />
             <DSSetColumnLabels unit="kg" />
-            {firstEditing ? (
+            {firstDeleted ? (
+              <DSInlineNotice
+                title="Fixture set 1 removed"
+                actions={
+                  <DSButton
+                    ref={firstUndoRef}
+                    onClick={() => setFirstDeleted(false)}
+                  >
+                    Undo example set 1 deletion
+                  </DSButton>
+                }
+              >
+                Undo restores the fixture values; no real record changed.
+              </DSInlineNotice>
+            ) : firstEditing ? (
               <DSSetRow
                 state="editing"
                 number={1}
                 name="Example bench press"
                 unit="kg"
                 weight={firstDraft.weight}
+                weightRef={firstWeightRef}
                 reps={firstDraft.reps}
                 onWeightChange={(v) =>
                   setFirstDraft((d) => ({ ...d, weight: v }))
@@ -353,10 +418,7 @@ export default function ComponentGallery() {
                 unit="kg"
                 weight={firstRecord.weight}
                 reps={firstRecord.reps}
-                onEdit={() => {
-                  setFirstDraft(firstRecord);
-                  setFirstEditing(true);
-                }}
+                onOptions={() => openOptions(1)}
               />
             )}
             {deleted ? (
@@ -364,6 +426,7 @@ export default function ComponentGallery() {
                 title="Fixture set removed"
                 actions={
                   <DSButton
+                    ref={secondUndoRef}
                     onClick={() => {
                       setDeleted(false);
                       setPhase("saved");
@@ -383,11 +446,7 @@ export default function ComponentGallery() {
                 name="Example bench press"
                 weight={record.weight}
                 reps={record.reps}
-                onEdit={() => {
-                  setWeight(record.weight);
-                  setReps(record.reps);
-                  setPhase("editing");
-                }}
+                onOptions={() => openOptions(2)}
                 data-testid="ds-demo-row"
               />
             ) : (
@@ -397,6 +456,7 @@ export default function ComponentGallery() {
                 unit="kg"
                 name="Example bench press"
                 weight={weight}
+                weightRef={secondWeightRef}
                 reps={reps}
                 onWeightChange={setWeight}
                 onRepsChange={setReps}
@@ -422,6 +482,42 @@ export default function ComponentGallery() {
               unit="kg"
               targetLabel="Planned only; not recorded"
             />
+            {optionsSet && (
+              <dialog
+                ref={optionsRef}
+                className="nb-action-sheet ds-theme"
+                aria-label={`Set ${optionsSet} options`}
+                onCancel={(event) => {
+                  event.preventDefault();
+                  closeOptions();
+                }}
+              >
+                <div className="nb-action-sheet-header">
+                  <h2 tabIndex={-1}>Set {optionsSet} options</h2>
+                  <DSButton variant="text" onClick={() => closeOptions()}>
+                    Close
+                  </DSButton>
+                </div>
+                <div className="nb-menu-list">
+                  <DSButton
+                    variant="text"
+                    startIcon={<Pencil size={18} aria-hidden="true" />}
+                    aria-label={`Edit set ${optionsSet}`}
+                    onClick={() => editFixtureSet(optionsSet)}
+                  >
+                    Edit
+                  </DSButton>
+                  <DSButton
+                    variant="danger"
+                    startIcon={<Trash2 size={18} aria-hidden="true" />}
+                    aria-label={`Delete set ${optionsSet}`}
+                    onClick={() => deleteFixtureSet(optionsSet)}
+                  >
+                    Delete
+                  </DSButton>
+                </div>
+              </dialog>
+            )}
             <div className="ds-actions">
               {phase === "saving" && (
                 <>
@@ -483,8 +579,8 @@ export default function ComponentGallery() {
             <DSSurface variant="worksheet">
               <h3>Literal correction state</h3>
               <p className="ds-supporting">
-                Read-only anatomy specimen. Use Edit set in the interactive
-                worksheet to try a correction.
+                Read-only anatomy specimen. Open a recorded set’s options and
+                choose Edit in the interactive worksheet to try a correction.
               </p>
               <DSSetRow
                 state="editing"

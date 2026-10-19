@@ -17,7 +17,7 @@ async function start(page: any) {
   await page.getByRole("textbox", { name: "Reps", exact: true }).fill("10");
   await page.getByRole("button", { name: /^Log set \d+ for / }).click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeVisible();
 }
 async function saved(page: any) {
@@ -292,11 +292,22 @@ test("effort UI: optional add change remove, correction and undo preserve stable
   await expect(page.locator(".personal-status")).toHaveText(
     "Saved on this device",
   );
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await page.getByLabel("Edit weight", { exact: true }).fill("42.5");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
-  await page.getByRole("button", { name: "Delete set", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Delete set 1", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Undo deleted set", exact: true })
     .click();

@@ -24,23 +24,23 @@
     }
   ],
   "latestCorrection": {
-    "x": 24,
-    "y": 316,
-    "width": 342,
-    "height": 50
+    "x": 324,
+    "y": 320,
+    "width": 44,
+    "height": 44
   },
   "longSession": [
     {
       "width": 320,
       "log": {
         "x": 16,
-        "y": 596,
+        "y": 600,
         "width": 288,
         "height": 56
       },
       "next": {
         "x": 164,
-        "y": 673,
+        "y": 677,
         "width": 140,
         "height": 48
       }
@@ -49,13 +49,13 @@
       "width": 390,
       "log": {
         "x": 22,
-        "y": 600,
+        "y": 604,
         "width": 346,
         "height": 56
       },
       "next": {
         "x": 199,
-        "y": 672,
+        "y": 676,
         "width": 169,
         "height": 48
       }

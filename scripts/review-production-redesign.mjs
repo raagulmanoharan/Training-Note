@@ -1,6 +1,7 @@
 import { chromium } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import assert from "node:assert/strict";
+const baseURL = process.env.COACHLINE_URL || "http://localhost:5173";
 const output = "docs/design/production-redesign";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -15,10 +16,10 @@ const errors = [],
   external = [];
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("request", (r) => {
-  if (/^https?:/.test(r.url()) && !r.url().startsWith("http://localhost:5173"))
+  if (/^https?:/.test(r.url()) && !r.url().startsWith(baseURL))
     external.push(r.url());
 });
-await page.goto("http://localhost:5173/");
+await page.goto(baseURL);
 await page.waitForSelector(".training-home");
 await page.evaluate(async () => {
   const s = await import("/frontend/src/personalStore.ts"),
@@ -108,7 +109,10 @@ await page
   .locator(".personal-status")
   .filter({ hasText: "Saved on this device" })
   .waitFor();
-const edit = page.getByRole("button", { name: "Edit set 1", exact: true });
+const edit = page.getByRole("button", {
+  name: "Options for set 1",
+  exact: true,
+});
 const editBox = await edit.boundingBox();
 assert.equal(editBox.y + editBox.height <= 844, true);
 await page.waitForTimeout(200);

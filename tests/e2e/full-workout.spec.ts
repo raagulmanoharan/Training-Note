@@ -40,7 +40,13 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
     .getByRole("button", { name: "Start workout", exact: true })
     .click();
   await log(page);
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await page.getByLabel("Edit weight", { exact: true }).fill("42.5");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
   let state = await read(page);

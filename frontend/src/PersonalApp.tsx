@@ -13,6 +13,7 @@ import {
   Settings,
   MoreHorizontal,
   Trash2,
+  Pencil,
   X,
   Search,
 } from "lucide-react";
@@ -66,6 +67,12 @@ import {
 } from "./personalLogic";
 
 type WorkoutAction =
+  | {
+      kind: "set-options";
+      exerciseId: string;
+      setId: string;
+      workoutId?: string;
+    }
   | {
       kind: "exercise-options" | "swap" | "setup" | "effort";
       exerciseId: string;
@@ -704,6 +711,7 @@ export default function PersonalApp() {
         });
         setEdit(null);
         setEffortEdit(null);
+        if (action?.kind === "set-options") closeAction();
       },
     );
   }
@@ -1194,8 +1202,9 @@ export default function PersonalApp() {
           : null,
       }),
       () => {
-        setUndo({ exercise: exercise.id, set: s, index });
+        setUndo({ exercise: target.id, set: s, index });
         setEdit(null);
+        if (action?.kind === "set-options") closeAction();
       },
     );
   }
@@ -1445,29 +1454,39 @@ export default function PersonalApp() {
     action && "exerciseId" in action
       ? ("scope" in action && action.scope === "plan"
           ? plan
-          : workout
+          : action.kind === "set-options" && action.workoutId
+            ? state.history.find((item) => item.id === action.workoutId)
+            : workout
         )?.exercises.find((item) => item.id === action.exerciseId)
       : null;
+  const actionSetIndex =
+    action?.kind === "set-options"
+      ? (actionExercise?.sets.findIndex((set) => set.id === action.setId) ?? -1)
+      : -1;
+  const actionSet =
+    actionSetIndex >= 0 ? actionExercise?.sets[actionSetIndex] : null;
   const actionTitle = !action
     ? ""
-    : action.kind === "exercise-options"
-      ? `Options for ${actionExercise?.name || "exercise"}`
-      : action.kind === "swap"
-        ? "Swap exercise"
-        : action.kind === "setup"
-          ? "Edit exercise"
-          : action.kind === "effort"
-            ? "How did that set feel?"
-            : action.kind === "session-options" ||
-                action.kind === "history-options"
-              ? "Workout options"
-              : action.kind === "add"
-                ? "Add exercise"
-                : action.kind === "remove-exercise"
-                  ? "Remove exercise"
-                  : action.kind === "discard-workout"
-                    ? "Discard workout"
-                    : "Delete workout";
+    : action.kind === "set-options"
+      ? `Set ${actionSetIndex + 1} options`
+      : action.kind === "exercise-options"
+        ? `Options for ${actionExercise?.name || "exercise"}`
+        : action.kind === "swap"
+          ? "Swap exercise"
+          : action.kind === "setup"
+            ? "Edit exercise"
+            : action.kind === "effort"
+              ? "How did that set feel?"
+              : action.kind === "session-options" ||
+                  action.kind === "history-options"
+                ? "Workout options"
+                : action.kind === "add"
+                  ? "Add exercise"
+                  : action.kind === "remove-exercise"
+                    ? "Remove exercise"
+                    : action.kind === "discard-workout"
+                      ? "Discard workout"
+                      : "Delete workout";
   return (
     <div
       className={`personal-app ds-theme ${tab === "today" ? "two-workout" : "two-home"} ${workout && tab === "today" ? "is-session" : ""}`}
@@ -2090,15 +2109,14 @@ export default function PersonalApp() {
                                         unit={x.unit}
                                         weight={s.weight}
                                         reps={s.reps}
-                                        onEdit={() =>
-                                          setEdit({
-                                            exercise: x.id,
-                                            set: s.id,
-                                            weight: String(s.weight),
-                                            reps: String(s.reps),
+                                        onOptions={() =>
+                                          openAction({
+                                            kind: "set-options",
+                                            exerciseId: x.id,
+                                            setId: s.id,
                                           })
                                         }
-                                        editLabel={`Edit set ${index + 1}`}
+                                        optionsLabel={`Options for set ${index + 1}`}
                                         disabled={busy || status === "error"}
                                       />
                                       {s.repsInReserve !== undefined && (
@@ -2653,26 +2671,23 @@ export default function PersonalApp() {
                                     disabled={busy || status === "error"}
                                   />
                                 ) : (
-                                  <>
-                                    <span>Set {index + 1}</span>
-                                    <strong>{actual(set, x.unit)}</strong>
-                                    <DSButton
-                                      variant="text"
-                                      disabled={busy || status === "error"}
-                                      aria-label={`Correct ${x.name} set ${index + 1}`}
-                                      onClick={() =>
-                                        setEdit({
-                                          workout: w.id,
-                                          exercise: x.id,
-                                          set: set.id,
-                                          weight: String(set.weight),
-                                          reps: String(set.reps),
-                                        })
-                                      }
-                                    >
-                                      Edit
-                                    </DSButton>
-                                  </>
+                                  <DSSetRow
+                                    state="saved"
+                                    number={index + 1}
+                                    name={x.name}
+                                    unit={x.unit}
+                                    weight={set.weight}
+                                    reps={set.reps}
+                                    onOptions={() =>
+                                      openAction({
+                                        kind: "set-options",
+                                        workoutId: w.id,
+                                        exerciseId: x.id,
+                                        setId: set.id,
+                                      })
+                                    }
+                                    disabled={busy || status === "error"}
+                                  />
                                 )}
                                 <DSButton
                                   variant="text"
@@ -2926,6 +2941,64 @@ export default function PersonalApp() {
                   </DSButton>
                 )}
               </DSInlineNotice>
+            )}
+            {action.kind === "set-options" && actionExercise && actionSet && (
+              <>
+                <div className="nb-set-menu-context">
+                  <p>{actionExercise.name}</p>
+                  <strong>{actual(actionSet, actionExercise.unit)} reps</strong>
+                  {action.workoutId && (
+                    <p className="personal-muted">
+                      Recorded workout ·{" "}
+                      {date(
+                        state.history.find(
+                          (item) => item.id === action.workoutId,
+                        )!.finishedAt!,
+                      )}
+                    </p>
+                  )}
+                </div>
+                <div className="nb-menu-list">
+                  <DSButton
+                    variant="text"
+                    disabled={busy || status === "error"}
+                    aria-label={`Edit set ${actionSetIndex + 1}`}
+                    onClick={() => {
+                      const target = {
+                        workout: action.workoutId,
+                        exercise: actionExercise.id,
+                        set: actionSet.id,
+                        weight: String(actionSet.weight),
+                        reps: String(actionSet.reps),
+                      };
+                      closeAction();
+                      setEdit(target);
+                    }}
+                  >
+                    <Pencil size={20} />
+                    <span>Edit set</span>
+                    <ChevronRight size={18} />
+                  </DSButton>
+                  <DSButton
+                    variant="danger"
+                    disabled={busy || status === "error"}
+                    aria-label={`Delete set ${actionSetIndex + 1}`}
+                    onClick={() =>
+                      void (action.workoutId
+                        ? deleteHistorySet(
+                            action.workoutId,
+                            actionExercise.id,
+                            actionSet,
+                            actionSetIndex,
+                          )
+                        : removeSet(actionSet, actionSetIndex))
+                    }
+                  >
+                    <Trash2 size={20} />
+                    <span>Delete set</span>
+                  </DSButton>
+                </div>
+              </>
             )}
             {action.kind === "exercise-options" && actionExercise && (
               <div className="nb-menu-list">

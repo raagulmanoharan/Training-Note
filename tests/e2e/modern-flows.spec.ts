@@ -143,7 +143,13 @@ test("review removal is reversible; draft reload and set corrections preserve ac
   await page.getByRole("button", { name: /^Log set 1 for / }).click();
   await saved(page);
   const original = (await read(page)).current!.exercises[0].sets[0];
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await expect(page.getByLabel("Edit weight", { exact: true })).toBeFocused();
   await page.getByLabel("Edit weight", { exact: true }).fill("22.5");
   await narrow(page);
@@ -151,21 +157,32 @@ test("review removal is reversible; draft reload and set corrections preserve ac
     .getByRole("button", { name: "Cancel correction", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeFocused();
   expect((await read(page)).current!.exercises[0].sets[0]).toEqual(original);
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
+    .click();
   await expect(page.getByLabel("Edit weight", { exact: true })).toBeFocused();
   await page.getByLabel("Edit weight", { exact: true }).fill("22.5");
   await page.getByRole("button", { name: "Save changes", exact: true }).click();
   await saved(page);
   await expect(
-    page.getByRole("button", { name: "Edit set 1", exact: true }),
+    page.getByRole("button", { name: "Options for set 1", exact: true }),
   ).toBeFocused();
   const corrected = (await read(page)).current!.exercises[0].sets[0];
   expect(corrected).toEqual({ ...original, weight: 22.5 });
-  await page.getByRole("button", { name: "Edit set 1", exact: true }).click();
-  await page.getByRole("button", { name: "Delete set", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Delete set 1", exact: true })
+    .click();
   await saved(page);
   expect((await read(page)).current!.exercises[0].sets).toEqual([]);
   await page
@@ -375,7 +392,11 @@ test("finish, correct history, cancel workout deletion, delete, and undo retain 
   });
   await history.getByText("Correct a set", { exact: true }).click();
   await history
-    .getByRole("button", { name: "Correct Dumbbell curl set 1", exact: true })
+    .getByRole("button", { name: "Options for set 1", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Edit set 1", exact: true })
     .click();
   await history
     .getByLabel("Correct history weight", { exact: true })
@@ -388,10 +409,11 @@ test("finish, correct history, cancel workout deletion, delete, and undo retain 
   const beforeDelete = (await read(page)).history;
   expect(beforeDelete[0].exercises[0].sets[0].weight).toBe(22.5);
   await history
-    .getByRole("button", { name: "Correct Dumbbell curl set 1", exact: true })
+    .getByRole("button", { name: "Options for set 1", exact: true })
     .click();
-  await history
-    .getByRole("button", { name: "Delete set", exact: true })
+  await page
+    .getByRole("dialog", { name: "Set 1 options", exact: true })
+    .getByRole("button", { name: "Delete set 1", exact: true })
     .click();
   await saved(page);
   expect((await read(page)).history[0].exercises[0].sets).toEqual([]);
