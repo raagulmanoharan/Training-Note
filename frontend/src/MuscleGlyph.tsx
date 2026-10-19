@@ -6,6 +6,8 @@ const targets: Record<MuscleGroup, number> = {
   back: 2,
   shoulders: 4,
   arms: 8,
+  biceps: 8,
+  triceps: 8,
   core: 16,
   legs: 480,
 };

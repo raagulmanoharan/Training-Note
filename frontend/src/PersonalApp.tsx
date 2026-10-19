@@ -310,7 +310,17 @@ export default function PersonalApp() {
       exercises,
       activeExerciseId: exercises[0]?.id || "",
     });
-    setSelected([...previous.groups]);
+    setSelected(
+      Array.from(
+        new Set(
+          exercises.map(
+            (e) =>
+              catalogExercises.find((item) => item.id === e.catalogId)?.group ??
+              e.group,
+          ),
+        ),
+      ),
+    );
     setPickedExercises(
       Array.from(new Set(exercises.map((e) => e.catalogId))).filter((id) =>
         catalogExercises.some((e) => e.id === id),
@@ -991,42 +1001,45 @@ export default function PersonalApp() {
                       description="Pick one or more muscle groups."
                     />
                     <div className="nb-muscle-grid">
-                      {groups.map((g) => (
-                        <DSChoice
-                          selected={selected.includes(g.id)}
-                          icon={
-                            <MuscleGlyph
-                              group={g.id}
-                              selected={selected.includes(g.id)}
-                            />
-                          }
-                          key={g.id}
-                          className={`nb-muscle-card ${selected.includes(g.id) ? "selected" : ""}`}
-                          onClick={() => {
-                            const next = selected.includes(g.id)
-                              ? selected.filter((x) => x !== g.id)
-                              : [...selected, g.id];
-                            setSelected(next);
-                            setPickedExercises((ids) =>
-                              ids.filter((id) =>
-                                catalogExercises.some(
-                                  (e) => e.id === id && next.includes(e.group),
+                      {groups
+                        .filter((g) => g.id !== "arms")
+                        .map((g) => (
+                          <DSChoice
+                            selected={selected.includes(g.id)}
+                            icon={
+                              <MuscleGlyph
+                                group={g.id}
+                                selected={selected.includes(g.id)}
+                              />
+                            }
+                            key={g.id}
+                            className={`nb-muscle-card ${selected.includes(g.id) ? "selected" : ""}`}
+                            onClick={() => {
+                              const next = selected.includes(g.id)
+                                ? selected.filter((x) => x !== g.id)
+                                : [...selected, g.id];
+                              setSelected(next);
+                              setPickedExercises((ids) =>
+                                ids.filter((id) =>
+                                  catalogExercises.some(
+                                    (e) =>
+                                      e.id === id && next.includes(e.group),
+                                  ),
                                 ),
-                              ),
-                            );
-                            setCount((c) =>
-                              Math.min(
-                                12,
-                                availableTargets(next) || 12,
-                                Math.max(c, next.length || 1),
-                              ),
-                            );
-                            setPlan(null);
-                          }}
-                        >
-                          {g.name}
-                        </DSChoice>
-                      ))}
+                              );
+                              setCount((c) =>
+                                Math.min(
+                                  12,
+                                  availableTargets(next) || 12,
+                                  Math.max(c, next.length || 1),
+                                ),
+                              );
+                              setPlan(null);
+                            }}
+                          >
+                            {g.name}
+                          </DSChoice>
+                        ))}
                     </div>
                     <div
                       className="nb-planning-mode"

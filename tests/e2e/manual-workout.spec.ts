@@ -11,7 +11,7 @@ test("manual back and biceps selection keeps six chosen variations in order and 
   await page
     .getByRole("button", { name: "Plan a workout", exact: true })
     .click();
-  for (const name of ["Back", "Arms"])
+  for (const name of ["Back", "Biceps"])
     await page.getByRole("button", { name, exact: true }).click();
   await page
     .getByRole("button", { name: "Pick exercises", exact: true })
@@ -70,13 +70,13 @@ test("manual picker filters removed groups and rejects duplicate or unavailable 
   await page
     .getByRole("button", { name: "Plan a workout", exact: true })
     .click();
-  for (const name of ["Back", "Arms"])
+  for (const name of ["Back", "Biceps"])
     await page.getByRole("button", { name, exact: true }).click();
   await page
     .getByRole("button", { name: "Pick exercises", exact: true })
     .click();
   await page.getByRole("button", { name: "Hammer curl", exact: true }).click();
-  await page.getByRole("button", { name: "Arms", exact: true }).click();
+  await page.getByRole("button", { name: "Biceps", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Build my workout", exact: true }),
   ).toBeDisabled();
@@ -101,4 +101,61 @@ test("manual picker filters removed groups and rejects duplicate or unavailable 
       ),
     ).toBe(false);
   }
+});
+
+test("biceps and triceps suggestions stay separate and legacy arm backups remain valid", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const result = await page.evaluate(async () => {
+    const l = await import("/frontend/src/personalLogic.ts"),
+      s = await import("/frontend/src/personalStore.ts");
+    const settings = { ...s.defaultState().settings, gym: "Test gym" };
+    const plans = Array.from(
+      { length: l.availableTargets(["back", "biceps"]) - 1 },
+      (_, i) => l.generatePlan(["back", "biceps"], i + 2, settings),
+    );
+    const curl = l.generateCustomPlan(["curl"], settings);
+    curl.exercises[0].group = "arms";
+    curl.groups = ["arms"];
+    const legacy = s.defaultState();
+    legacy.current = curl;
+    s.validateState(legacy);
+    const oldBackup = await s.inspectBackup(await s.exportBackup(legacy));
+    const modern = s.defaultState();
+    modern.current = l.generateCustomPlan(
+      ["curl", "preacher-curl", "hammer-curl"],
+      settings,
+    );
+    s.validateState(modern);
+    const newBackup = await s.inspectBackup(await s.exportBackup(modern));
+    return {
+      groups: plans.flatMap((p) => p.exercises.map((e) => e.group)),
+      names: plans.flatMap((p) => p.exercises.map((e) => e.name)),
+      swaps: l.suggestSwap(curl.exercises[0], curl).map((e) => e.group),
+      triceps: l
+        .generatePlan(["triceps"], 1, settings)
+        .exercises.map((e) => e.group),
+      oldGroup: oldBackup.state.current!.exercises[0].group,
+      newGroups: newBackup.state.current!.exercises.map((e) => e.group),
+    };
+  });
+  expect(result.groups.every((g) => g === "back" || g === "biceps")).toBe(true);
+  expect(result.names.join(" ")).not.toMatch(/triceps|pushdown/i);
+  expect(result.swaps.length).toBeGreaterThan(0);
+  expect(result.swaps.every((g) => g === "biceps")).toBe(true);
+  expect(result.triceps).toEqual(["triceps"]);
+  expect(result.oldGroup).toBe("arms");
+  expect(result.newGroups).toEqual(["biceps", "biceps", "biceps"]);
+  await page
+    .getByRole("button", { name: "Plan a workout", exact: true })
+    .click();
+  for (const name of ["Back", "Biceps"])
+    await page.getByRole("button", { name, exact: true }).click();
+  await page
+    .getByRole("button", { name: "Build my workout", exact: true })
+    .click();
+  await expect(page.locator(".nb-lineup")).not.toContainText(
+    /triceps|pushdown/i,
+  );
 });

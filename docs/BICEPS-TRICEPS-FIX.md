@@ -1,0 +1,9 @@
+# Correct biceps-specific planning
+
+Bug: the picker exposed only Arms; automatic plans could therefore include elbow-extension/triceps movements when the user intended biceps. New planning must offer Biceps and Triceps explicitly. Biceps pools and swaps must contain only biceps catalog entries; multiple curl variants remain permitted through manual selection. Existing catalog IDs, stored legacy Arms sessions and their actual values remain unchanged. Legacy Arms metadata remains available for historical display and backup validation. New biceps/triceps group IDs are accepted by storage validation; the object-store schema does not change.
+
+Journey: choose Back+Biceps, request suggestions or pick known curls, review the movement names, start and log. No pushdowns/extensions may appear as biceps suggestions or swaps. Returning to an old session preserves its exact performed work. Repeating/editing a legacy session derives new picker choices from current catalog classification without relabeling old records. Existing unlogged triceps choices are not silently removed from an active session; the user can review them explicitly.
+
+Acceptance: biceps auto pools and curl swaps exclude triceps, triceps pools exclude curls, manual six-movement selection persists, new backups round-trip, legacy Arms backups remain importable, and the live deployment passes production offline checks.
+
+Verification: production build passed. Full development regression:40passed,1intentional production-offline skip in1.3minutes. Focused assertions cover every valid Back+Biceps suggestion count, absence of triceps names/groups, legacy curl swaps into only biceps entries, triceps-only plans, old Arms backup round-trip, new Biceps backup round-trip, and the six-movement manual UI/persistence. Existing storage-failure/revision/backup/effort/session tests passed. Production offline coverage is verified against the live release separately.

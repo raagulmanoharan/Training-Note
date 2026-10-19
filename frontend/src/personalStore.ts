@@ -1,5 +1,12 @@
 export type MuscleGroup =
-  "chest" | "back" | "shoulders" | "legs" | "arms" | "core";
+  | "chest"
+  | "back"
+  | "shoulders"
+  | "legs"
+  | "arms"
+  | "biceps"
+  | "triceps"
+  | "core";
 export type Unit = "kg" | "lb";
 export interface PersonalSet {
   id: string;
@@ -149,6 +156,8 @@ const validGroups = new Set([
   "shoulders",
   "legs",
   "arms",
+  "biceps",
+  "triceps",
   "core",
 ]);
 function fail(): never {

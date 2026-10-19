@@ -12,7 +12,9 @@ export const groups: { id: MuscleGroup; name: string }[] = [
   { id: "back", name: "Back" },
   { id: "shoulders", name: "Shoulders" },
   { id: "legs", name: "Legs" },
-  { id: "arms", name: "Arms" },
+  { id: "arms", name: "Arms" }, // Historical sessions; new planning uses explicit muscles.
+  { id: "biceps", name: "Biceps" },
+  { id: "triceps", name: "Triceps" },
   { id: "core", name: "Core" },
 ];
 export const exercises: CatalogExercise[] = [];
@@ -152,12 +154,12 @@ const entries: [string, string, MuscleGroup, string, string, string[]][] = [
   ["leg-curl", "Leg curl", "legs", "knee flexion", "Machine", ["hamstrings"]],
   ["calf", "Calf raise", "legs", "calves", "Machine", []],
   ["db-calf", "Dumbbell calf raise", "legs", "calves", "Dumbbells", []],
-  ["curl", "Dumbbell curl", "arms", "elbow flexion", "Dumbbells", ["biceps"]],
-  ["cable-curl", "Cable curl", "arms", "elbow flexion", "Cable", ["biceps"]],
+  ["curl", "Dumbbell curl", "biceps", "elbow flexion", "Dumbbells", ["biceps"]],
+  ["cable-curl", "Cable curl", "biceps", "elbow flexion", "Cable", ["biceps"]],
   [
     "pushdown",
     "Triceps pushdown",
-    "arms",
+    "triceps",
     "elbow extension",
     "Cable",
     ["triceps"],
@@ -165,7 +167,7 @@ const entries: [string, string, MuscleGroup, string, string, string[]][] = [
   [
     "db-triceps",
     "Overhead triceps extension",
-    "arms",
+    "triceps",
     "elbow extension",
     "Dumbbells",
     ["triceps"],
@@ -181,7 +183,7 @@ const entries: [string, string, MuscleGroup, string, string, string[]][] = [
   [
     "preacher-curl",
     "Preacher curl",
-    "arms",
+    "biceps",
     "elbow flexion",
     "EZ bar",
     ["biceps"],
@@ -189,7 +191,7 @@ const entries: [string, string, MuscleGroup, string, string, string[]][] = [
   [
     "hammer-curl",
     "Hammer curl",
-    "arms",
+    "biceps",
     "elbow flexion",
     "Dumbbells",
     ["biceps", "brachialis"],

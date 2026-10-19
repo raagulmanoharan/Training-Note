@@ -30,7 +30,12 @@ export function makeExercise(
 export function availableTargets(selected: MuscleGroup[]): number {
   return new Set(
     exercises
-      .filter((e) => selected.includes(e.group))
+      .filter(
+        (e) =>
+          selected.includes(e.group) ||
+          (selected.includes("arms") &&
+            (e.group === "biceps" || e.group === "triceps")),
+      )
       .map((e) => e.group + ":" + e.target),
   ).size;
 }
@@ -50,7 +55,11 @@ export function generatePlan(
     );
   const uniqueGroups = Array.from(new Set(selected));
   const pools = uniqueGroups.map((group) =>
-    exercises.filter((e) => e.group === group),
+    exercises.filter(
+      (e) =>
+        e.group === group ||
+        (group === "arms" && (e.group === "biceps" || e.group === "triceps")),
+    ),
   );
   const chosen: CatalogExercise[] = [];
   const used = new Set<string>();
@@ -71,7 +80,7 @@ export function generatePlan(
   return {
     id: crypto.randomUUID(),
     startedAt: new Date().toISOString(),
-    groups: uniqueGroups,
+    groups: Array.from(new Set(planned.map((e) => e.group))),
     exercises: planned,
     activeExerciseId: planned[0].id,
   };
@@ -101,10 +110,13 @@ export function suggestSwap(
   exercise: PersonalExercise,
   workout: PersonalWorkout,
 ): CatalogExercise[] {
+  const primaryGroup =
+    exercises.find((item) => item.id === exercise.catalogId)?.group ??
+    exercise.group;
   return exercises.filter(
     (candidate) =>
       candidate.target === exercise.target &&
-      candidate.group === exercise.group &&
+      candidate.group === primaryGroup &&
       candidate.id !== exercise.catalogId &&
       !workout.exercises.some(
         (e) => e.id !== exercise.id && e.catalogId === candidate.id,
