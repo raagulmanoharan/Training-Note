@@ -16,3 +16,14 @@ Loading/failure: GitHub Actions builds and uploads static dist; a failed build d
 ## 19 October2026 — user-provided destination
 
 The user supplied `raagulmanoharan/Training-Note` and authorized deployment for a same-day gym trial. Repository access and admin/push permissions verified; remote is empty. Current release is the real card-based React app with local IndexedDB, backup, offline fonts and the persistent collapsible session clock. Relative assets and manifest scope work with `/Training-Note/`; the production smoke test now derives its expected scope from PAGES_URL. No private browser data or secrets are published. Earlier repository-creation failure above is historical. Live verification results will follow.
+
+### Live publication verified
+
+- Public repository: https://github.com/raagulmanoharan/Training-Note
+- Live HTTPS app: https://raagulmanoharan.github.io/Training-Note/
+- Initial release commit: f2ba07a70faa08146a77a60a664a8cc91d046a48.
+- Deploy GitHub Pages workflow succeeded: https://github.com/raagulmanoharan/Training-Note/actions/runs/39247711392.
+- Direct integration attempt to create the Pages site returned403, but the repository workflow successfully deployed; no user settings action is required for the now-live site.
+- HTTPS returned200. Real Chromium production smoke test passed on the public URL: project-relative manifest/icons, saved actuals, reload, correct `/Training-Note/` service worker scope, cached fonts and additional offline logging. One live browser test passed in3seconds. Browser fetch is used for manifest/icon checks so requests honor browser networking/proxy configuration.
+- A separate isolated live-browser walkthrough verified Back+Arms with3exercises previews Lat pulldown, Dumbbell curl and Seated cable row; no triceps movement. User records were not seeded or changed: all test data lived in fresh isolated browser contexts.
+- On iPhone, open the live URL in Safari and use Share→Add to Home Screen. Load once online before offline use. The app stores records on that browser/device; export a backup after a session. Changing devices/origins requires backup import.

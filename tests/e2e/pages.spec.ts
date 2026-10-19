@@ -18,19 +18,25 @@ test("Pages project path: live assets, durable actuals and offline logging", asy
   await expect(
     page.getByRole("heading", { name: "What are you training?" }),
   ).toBeVisible();
-  const manifestResponse = await page.request.get(
-    new URL("manifest.webmanifest", appURL).href,
-  );
-  expect(manifestResponse.ok()).toBe(true);
-  const manifest = await manifestResponse.json();
-  expect(new URL(manifest.scope, manifestResponse.url()).pathname).toBe(
+  const manifestResponse = await page.evaluate(async (url) => {
+    const response = await fetch(url);
+    return {
+      ok: response.ok,
+      url: response.url,
+      manifest: await response.json(),
+    };
+  }, new URL("manifest.webmanifest", appURL).href);
+  expect(manifestResponse.ok).toBe(true);
+  const manifest = manifestResponse.manifest;
+  expect(new URL(manifest.scope, manifestResponse.url).pathname).toBe(
     projectPath,
   );
   for (const icon of manifest.icons)
     expect(
-      (
-        await page.request.get(new URL(icon.src, manifestResponse.url()).href)
-      ).ok(),
+      await page.evaluate(
+        async (url) => (await fetch(url)).ok,
+        new URL(icon.src, manifestResponse.url).href,
+      ),
     ).toBe(true);
   await page.getByRole("button", { name: "Chest", exact: true }).click();
   await page.getByRole("button", { name: "Back", exact: true }).click();

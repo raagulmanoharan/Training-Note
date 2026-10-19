@@ -1,6 +1,6 @@
 # Gym Notebook
 
-Deployment target: [`raagulmanoharan/Training-Note`](https://github.com/raagulmanoharan/Training-Note). GitHub Pages address: https://raagulmanoharan.github.io/Training-Note/. Deployment is managed by the Pages workflow; see its latest result before assuming a release is live.
+Deployment target: [`raagulmanoharan/Training-Note`](https://github.com/raagulmanoharan/Training-Note). GitHub Pages address: https://raagulmanoharan.github.io/Training-Note/. Live deployment verified19October2026, including recorded-set recovery and offline logging. Deployment is managed by the Pages workflow.
 
 A personal, mobile-first gym log. No account, backend, analytics or subscription. Your workout records live in this browser's IndexedDB database.
 
