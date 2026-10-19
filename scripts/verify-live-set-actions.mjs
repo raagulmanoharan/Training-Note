@@ -35,6 +35,11 @@ await page
   .click();
 const menu = page.getByRole("dialog", { name: "Set 1 options", exact: true });
 await expect(menu).toContainText("20 kg × 10 reps");
+await menu.evaluate(async (element) => {
+  await Promise.all(
+    element.getAnimations({ subtree: true }).map((animation) => animation.finished),
+  );
+});
 await page.screenshot({ path: `${output}/live-menu.png` });
 await menu.getByRole("button", { name: "Edit set 1", exact: true }).click();
 await page.getByLabel("Edit weight", { exact: true }).fill("22.5");

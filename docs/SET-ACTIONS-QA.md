@@ -45,3 +45,7 @@ The saved-row and history correction routes were migrated in the existing workou
 After the implementation freeze, `COACHLINE_URL=http://127.0.0.1:5174 npm test -- --reporter=list` completed with **53 passed and 1 skipped in 2.6 minutes**, with no failures or retries. All five focused scenarios passed in that same run; the new saved-set scenario took 8.7 seconds. Current-workout correction/deletion/undo, historical correction/direct deletion/undo, effort retention, complete workout/return journeys, storage failures, backup validation and revision protection all passed. The one skipped local-development test requires the production service worker; public Pages/offline verification is a separate release check.
 
 No human or physical-device study was performed. Actual one-hand speed, touch comfort, mobile-keyboard occlusion and browser storage eviction remain unmeasured.
+
+## Published verification
+
+Release `2523586a3892263f81236063b11bdf8cdd18cdee` deployed successfully in Pages run 39271580133. The public project-path/offline test passed in 3.1 seconds. A separate isolated browser verified the exact set context, Edit, Delete, Undo and persisted edited values after reload with no page errors. Live screenshots and JSON are in `design/set-actions/live-*`; no user database was accessed.

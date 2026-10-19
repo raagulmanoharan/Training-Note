@@ -47,3 +47,14 @@ The user supplied `raagulmanoharan/Training-Note` and authorized deployment for 
 - Live Pages test:1 passed in2.5s, including HTTP200, project-scoped assets/manifest/icons, self-hosted fonts, actual logging, reload, correct service-worker scope, offline reopening and another offline actual.
 - Separate public-browser check confirmed the new dark release, all six Back+Biceps exercises in the chosen order, contextual exercise options, explicit target edit from3 to4, and60kg×8 plus the edited target after reload. Zero page errors. Screenshot and JSON: `design/focus-live-workout.png`, `design/focus-live-review.json`.
 - Both public checks used isolated synthetic browser contexts; no user database was accessed, uploaded or cleared. Existing same-origin data schema and storage/backup engine are unchanged.
+
+## Saved-set options — published 19 October 2026
+
+- Release: `2523586a3892263f81236063b11bdf8cdd18cdee`.
+- Successful Pages workflow: https://github.com/raagulmanoharan/Training-Note/actions/runs/39271580133.
+- Live app: https://raagulmanoharan.github.io/Training-Note/.
+- Saved rows now use an inline status tick and aligned numeric columns. A single ellipsis opens contextual Edit and Delete actions for current or historical sets; deletion retains Undo.
+- Final local suite: 53 passed, 1 expected production-only skip. Build and component-gallery checks passed. See SET-ACTIONS-QA.md for narrow-screen, enlarged-text and failed-write recovery evidence.
+- Live Pages check: 1 passed in 3.1 seconds (scenario 2.3 seconds), covering production assets, manifest/icons, project-scoped service worker, self-hosted fonts, actual logging, reload, offline reopen and additional offline logging.
+- Separate public-browser walkthrough confirmed no upfront Edit link, correct set menu context, correction from 20 to 22.5 kg, selected-set deletion, Undo and exact edited value after reload. Zero page errors. Captures and report: `design/set-actions/live-receipt.png`, `live-menu.png`, `live-review.json`.
+- All checks used isolated synthetic browsers. Existing user data, schema and storage engine are unchanged.
