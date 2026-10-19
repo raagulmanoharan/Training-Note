@@ -27,3 +27,13 @@ The user supplied `raagulmanoharan/Training-Note` and authorized deployment for 
 - HTTPS returned200. Real Chromium production smoke test passed on the public URL: project-relative manifest/icons, saved actuals, reload, correct `/Training-Note/` service worker scope, cached fonts and additional offline logging. One live browser test passed in3seconds. Browser fetch is used for manifest/icon checks so requests honor browser networking/proxy configuration.
 - A separate isolated live-browser walkthrough verified Back+Arms with3exercises previews Lat pulldown, Dumbbell curl and Seated cable row; no triceps movement. User records were not seeded or changed: all test data lived in fresh isolated browser contexts.
 - On iPhone, open the live URL in Safari and use Share→Add to Home Screen. Load once online before offline use. The app stores records on that browser/device; export a backup after a session. Changing devices/origins requires backup import.
+
+## Modern UI and complete action flows — published19October2026
+
+- Release commit: `24b3df272c527c8eb996fed07d6925abc8220841`.
+- Successful Pages workflow: https://github.com/raagulmanoharan/Training-Note/actions/runs/39258128485.
+- Same live origin: https://raagulmanoharan.github.io/Training-Note/.
+- Local release regression:48passed,1intentional production-onlyskip. Build and PWA generation passed.
+- Public Pages smoke:1passed in2.9seconds; real project-path assets, manifest/icons, self-hosted fonts, explicit actuals, reload, service-worker scope, offline reopen and additional offline logging.
+- A separate live isolated browser confirmed Biceps suggestions exclude triceps, Add Hammercurl works, remove/Undo restores both movements, and a logged set survives reload. The assertion waits for IndexedDB hydration before inspecting the reopened UI.
+- Storage schema/engine and existing data identities are unchanged. No user browser database was accessed or reset. Undo is the latest in-memory removal and is not a trash archive across reloads.

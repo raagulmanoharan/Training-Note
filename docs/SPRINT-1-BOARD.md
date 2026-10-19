@@ -87,4 +87,4 @@ Completed four Home content cards (launch, attendance, progress, latest workout)
 | Add/remove exercises, discard session, delete history, Undo | Flow engineer | Done | MODERN-FLOWS.md; acknowledged writes and recovery |
 | Modern cards, typography, compact controls and contextual sheets | Root integration | Done | MODERN-DESIGN-PASS.md; actual mobile captures |
 | Full workout state and regression verification | QA agent + root | Done | MODERN-QA.md;48browserchecks passed |
-| Publish to existing Training-Note Pages origin | Root | Deploying | GitHub Actions and live offline verification required |
+| Publish to existing Training-Note Pages origin | Root | Done | Pages run39258128485 succeeded; live offline/reload and add/remove/Undo verified |

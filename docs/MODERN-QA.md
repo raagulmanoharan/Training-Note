@@ -61,3 +61,5 @@ The history comparison evidence is now inside the intentional **Lift comparisons
 Existing legacy Swap tests act on the active exercise, where Swap remains visible, so they did not require preview-menu changes.
 
 Root consolidated release run: **48 passed, 1 intentional production-only skip** in2.0minutes. It includes the8new journeys, the unchanged persistence/backup/effort regression coverage and a new last-history-set reachability assertion. One earlier rerun was interrupted by a development hot reload; the unchanged scenario passed in the final frozen-source run. Shared visual capture confirms Log and Next stay in view at320×740 after5recordedsets. Final footer layout adjustment gives Add exercise a full-width row; no data behavior changed.
+
+Live release verification passed on the public Training-Note origin: Pages project-path/offline browser test1passed in2.9seconds, plus isolated Add/remove/Undo and logged-set reload walkthrough. Successful deployment run39258128485 published release24b3df2.
