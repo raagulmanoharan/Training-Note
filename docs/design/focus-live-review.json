@@ -1,0 +1,17 @@
+{
+  "liveURL": "https://raagulmanoharan.github.io/Training-Note/",
+  "sixExerciseOrder": [
+    "Barbell deadlift",
+    "Lat pulldown",
+    "Seated cable row",
+    "Dumbbell curl",
+    "Preacher curl",
+    "Hammer curl"
+  ],
+  "actualPersisted": true,
+  "targetEditPersisted": true,
+  "contextualMenuOpened": true,
+  "accent": "#d9f279",
+  "pageErrors": [],
+  "fixture": "Fresh isolated browser; no user records accessed"
+}

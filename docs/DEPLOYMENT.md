@@ -37,3 +37,13 @@ The user supplied `raagulmanoharan/Training-Note` and authorized deployment for 
 - Public Pages smoke:1passed in2.9seconds; real project-path assets, manifest/icons, self-hosted fonts, explicit actuals, reload, service-worker scope, offline reopen and additional offline logging.
 - A separate live isolated browser confirmed Biceps suggestions exclude triceps, Add Hammercurl works, remove/Undo restores both movements, and a logged set survives reload. The assertion waits for IndexedDB hydration before inspecting the reopened UI.
 - Storage schema/engine and existing data identities are unchanged. No user browser database was accessed or reset. Undo is the latest in-memory removal and is not a trash archive across reloads.
+
+## Focus edition — published 19 October 2026
+
+- Release: `85443bbbae329bf547fc91925bc3db9162b2ff04`.
+- Successful Pages workflow: https://github.com/raagulmanoharan/Training-Note/actions/runs/39261992402.
+- Live app: https://raagulmanoharan.github.io/Training-Note/.
+- Local verification:52 distinct scenarios passed across the final regression runs and targeted rechecks;1 production-only local skip. Final integrated workout/focus rerun:7 passed in35.7s. Final notice target refinement: six-exercise finish/return check passed in11.8s. Build passed.
+- Live Pages test:1 passed in2.5s, including HTTP200, project-scoped assets/manifest/icons, self-hosted fonts, actual logging, reload, correct service-worker scope, offline reopening and another offline actual.
+- Separate public-browser check confirmed the new dark release, all six Back+Biceps exercises in the chosen order, contextual exercise options, explicit target edit from3 to4, and60kg×8 plus the edited target after reload. Zero page errors. Screenshot and JSON: `design/focus-live-workout.png`, `design/focus-live-review.json`.
+- Both public checks used isolated synthetic browser contexts; no user database was accessed, uploaded or cleared. Existing same-origin data schema and storage/backup engine are unchanged.

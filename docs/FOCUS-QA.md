@@ -71,3 +71,7 @@ The final bounded Home polish (heading wording, notice wrapping and attendance s
 Root applied the last visual-only fixes: notice titles use their own line, visit counts have space before their label, first-use Home says “Your next workout.”, and the installed-app status-bar configuration follows the dark theme. Then `full-workout.spec.ts` and all four `focus-ui.spec.ts` scenarios passed together: **7 passed in35.7s**. The final production build passed. The layout capture script passed again: at320×740, sixth-set Log occupies y596–652 and Next y673–721; at390×844, Log occupies y600–656 and Next y672–720. Local fonts loaded; no external requests or JavaScript errors; all five recorded sets survived reload. Final screenshots were visually inspected, including complete recent receipts, notice layout and stacked enlarged-text numeric fields.
 
 A final notice-only adjustment gives dismiss buttons a dedicated44px target at the upper right instead of placing × inline in the text. The six-exercise through finish/return scenario passed again in11.8s; the production build passed. No application behavior changed after this recheck.
+
+### Published release verification
+
+Release85443bb deployed successfully in Pages run39261992402. The live offline/assets/actuals test passed in2.5s. A second public-browser walkthrough verified the exact six-exercise Back+Biceps order, the new exercise menu, an explicit target edit and a recorded60kg×8 set after reload. Both used isolated synthetic contexts. Evidence and final screenshot are linked in DEPLOYMENT.md.

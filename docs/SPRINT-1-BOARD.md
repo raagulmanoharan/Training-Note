@@ -97,6 +97,6 @@ Completed four Home content cards (launch, attendance, progress, latest workout)
 | Consolidate occasional actions into contextual sheets | Hierarchy engineer | Done | FOCUS-FLOWS.md; explicit target editor and Finish confirmation |
 | Remove hidden scrolling and prevent lost corrections | Engineer + root | Done | Latest-two receipt disclosure, correction guard, active-title scrolling |
 | Verify fresh gym persona, long labels, enlarged text and recovery | Fresh QA + regression agent | Done | FOCUS-QA.md; actual Chromium hit-testing and transaction assertions |
-| Publish on existing Pages origin | Root | Ready to publish | DEPLOYMENT.md will record release evidence |
+| Publish on existing Pages origin | Root | Done | Pages run39261992402; live offline and six-exercise checks passed |
 
 This replaces the previous pale-card visual direction. It does not claim the independent saved-routine/domain-model backlog is implemented.
