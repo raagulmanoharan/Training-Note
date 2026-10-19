@@ -58,3 +58,17 @@ The user supplied `raagulmanoharan/Training-Note` and authorized deployment for 
 - Live Pages check: 1 passed in 3.1 seconds (scenario 2.3 seconds), covering production assets, manifest/icons, project-scoped service worker, self-hosted fonts, actual logging, reload, offline reopen and additional offline logging.
 - Separate public-browser walkthrough confirmed no upfront Edit link, correct set menu context, correction from 20 to 22.5 kg, selected-set deletion, Undo and exact edited value after reload. Zero page errors. Captures and report: `design/set-actions/live-receipt.png`, `live-menu.png`, `live-review.json`.
 - All checks used isolated synthetic browsers. Existing user data, schema and storage engine are unchanged.
+
+## Unified workout editing — published 19 October 2026
+
+- Release: `4f3f809df4ff71cc44f2bfa74bc0ec395cf62307`.
+- Successful Pages workflow: https://github.com/raagulmanoharan/Training-Note/actions/runs/39276564803.
+- Live app: https://raagulmanoharan.github.io/Training-Note/.
+- Multi-select chooser stages changes and saves once; existing/new exercises share one selected state and review view. Header, search and commit controls remain reachable on narrow/short screens. Destructive selection changes review the affected actuals/drafts and retain Undo.
+- Swap uses canonical matching and a full searchable replacement picker, prioritizing exact targets and then the same muscle group. A typed draft is protected even if earlier sets were logged.
+- Single and bulk target editors support sets, rep ranges and optional rest. Bulk corrections are separate and preserve recorded-set identities, timestamps, effort and pending drafts. Rest persists a wall-clock deadline and supports extension/skip.
+- Optional rest fields were added without changing schema version or resetting data. Legacy backup signatures still validate; undefined optional fields are omitted consistently from canonical backup checksums.
+- Local production build passed. 66 applicable distinct checks verified: full run 65 passed, 1 expected local production-only skip, 1 stale rest-off assertion; corrected assertion passed on a targeted rerun. All ten new flow scenarios passed in the full run. See WORKOUT-EDITING-QA.md.
+- Public Pages check: 1 passed in 2.6 seconds (scenario 1.8 seconds), including project-path assets, manifest/icons, service-worker scope, saved actuals/reload, offline reopening and additional offline logging.
+- Separate public UI walkthrough passed multi-selecting four shoulder exercises, swapping lateral raise to cable lateral raise, applying sets/rest to all four, logging two sets, bulk-correcting their weights, and reloading with exact data and timer deadline. Zero page errors. Screenshots and report are under `design/workout-editing/live-*`.
+- All verification used isolated synthetic browser contexts; no user database was accessed, reset or uploaded. Physical iOS keyboard behavior remains unverified; reduced viewport and enlarged-text checks ran in Chromium.

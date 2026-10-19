@@ -53,6 +53,10 @@ Tests use isolated browser contexts and synthetic IndexedDB records. Storage fai
 
 The new test file is `tests/e2e/workout-editing.spec.ts`. Existing add/swap selectors in four regression files were migrated to the actual staged picker and direct replacement flow, while preserving their original persistence and workout-completion assertions. Package test commands include the new flow tests and the rest engineer's `rest-logic.spec.ts` checks.
 
+## Live release checks
+
+Release `4f3f809df4ff71cc44f2bfa74bc0ec395cf62307` deployed in successful Pages run 39276564803. The public production-path and offline test passed in 2.6 seconds. An additional isolated public-browser walkthrough verified multiple selection, canonical direct swap, four-exercise bulk targets/rest, two-record actual correction and rest/actual persistence after reload. No page errors occurred. Captures and JSON are in `design/workout-editing/live-*`.
+
 
 ## Executed commands and evidence
 

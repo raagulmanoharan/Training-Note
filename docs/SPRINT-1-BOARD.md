@@ -115,8 +115,8 @@ This replaces the previous pale-card visual direction. It does not claim the ind
 | Story | Owner | Status | Evidence |
 | --- | --- | --- | --- |
 | Map real in-gym selection, swap, editing and rest journeys | UX + root | Done | WORKOUT-EDITING-UX.md and WORKOUT-EDITING-INTEGRATION.md, recorded before implementation |
-| Select and review existing/new exercises together; save once | Picker engineer + root | Done locally; QA passed | Unified Selected view, unchanged old IDs/order, explicit review and Undo for removed records |
-| Replace unavailable equipment without leaving Swap | Root | Done locally; QA passed | Searchable picker, canonical same-target ranking, pending-entry guard even after recorded sets |
-| Edit one or several planned targets; separately correct actual sets | Editor engineer + root | Done locally; QA passed | BULK-EDITING.md; opt-in fields and explicit selection scope |
-| Optional rest preference and durable countdown | Rest engineer + root | Done locally; QA passed | REST-FLOW.md; legacy backup/checksum compatibility and wall-clock timer |
-| Narrow-screen, failure/retry, regression and public release checks | QA + UX + root | Publishing | WORKOUT-EDITING-QA.md; 66 applicable checks verified, production build passed; live checks pending |
+| Select and review existing/new exercises together; save once | Picker engineer + root | Done | Unified Selected view, unchanged old IDs/order, explicit review and Undo for removed records |
+| Replace unavailable equipment without leaving Swap | Root | Done | Searchable picker, canonical same-target ranking, pending-entry guard even after recorded sets |
+| Edit one or several planned targets; separately correct actual sets | Editor engineer + root | Done | BULK-EDITING.md; opt-in fields and explicit selection scope |
+| Optional rest preference and durable countdown | Rest engineer + root | Done | REST-FLOW.md; legacy backup/checksum compatibility and wall-clock timer |
+| Narrow-screen, failure/retry, regression and public release checks | QA + UX + root | Done | WORKOUT-EDITING-QA.md; 66 applicable checks verified; Pages run 39276564803 and both public checks passed |

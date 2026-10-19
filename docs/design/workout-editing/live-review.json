@@ -1,0 +1,10 @@
+{
+  "url": "https://raagulmanoharan.github.io/Training-Note/",
+  "multipleSelection": true,
+  "sameTargetSwap": true,
+  "bulkTargets": true,
+  "bulkActuals": true,
+  "restAfterReload": true,
+  "pageErrors": [],
+  "fixture": "Fresh isolated synthetic browser; no user database accessed"
+}
