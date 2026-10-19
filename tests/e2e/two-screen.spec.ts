@@ -202,5 +202,6 @@ test("two screens: mixed or harder performance never becomes a steady or growth 
   await page
     .getByRole("button", { name: "View progress details", exact: true })
     .click();
+  await page.getByText("Lift comparisons", { exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("Some work felt harder");
 });

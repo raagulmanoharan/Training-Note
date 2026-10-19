@@ -31,7 +31,7 @@ These journeys are ready product contracts for the personal-only pivot. Preparat
 
 ## PERS03 — Protect, export and recover local records
 
-**Actor/need:** User expects progress to survive weeks and wants a recovery path. **Prerequisite:** Same browser profile and app origin. **Entry:** Backup tab, first successful save or browser-persistence status notice.
+**Actor/need:** User expects progress to survive weeks and wants a recovery path. **Prerequisite:** Same browser profile and app origin. **Entry:** Home settings/backup panel, first successful save or browser-persistence status notice.
 
 1. See Local storage status, Last backup timestamp and the plain limitation that site-data clearing/device loss can erase records. Do not show a permanent modal or alarm every session.
 2. Tap Protect local storage to request persistent storage if supported. Show Granted, Not granted or Unsupported truthfully; refusal does not block tracking.
@@ -43,10 +43,10 @@ These journeys are ready product contracts for the personal-only pivot. Preparat
 
 ## PERS04 — Understand progress without misleading coaching
 
-**Actor/need:** Returning user chooses an appropriate next session load using their own records. **Prerequisite:** At least one actual saved session; equipment/load convention known for qualified comparisons. **Entry:** Last time on Today or the Progress tab.
+**Actor/need:** Returning user chooses an appropriate next session load using their own records. **Prerequisite:** At least one actual saved session; equipment/load convention known for qualified comparisons. **Entry:** Last time in Workout or Home’s training-history panel.
 
 1. Read dated ordered prior sets for the same movement/context. Explicitly separate Last time, Target and Today. No record says No previous sets for this setup.
-2. Open Progress and inspect visible dated sessions and all actual sets; no nested history drilldown is needed. Partial sessions and substitutions remain labeled; correction uses the same validation and stable identities as PERS02.
+2. Open training history and inspect visible dated sessions and all actual sets; no nested history drilldown is needed. Partial sessions and substitutions remain labeled; correction uses the same validation and stable identities as PERS02.
 3. Compare all ordered comparable working sets, showing descriptive rep/load changes. If equipment, movement or units differ, explain why no direct comparison is shown. Do not infer nonadherence from missing sessions.
 4. Opt into a double-progression hint and set available load increment and rep range. Only a fully logged intended working-set count, same load, all at the upper rep bound may yield Consider [current + configured increment] next time. Otherwise retain current load/range as neutral context; a lower-performance day is not failure.
 5. Accepting a hint changes an editable future target only. Declining does nothing. Neither action creates actual sets or rewrites history. The user remains free to choose a different load.
@@ -66,4 +66,4 @@ These journeys are ready product contracts for the personal-only pivot. Preparat
 
 ## Current delivery boundaries
 
-The implemented MVP supports load/reps, Today/Progress/Backup tabs, curated unique-target planning with count caps, and same-target substitutions. It does not claim timed logging, session notes, intentional duplicate-target overrides, or anatomical isolation. These are outside the user's essential requested loop, not shipped features. Any remaining unexecuted acceptance condition stays a gap until verified.
+The implemented MVP supports load/reps, two primary Home/Workout screens with contextual history and backup panels, curated unique-target suggestions with count caps, deliberate manual exercise selection including same-target variations, and same-target substitutions. Biceps and Triceps are separate new-plan choices; legacy Arms records remain valid. The persistent session card shows elapsed session time and Finish; the clock may be hidden without pausing. It does not claim duration-based exercise logging, session notes, or anatomical isolation. These are outside the user's essential requested loop, not shipped features. Any remaining unexecuted acceptance condition stays a gap until verified.

@@ -1081,3 +1081,61 @@
   width: 100%;
   min-height: 52px;
 }
+
+/* Recorded values are a single edit target, with their saved receipt intact. */
+.ds-saved-row-button {
+  width: 100%;
+  padding: 8px 0;
+  background: transparent;
+  color: var(--ds-ink);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 52px;
+  grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr) 52px;
+  text-align: left;
+}
+.ds-saved-row-button .ds-set-ordinal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  line-height: 18px;
+}
+.ds-saved-row-button .ds-commit--saved {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.ds-saved-row-button .ds-commit--saved svg {
+  width: 14px;
+  height: 14px;
+}
+.ds-saved-edit {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font: 600 14px/20px var(--ds-font);
+  color: var(--ds-secondary);
+}
+.ds-saved-row-button:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+.ds-set-record .ds-set-record__actions {
+  min-height: 0;
+  padding-bottom: 8px;
+}
+.ds-theme .ds-effort__choices {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+.ds-theme .ds-effort__choices > .ds-button {
+  min-width: 0;
+  padding: 8px 4px;
+}

@@ -298,6 +298,7 @@ export function DSStatus({
       className={cx("ds-status", `ds-status--${state}`, className)}
       role="status"
       aria-live="polite"
+      title={text || statusText[state]}
     >
       <span className="ds-status__mark" aria-hidden="true">
         {state === "saving" || state === "opening" ? (
@@ -308,7 +309,7 @@ export function DSStatus({
           <AlertCircle size={13} />
         ) : null}
       </span>
-      {text || statusText[state]}
+      <span className="ds-status__text">{text || statusText[state]}</span>
     </span>
   );
 }
@@ -603,7 +604,7 @@ export function DSSetColumnLabels({ unit = "kg" }: { unit?: string }) {
       <span>Set</span>
       <span>{unit}</span>
       <span>Reps</span>
-      <span>Record</span>
+      <span className="ds-visually-hidden">Edit</span>
     </div>
   );
 }
@@ -674,13 +675,28 @@ export function DSSetRow(props: DSSetRowProps) {
   if (props.state === "saved")
     return (
       <div className="ds-set-record">
-        <DSSetGridRow
-          state="saved"
-          className={props.className}
+        <button
+          type="button"
+          data-state="saved"
+          className={cx(
+            "ds-set-grid-row",
+            "ds-set-grid-row--saved",
+            "ds-saved-row-button",
+            props.className,
+          )}
           data-testid={props["data-testid"]}
-          aria-label={`${base}: recorded`}
+          aria-label={props.editLabel || `Edit set ${props.number}`}
+          aria-describedby={`${id}-actual`}
+          onClick={props.onEdit}
+          disabled={props.disabled}
         >
-          <span className="ds-set-ordinal">{props.number}</span>
+          <span className="ds-set-ordinal">
+            <DSCommitControl
+              state="saved"
+              label={props.recordedLabel || `Recorded set ${props.number}`}
+            />
+            {props.number}
+          </span>
           <span className="ds-set-value">
             <span className="ds-visually-hidden">Weight </span>
             {props.weight}
@@ -690,25 +706,20 @@ export function DSSetRow(props: DSSetRowProps) {
             <span className="ds-visually-hidden">Reps </span>
             {props.reps}
           </span>
-          <DSCommitControl
-            state="saved"
-            label={props.recordedLabel || `Recorded set ${props.number}`}
-          />
-        </DSSetGridRow>
-        <div className="ds-set-record__actions">
-          {props.effort && (
-            <span className="ds-supporting">{props.effort}</span>
-          )}
-          <DSButton
-            variant="text"
-            size="compact"
-            startIcon={<Pencil size={13} aria-hidden="true" />}
-            onClick={props.onEdit}
-            disabled={props.disabled}
-          >
-            {props.editLabel || `Edit set ${props.number}`}
-          </DSButton>
-        </div>
+          <span className="ds-saved-edit">
+            <Pencil size={13} aria-hidden="true" /> Edit
+          </span>
+        </button>
+        <span id={`${id}-actual`} className="ds-visually-hidden">
+          Recorded {props.weight} {props.unit}, {props.reps} reps.
+        </span>
+        {props.effort && (
+          <div className="ds-set-record__actions">
+            {props.effort && (
+              <span className="ds-supporting">{props.effort}</span>
+            )}
+          </div>
+        )}
       </div>
     );
   const busy = props.state === "saving";
@@ -835,9 +846,11 @@ export function DSEffortChoices({
 }) {
   return (
     <DSSurface variant="inset" className="ds-effort">
-      <DSLabel>Optional set context</DSLabel>
       <h3>How many good-form reps were left?</h3>
-      <p>Tap a choice to save only this effort estimate.</p>
+      <p>
+        Think about your last set. How many more could you have done with good
+        form?
+      </p>
       <div
         className="ds-effort__choices"
         role="group"

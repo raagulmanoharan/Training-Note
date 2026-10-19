@@ -385,11 +385,17 @@ const dots: [number, number, number][] = [
 ];
 export default function MuscleGlyph({
   group,
+  groups,
   selected = false,
 }: {
   group: MuscleGroup;
+  groups?: MuscleGroup[];
   selected?: boolean;
 }) {
+  const targetMask = (groups?.length ? groups : [group]).reduce(
+    (mask, item) => mask | targets[item],
+    0,
+  );
   return (
     <svg
       viewBox="0 0 112 180"
@@ -406,11 +412,11 @@ export default function MuscleGlyph({
           cy={y}
           r={1.35}
           fill={
-            mask & targets[group]
+            mask & targetMask
               ? "var(--ds-accent, #e8492d)"
               : "var(--muscle-base, #c4c3bd)"
           }
-          opacity={selected || mask & targets[group] ? 1 : 0.72}
+          opacity={selected || mask & targetMask ? 1 : 0.72}
         />
       ))}
     </svg>

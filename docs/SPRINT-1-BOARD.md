@@ -78,3 +78,13 @@ Completed persistent session card with a strong Finish action, wall-clock elapse
 ## Card-based information organization
 
 Completed four Home content cards (launch, attendance, progress, latest workout), one active exercise worksheet card, and compact selectable exercise cards. The existing sticky session card remains distinct. Rebalanced padding so the new surfaces do not push logging/navigation out of small-screen view. Build, five targeted workflow/timer tests and320/390 real-app layout checks passed. No data-model changes. See `CARD-LAYOUT.md`.
+
+## 19 October 2026 — modern interaction pass
+
+| Story | Owner | Status | Evidence |
+| --- | --- | --- | --- |
+| Audit real planning/logging/edit/removal journeys | UX agent | Done | MODERN-UX-AUDIT.md; actual Chromium walkthrough, explicitly synthetic |
+| Add/remove exercises, discard session, delete history, Undo | Flow engineer | Done | MODERN-FLOWS.md; acknowledged writes and recovery |
+| Modern cards, typography, compact controls and contextual sheets | Root integration | Done | MODERN-DESIGN-PASS.md; actual mobile captures |
+| Full workout state and regression verification | QA agent + root | Done | MODERN-QA.md;48browserchecks passed |
+| Publish to existing Training-Note Pages origin | Root | Deploying | GitHub Actions and live offline verification required |

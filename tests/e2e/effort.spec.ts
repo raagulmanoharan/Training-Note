@@ -393,6 +393,7 @@ test("effort UI: history retains effort and muscle card exposes actual compariso
   await page
     .getByRole("button", { name: "View progress details", exact: true })
     .click();
+  await page.getByText("Lift comparisons", { exact: true }).click();
   const group = page
     .locator(".nb-muscle-insight")
     .filter({ has: page.getByRole("heading", { name: "Chest", exact: true }) });
