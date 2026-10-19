@@ -1,0 +1,109 @@
+/* Bounded sheets keep navigation and commit controls out of the scroll region. */
+.personal-app .nb-action-sheet {
+  bottom: var(--nb-keyboard-gap, 0px);
+  max-height: calc(
+    var(--nb-viewport-height, 100dvh) - 12px - env(safe-area-inset-top)
+  );
+}
+.personal-app .nb-action-sheet--picker[open],
+.personal-app .nb-action-sheet--editor[open] {
+  display: flex;
+  flex-direction: column;
+  height: min(
+    840px,
+    calc(var(--nb-viewport-height, 100dvh) - 12px - env(safe-area-inset-top))
+  );
+  overflow: hidden;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+.nb-action-sheet--picker > .nb-action-sheet-header,
+.nb-action-sheet--editor > .nb-action-sheet-header {
+  flex: none;
+  min-width: 0;
+}
+.nb-action-sheet-header h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.nb-action-sheet-header > .ds-button {
+  flex: 0 0 44px;
+}
+.nb-action-sheet--picker > .ds-inline-notice,
+.nb-action-sheet--editor > .ds-inline-notice {
+  flex: none;
+  max-height: 34%;
+  overflow: auto;
+}
+.nb-action-sheet--editor > .nb-workout-editor,
+.nb-action-sheet--picker > .nb-sheet-scroll {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scroll-padding: 14px 0 100px;
+  flex: 1;
+}
+.nb-action-sheet--editor > .nb-workout-editor {
+  display: flex;
+  flex-direction: column;
+}
+.nb-action-sheet--editor > .nb-workout-editor > * {
+  flex: none;
+}
+.nb-action-sheet--editor .nb-editor-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--ds-sheet);
+  padding-block: 12px 4px;
+  box-shadow: 0 -8px 12px var(--ds-sheet);
+  align-self: end;
+  width: 100%;
+  margin-top: auto;
+}
+.personal-app .nb-bulk-plan {
+  width: 100%;
+  margin-top: 8px;
+}
+.nb-selection-review ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.nb-selection-review li {
+  display: grid;
+  gap: 6px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ds-rule);
+  overflow-wrap: anywhere;
+}
+.nb-selection-review li span {
+  color: var(--ds-secondary);
+  font-size: 14px;
+}
+.nb-selection-review .nb-confirm-actions,
+.nb-swap-confirm .nb-confirm-actions {
+  position: sticky;
+  bottom: 0;
+  padding-block: 12px;
+  background: var(--ds-sheet);
+}
+@media (max-height: 560px) {
+  .personal-app .nb-action-sheet {
+    padding-top: 10px;
+  }
+  .nb-action-sheet--picker .nb-action-sheet-header,
+  .nb-action-sheet--editor .nb-action-sheet-header {
+    padding-bottom: 8px;
+  }
+  .nb-action-sheet--picker .nb-action-sheet-header h2,
+  .nb-action-sheet--editor .nb-action-sheet-header h2 {
+    font-size: 21px;
+    line-height: 26px;
+  }
+}
+@media (min-width: 700px) {
+  .personal-app .nb-action-sheet {
+    bottom: max(16px, var(--nb-keyboard-gap, 0px));
+    max-height: calc(var(--nb-viewport-height, 100dvh) - 32px);
+  }
+}

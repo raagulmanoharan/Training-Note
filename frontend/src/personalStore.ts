@@ -31,6 +31,14 @@ export interface PersonalExercise {
   increment: number;
   pendingWeight: string;
   pendingReps: string;
+  /** Seconds between sets; omitted or zero keeps the timer off. */
+  restSeconds?: number;
+}
+export interface PersonalRestTimer {
+  exerciseId: string;
+  /** Epoch milliseconds, so refresh and background time do not pause rest. */
+  endsAt: number;
+  durationSeconds: number;
 }
 export interface PersonalWorkout {
   id: string;
@@ -39,6 +47,7 @@ export interface PersonalWorkout {
   groups: MuscleGroup[];
   exercises: PersonalExercise[];
   activeExerciseId: string;
+  restTimer?: PersonalRestTimer;
 }
 export interface PersonalState {
   schemaVersion: 1;
@@ -223,6 +232,17 @@ export function validateState(input: unknown): asserts input is PersonalState {
       !string(w.activeExerciseId, 100)
     )
       fail();
+    if (
+      w.restTimer !== undefined &&
+      (!w.restTimer ||
+        typeof w.restTimer !== "object" ||
+        Array.isArray(w.restTimer) ||
+        !string(w.restTimer.exerciseId, 100) ||
+        !w.restTimer.exerciseId ||
+        !integer(w.restTimer.endsAt, 0, 8_640_000_000_000_000) ||
+        !integer(w.restTimer.durationSeconds, 1, 3600))
+    )
+      fail();
     workoutIds.add(w.id);
     for (const e of w.exercises) {
       if (
@@ -244,6 +264,7 @@ export function validateState(input: unknown): asserts input is PersonalState {
         !finite(e.increment, 0.1, 50) ||
         !string(e.pendingWeight, 30) ||
         !string(e.pendingReps, 30) ||
+        !(e.restSeconds === undefined || integer(e.restSeconds, 0, 3600)) ||
         !Array.isArray(e.sets) ||
         e.sets.length > 500
       )
@@ -275,6 +296,7 @@ function canonical(value: unknown): string {
     return (
       "{" +
       Object.keys(value)
+        .filter((key) => (value as Record<string, unknown>)[key] !== undefined)
         .sort()
         .map(
           (key) =>

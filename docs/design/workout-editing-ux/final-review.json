@@ -1,0 +1,45 @@
+{
+  "bulkShort": {
+    "width": 320,
+    "height": 420,
+    "footer": {
+      "top": 343,
+      "bottom": 408
+    },
+    "hit": true,
+    "horizontalOverflow": false
+  },
+  "swapOrder": [
+    "Cable lateral raise",
+    "Bent-over reverse fly",
+    "Shoulder press",
+    "Bench press",
+    "Dumbbell bench press",
+    "Chest press",
+    "Incline dumbbell press",
+    "Incline chest press",
+    "Lat pulldown",
+    "Assisted pull-up",
+    "Seated cable row",
+    "Dumbbell row",
+    "Back extension",
+    "Leg press",
+    "Goblet squat",
+    "Romanian deadlift",
+    "Barbell Romanian deadlift",
+    "Leg curl",
+    "Calf raise",
+    "Dumbbell calf raise",
+    "Dumbbell curl",
+    "Cable curl",
+    "Triceps pushdown",
+    "Overhead triceps extension",
+    "Barbell deadlift",
+    "Preacher curl",
+    "Hammer curl",
+    "Cable crunch",
+    "Crunch",
+    "Pallof press",
+    "Side bend"
+  ]
+}

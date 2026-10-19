@@ -1,0 +1,19 @@
+# Workout editing journeys
+
+The lifter is in the gym, adjusting a session before starting or between sets. They open Choose exercises, see all selected movements with the same checked treatment, toggle several choices, and save once. Search and filters never discard selections. Closing cancels the draft. Retained exercises preserve their IDs, order, actuals and next-set entries; additions follow in selection order. Removing exercises with recorded sets or an unlogged entry requires a concise review listing the affected movements before Save. Undo removals restores those exact records. An empty selection cannot erase the whole workout accidentally. Unknown historical catalog entries remain intact.
+
+When equipment is occupied, Swap opens a searchable replacement list immediately, with same-target alternatives first using canonical catalog metadata. Choosing an alternative replaces an unstarted movement in place. If sets were recorded, they stay attached to their original exercise and the replacement follows it for remaining work. An unlogged entry always requires an explicit keep/discard choice; swap never changes into Add. Current and prepared workouts use the same journey.
+
+Set and rest editing has explicit scope. Edit exercise changes that movement's planned set count, rep range and optional rest; equipment/setup is secondary. Edit sets & rest allows several checked exercises and only explicitly enabled target fields. Edit recorded sets is a separate correction flow: choose actual sets and fields, review the affected count, then Save. No target edit creates, deletes or rewrites actuals. Current/history identities, timestamps, effort and next-set drafts survive corrections.
+
+Rest is optional and off on legacy exercises. After an acknowledged set log, an enabled rest duration starts a persisted wall-clock countdown. The lifter can add 30 seconds, skip or restart without a drilldown; reopening uses elapsed wall time, and no countdown ticks write to storage. Finishing a workout clears the active timer.
+
+Sheets keep a reachable title/close control, scrolling content and persistent commit actions. Search does not automatically summon the mobile keyboard. Rows use fixed glyph and action columns around wrapping names. Validate at 320/390 px, short keyboard-like viewports and enlarged text. Failed writes leave the selected draft and recovery controls available; success is shown only after acknowledgement. Tests use isolated synthetic browser data, never user records.
+
+## Integrated delivery
+
+All flows above are implemented. Existing selected movements appear first when the picker opens, followed by other movements for the workout's muscle groups. That order remains stable while selecting; Selected shows the complete combined selection. Swap ranks exact canonical targets first, then the same muscle group, then the remaining catalog.
+
+The production build passed after the final UI changes. QA verified 66 applicable distinct scenarios: the full run reported 65 passed, one expected production-only skip and one stale rest-off snapshot assertion; the corrected assertion passed on a targeted rerun. All ten new workout-editing scenarios passed in the full run. The independent UX agent reviewed actual Chromium screens at 320/390 px and short viewports; remaining physical iOS keyboard behavior was not tested. See WORKOUT-EDITING-QA.md and WORKOUT-EDITING-UX.md.
+
+An additional UI-only release walkthrough passed locally: plan four shoulder exercises through multi-selection, swap lateral raise to its cable alternative, apply two working sets and 60-second rest to all four exercises, log two actual sets, correct both weights, and reload with the same actuals and timer deadline. Public release verification follows deployment.

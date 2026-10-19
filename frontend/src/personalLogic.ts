@@ -110,12 +110,12 @@ export function suggestSwap(
   exercise: PersonalExercise,
   workout: PersonalWorkout,
 ): CatalogExercise[] {
-  const primaryGroup =
-    exercises.find((item) => item.id === exercise.catalogId)?.group ??
-    exercise.group;
+  const canonical = exercises.find((item) => item.id === exercise.catalogId);
+  const primaryGroup = canonical?.group ?? exercise.group;
+  const primaryTarget = canonical?.target ?? exercise.target;
   return exercises.filter(
     (candidate) =>
-      candidate.target === exercise.target &&
+      candidate.target === primaryTarget &&
       candidate.group === primaryGroup &&
       candidate.id !== exercise.catalogId &&
       !workout.exercises.some(

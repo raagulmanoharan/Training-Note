@@ -294,7 +294,10 @@ test("personal UI: one-hand logger explicit actuals, corrections, undo, replacem
   await page
     .getByRole("button", { name: `Swap ${before}`, exact: true })
     .click();
-  await page.locator(".personal-inline .personal-secondary").first().click();
+  await page
+    .getByRole("button", { name: /^Swap to / })
+    .first()
+    .click();
   await expect(
     page
       .locator(".personal-notice")
@@ -838,11 +841,15 @@ test("redesign: swapping an unperformed exercise requires explicit draft discard
   await page
     .getByRole("button", { name: `Swap ${title}`, exact: true })
     .click();
-  await page.locator(".personal-inline .personal-secondary").first().click();
+  await page
+    .getByRole("button", { name: /^Swap to / })
+    .first()
+    .click();
   await expect(
     page.getByRole("heading", { name: "Discard unlogged entry and swap?" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Keep entry", exact: true }).click();
+  await page.getByRole("button", { name: "Cancel swap", exact: true }).click();
   await expect(weight).toHaveValue("40");
   await expect(reps).toHaveValue("10");
   await expect(
@@ -854,7 +861,10 @@ test("redesign: swapping an unperformed exercise requires explicit draft discard
   await page
     .getByRole("button", { name: `Swap ${title}`, exact: true })
     .click();
-  await page.locator(".personal-inline .personal-secondary").first().click();
+  await page
+    .getByRole("button", { name: /^Swap to / })
+    .first()
+    .click();
   await page
     .getByRole("button", { name: "Discard entry and swap", exact: true })
     .click();

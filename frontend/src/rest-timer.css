@@ -1,0 +1,54 @@
+.nb-rest-timer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 8px 10px 8px 14px;
+  border: 1px solid var(--ds-rule);
+  border-radius: 16px;
+  background: var(--ds-sheet);
+  color: var(--ds-ink);
+}
+
+.nb-rest-timer__readout {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.nb-rest-timer__readout > svg {
+  flex-shrink: 0;
+  color: var(--ds-secondary);
+}
+
+.nb-rest-timer__label {
+  font-size: var(--ds-type-body-size);
+  line-height: var(--ds-type-body-line);
+}
+
+.nb-rest-timer__time {
+  font-family: var(--ds-mono);
+  font-size: var(--ds-type-subheading-size);
+  line-height: var(--ds-type-subheading-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.nb-rest-timer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nb-rest-timer__actions .ds-button {
+  min-height: 44px;
+  min-width: 48px;
+}
+
+.nb-rest-timer[data-state="complete"] .nb-rest-timer__readout > svg {
+  color: var(--ds-success, var(--ds-accent));
+}

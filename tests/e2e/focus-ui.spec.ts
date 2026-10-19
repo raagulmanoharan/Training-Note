@@ -292,8 +292,7 @@ test("one-hand gym journey: six exercises, target edit, typo correction, busy eq
   const swap = page.getByRole("dialog", { name: "Swap exercise", exact: true });
   await shot(page, "swap");
   await swap
-    .getByRole("button")
-    .filter({ hasText: "Assisted pull-up" })
+    .getByRole("button", { name: "Swap to Assisted pull-up", exact: true })
     .click();
   await saved(page);
   let workout = (await read(page)).current!;
@@ -309,15 +308,18 @@ test("one-hand gym journey: six exercises, target edit, typo correction, busy eq
     .getByRole("button", { name: "Add exercise", exact: true })
     .click();
   const picker = page.getByRole("dialog", {
-    name: "Add exercise",
+    name: "Choose exercises",
     exact: true,
   });
   await picker
-    .getByRole("searchbox", { name: "Find an exercise", exact: true })
+    .getByRole("searchbox", { name: "Search exercises", exact: true })
     .fill("Cable curl");
   await shot(page, "add-exercise");
   await picker
-    .getByRole("button", { name: "Add Cable curl", exact: true })
+    .getByRole("checkbox", { name: "Cable curl", exact: true })
+    .click();
+  await picker
+    .getByRole("button", { name: "Save exercises", exact: true })
     .click();
   await saved(page);
   const beforeRemove = (await read(page)).current!;
@@ -511,6 +513,7 @@ test("exercise target editor validates and keeps a failed write recoverable with
     plannedSets: 4,
     repMin: 9,
     repMax: 12,
+    restSeconds: 0,
   });
   await page.reload();
   expect((await read(page)).current).toEqual(after);

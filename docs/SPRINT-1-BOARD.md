@@ -109,3 +109,14 @@ This replaces the previous pale-card visual direction. It does not claim the ind
 | Demonstrate the real Edit/Delete/Undo interaction in the workbench | Component agent | Done | Actual 320 px Chromium interaction check |
 | Verify correction, deletion, Undo, failure recovery and draft preservation | QA agent + root | Done | SET-ACTIONS-QA.md; 53 passed, 1 expected production-only skip; mobile and enlarged-text captures |
 | Publish and verify on the existing Pages origin | Root | Done | Pages run 39271580133 succeeded; live menu/edit/delete/Undo/reload and offline logging checks passed |
+
+## 19 October 2026 — workout editing flow correction
+
+| Story | Owner | Status | Evidence |
+| --- | --- | --- | --- |
+| Map real in-gym selection, swap, editing and rest journeys | UX + root | Done | WORKOUT-EDITING-UX.md and WORKOUT-EDITING-INTEGRATION.md, recorded before implementation |
+| Select and review existing/new exercises together; save once | Picker engineer + root | Done locally; QA passed | Unified Selected view, unchanged old IDs/order, explicit review and Undo for removed records |
+| Replace unavailable equipment without leaving Swap | Root | Done locally; QA passed | Searchable picker, canonical same-target ranking, pending-entry guard even after recorded sets |
+| Edit one or several planned targets; separately correct actual sets | Editor engineer + root | Done locally; QA passed | BULK-EDITING.md; opt-in fields and explicit selection scope |
+| Optional rest preference and durable countdown | Rest engineer + root | Done locally; QA passed | REST-FLOW.md; legacy backup/checksum compatibility and wall-clock timer |
+| Narrow-screen, failure/retry, regression and public release checks | QA + UX + root | Publishing | WORKOUT-EDITING-QA.md; 66 applicable checks verified, production build passed; live checks pending |

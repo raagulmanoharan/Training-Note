@@ -1,0 +1,236 @@
+{
+  "metrics": [
+    {
+      "name": "picker-all-390",
+      "viewport": [
+        390,
+        844
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 844,
+        "width": 390,
+        "height": 832
+      },
+      "header": {
+        "top": 31,
+        "bottom": 95,
+        "width": 344,
+        "height": 64
+      },
+      "results": {
+        "top": 207,
+        "bottom": 719,
+        "width": 344,
+        "height": 512
+      },
+      "footer": {
+        "top": 719,
+        "bottom": 832,
+        "width": 344,
+        "height": 113
+      },
+      "horizontalOverflow": false,
+      "activeElement": "H2"
+    },
+    {
+      "name": "picker-selected-390",
+      "viewport": [
+        390,
+        844
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 844,
+        "width": 390,
+        "height": 832
+      },
+      "header": {
+        "top": 31,
+        "bottom": 95,
+        "width": 344,
+        "height": 64
+      },
+      "results": {
+        "top": 207,
+        "bottom": 719,
+        "width": 344,
+        "height": 512
+      },
+      "footer": {
+        "top": 719,
+        "bottom": 832,
+        "width": 344,
+        "height": 113
+      },
+      "horizontalOverflow": false,
+      "activeElement": "BUTTON"
+    },
+    {
+      "name": "picker-selected-320",
+      "viewport": [
+        320,
+        740
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 740,
+        "width": 320,
+        "height": 728
+      },
+      "header": {
+        "top": 31,
+        "bottom": 95,
+        "width": 286,
+        "height": 64
+      },
+      "results": {
+        "top": 207,
+        "bottom": 615,
+        "width": 286,
+        "height": 408
+      },
+      "footer": {
+        "top": 615,
+        "bottom": 728,
+        "width": 286,
+        "height": 113
+      },
+      "horizontalOverflow": false,
+      "activeElement": "BUTTON"
+    },
+    {
+      "name": "picker-short-320",
+      "viewport": [
+        320,
+        420
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 420,
+        "width": 320,
+        "height": 408
+      },
+      "header": {
+        "top": 23,
+        "bottom": 79,
+        "width": 286,
+        "height": 56
+      },
+      "results": {
+        "top": 183,
+        "bottom": 299,
+        "width": 286,
+        "height": 116
+      },
+      "footer": {
+        "top": 299,
+        "bottom": 408,
+        "width": 286,
+        "height": 109
+      },
+      "horizontalOverflow": false,
+      "activeElement": "BUTTON"
+    },
+    {
+      "name": "swap-stale-target-390",
+      "viewport": [
+        390,
+        844
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 844,
+        "width": 390,
+        "height": 832
+      },
+      "header": {
+        "top": 31,
+        "bottom": 95,
+        "width": 344,
+        "height": 64
+      },
+      "results": {
+        "top": 239,
+        "bottom": 775,
+        "width": 344,
+        "height": 536
+      },
+      "footer": {
+        "top": 775,
+        "bottom": 832,
+        "width": 344,
+        "height": 57
+      },
+      "horizontalOverflow": false,
+      "activeElement": "H2"
+    },
+    {
+      "name": "swap-short-320",
+      "viewport": [
+        320,
+        420
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 420,
+        "width": 320,
+        "height": 408
+      },
+      "header": {
+        "top": 23,
+        "bottom": 79,
+        "width": 286,
+        "height": 56
+      },
+      "results": {
+        "top": 211,
+        "bottom": 355,
+        "width": 286,
+        "height": 144
+      },
+      "footer": {
+        "top": 355,
+        "bottom": 408,
+        "width": 286,
+        "height": 53
+      },
+      "horizontalOverflow": false,
+      "activeElement": "H2"
+    },
+    {
+      "name": "long-name-short-320",
+      "viewport": [
+        320,
+        420
+      ],
+      "dialog": {
+        "top": 12,
+        "bottom": 420,
+        "width": 320,
+        "height": 408
+      },
+      "header": {
+        "top": 23,
+        "bottom": 79,
+        "width": 286,
+        "height": 56
+      },
+      "results": {
+        "top": 183,
+        "bottom": 299,
+        "width": 286,
+        "height": 116
+      },
+      "footer": {
+        "top": 299,
+        "bottom": 408,
+        "width": 286,
+        "height": 109
+      },
+      "horizontalOverflow": false,
+      "activeElement": "INPUT"
+    }
+  ],
+  "errors": []
+}

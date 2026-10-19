@@ -61,7 +61,10 @@ test("complete workout: plan, correct, swap, complete every remaining set, resum
   await page
     .getByRole("button", { name: `Swap ${original.name}`, exact: true })
     .click();
-  await page.locator(".personal-inline .personal-secondary").first().click();
+  await page
+    .getByRole("button", { name: /^Swap to / })
+    .first()
+    .click();
   state = await read(page);
   expect(
     state.current.exercises.find((x: any) => x.id === original.id).sets,

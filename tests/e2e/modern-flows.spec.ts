@@ -207,29 +207,40 @@ test("mid-session add preserves another exercise draft; removing actual work req
     .getByRole("button", { name: "Add exercise", exact: true })
     .click();
   const picker = page.getByRole("dialog", {
-    name: "Add exercise",
+    name: "Choose exercises",
     exact: true,
   });
   await expect(picker).toBeVisible();
   await picker
-    .getByRole("searchbox", { name: "Find an exercise", exact: true })
+    .getByRole("searchbox", { name: "Search exercises", exact: true })
     .fill("curl");
   await expect(
-    picker.getByRole("button", {
-      name: "Dumbbell curl is already in this workout",
+    picker.getByRole("checkbox", {
+      name: "Dumbbell curl",
       exact: true,
     }),
-  ).toBeDisabled();
+  ).toBeChecked();
   await narrow(page);
   await picker
-    .getByRole("button", { name: "Add Hammer curl", exact: true })
+    .getByRole("checkbox", { name: "Hammer curl", exact: true })
+    .click();
+  await picker
+    .getByRole("button", { name: "Save exercises", exact: true })
     .click();
   await saved(page);
   let workout = (await read(page)).current!;
   expect(workout.exercises.find((x) => x.id === original.id)).toEqual(original);
   expect(workout.exercises).toHaveLength(3);
   const added = workout.exercises.find((x) => x.name === "Hammer curl")!;
-  expect(workout.activeExerciseId).toBe(added.id);
+  expect(
+    workout.exercises.some((item) => item.id === workout.activeExerciseId),
+  ).toBe(true);
+  await page
+    .locator(".nb-exercise-heading")
+    .filter({
+      has: page.getByRole("heading", { name: "Hammer curl", exact: true }),
+    })
+    .click();
   expect(added.sets).toEqual([]);
   await log(page, "15", "12");
   await enter(page, "17.5", "10");
@@ -309,8 +320,7 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
     .click();
   await narrow(page);
   await page
-    .locator(".personal-inline .personal-secondary")
-    .filter({ hasText: "Hammer curl" })
+    .getByRole("button", { name: "Swap to Hammer curl", exact: true })
     .click();
   await saved(page);
   let workout = (await read(page)).current!;
@@ -327,8 +337,7 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
     .getByRole("button", { name: "Swap Hammer curl", exact: true })
     .click();
   await page
-    .locator(".personal-inline .personal-secondary")
-    .filter({ hasText: "Preacher curl" })
+    .getByRole("button", { name: "Swap to Preacher curl", exact: true })
     .click();
   const confirm = page.getByRole("group", {
     name: "Confirm exercise swap",
@@ -340,6 +349,7 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
     .getByRole("button", { name: "Keep entry", exact: true })
     .click();
   expect((await read(page)).current).toEqual(withDraft);
+  await page.getByRole("button", { name: "Cancel swap", exact: true }).click();
   await page
     .getByRole("button", { name: "More options for Hammer curl", exact: true })
     .click();
@@ -347,8 +357,7 @@ test("swap keeps recorded work attributed to its original exercise and confirms 
     .getByRole("button", { name: "Swap Hammer curl", exact: true })
     .click();
   await page
-    .locator(".personal-inline .personal-secondary")
-    .filter({ hasText: "Preacher curl" })
+    .getByRole("button", { name: "Swap to Preacher curl", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Discard entry and swap", exact: true })
@@ -538,9 +547,12 @@ test("empty preview and no search results provide a clear recovery path without 
   expect((await read(page)).current).toBeNull();
   await narrow(page);
   await page.getByRole("button", { name: "Add exercise", exact: true }).click();
-  let picker = page.getByRole("dialog", { name: "Add exercise", exact: true });
+  let picker = page.getByRole("dialog", {
+    name: "Choose exercises",
+    exact: true,
+  });
   await picker
-    .getByRole("searchbox", { name: "Find an exercise", exact: true })
+    .getByRole("searchbox", { name: "Search exercises", exact: true })
     .fill("no such movement 123");
   await expect(
     picker.getByRole("button", { name: "Clear filters", exact: true }),
@@ -549,7 +561,7 @@ test("empty preview and no search results provide a clear recovery path without 
   // Chromium first clears a focused native search field on Escape.
   await page.keyboard.press("Escape");
   await expect(
-    picker.getByRole("searchbox", { name: "Find an exercise", exact: true }),
+    picker.getByRole("searchbox", { name: "Search exercises", exact: true }),
   ).toHaveValue("");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Escape");
@@ -558,19 +570,22 @@ test("empty preview and no search results provide a clear recovery path without 
     page.getByRole("button", { name: "Add exercise", exact: true }),
   ).toBeFocused();
   await page.getByRole("button", { name: "Add exercise", exact: true }).click();
-  picker = page.getByRole("dialog", { name: "Add exercise", exact: true });
+  picker = page.getByRole("dialog", { name: "Choose exercises", exact: true });
   await picker
-    .getByRole("searchbox", { name: "Find an exercise", exact: true })
+    .getByRole("searchbox", { name: "Search exercises", exact: true })
     .fill("no such movement 123");
   await picker
     .getByRole("button", { name: "Clear filters", exact: true })
     .click();
   await picker.getByRole("button", { name: "Biceps", exact: true }).click();
   await expect(
-    picker.getByRole("button", { name: "Add Triceps pushdown", exact: true }),
+    picker.getByRole("checkbox", { name: "Triceps pushdown", exact: true }),
   ).toHaveCount(0);
   await picker
-    .getByRole("button", { name: "Add Hammer curl", exact: true })
+    .getByRole("checkbox", { name: "Hammer curl", exact: true })
+    .click();
+  await picker
+    .getByRole("button", { name: "Save exercises", exact: true })
     .click();
   await expect(page.locator(".nb-lineup-row h3")).toHaveText(["Hammer curl"]);
   await page

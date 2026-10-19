@@ -1,0 +1,243 @@
+/* Form controls shared by the exercise, workout-target and receipt editors. */
+.personal-app .nb-workout-editor {
+  display: grid;
+  min-width: 0;
+  gap: 20px;
+}
+.personal-app .nb-workout-editor * {
+  box-sizing: border-box;
+}
+.personal-app .nb-workout-editor .nb-editor-context,
+.personal-app .nb-workout-editor .nb-editor-hint {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.personal-app .nb-workout-editor .nb-editor-context {
+  color: var(--ds-secondary);
+  font-size: 15px;
+  line-height: 22px;
+}
+.personal-app .nb-workout-editor .nb-editor-hint {
+  color: var(--ds-secondary);
+  font-size: 13px;
+  line-height: 19px;
+}
+.personal-app .nb-workout-editor .nb-editor-field {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  margin: 0;
+}
+.personal-app .nb-workout-editor .nb-editor-field-title {
+  color: var(--ds-ink);
+  font-size: 15px;
+  line-height: 22px;
+}
+.personal-app .nb-workout-editor label {
+  min-width: 0;
+}
+.personal-app .nb-workout-editor .ds-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  font-size: 16px;
+}
+.personal-app .nb-workout-editor .nb-editor-stepper {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 8px;
+}
+.personal-app .nb-workout-editor .nb-editor-stepper > .ds-icon-button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--ds-rule);
+  background: var(--ds-raised);
+}
+.personal-app .nb-workout-editor .nb-editor-stepper > .ds-input {
+  text-align: center;
+  font-family: var(--ds-mono);
+}
+.personal-app .nb-workout-editor .nb-editor-range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+.personal-app .nb-workout-editor .nb-editor-range > label {
+  display: grid;
+  gap: 6px;
+  color: var(--ds-secondary);
+  font-size: 13px;
+  line-height: 19px;
+}
+.personal-app .nb-workout-editor .nb-editor-range > span {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  color: var(--ds-secondary);
+}
+.personal-app .nb-workout-editor .nb-editor-rest {
+  display: grid;
+  gap: 10px;
+}
+.personal-app .nb-workout-editor .nb-editor-presets {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.personal-app .nb-workout-editor .nb-editor-presets > .ds-button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 2px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.personal-app
+  .nb-workout-editor
+  .nb-editor-presets
+  > .ds-button[aria-pressed="true"] {
+  background: var(--ds-accent);
+  color: var(--ds-canvas);
+  border-color: var(--ds-accent);
+}
+.personal-app .nb-workout-editor .nb-editor-rest-custom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(80px, 110px);
+  align-items: center;
+  gap: 12px;
+  color: var(--ds-secondary);
+  font-size: 13px;
+}
+.personal-app .nb-workout-editor .nb-editor-rest-custom .ds-input {
+  text-align: center;
+}
+.personal-app .nb-workout-editor .nb-editor-advanced {
+  border-top: 1px solid var(--ds-rule);
+}
+.personal-app .nb-workout-editor .nb-editor-advanced > .ds-disclosure__content {
+  display: grid;
+  gap: 16px;
+}
+.personal-app .nb-workout-editor .nb-editor-advanced label {
+  display: grid;
+  gap: 8px;
+}
+.personal-app .nb-workout-editor .nb-editor-selection {
+  padding: 0 12px;
+  border: 1px solid var(--ds-rule);
+  border-radius: 14px;
+}
+.personal-app .nb-workout-editor .ds-disclosure > summary {
+  min-height: 48px;
+  padding-block: 12px;
+}
+.personal-app .nb-workout-editor .ds-disclosure > summary > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.personal-app .nb-workout-editor .nb-editor-selection .ds-disclosure__content {
+  padding-bottom: 12px;
+}
+.personal-app .nb-workout-editor .nb-editor-checklist {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+.personal-app .nb-workout-editor .nb-editor-check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 0;
+  cursor: pointer;
+  border-bottom: 1px solid var(--ds-rule);
+}
+.personal-app .nb-workout-editor .nb-editor-check-row:last-child {
+  border-bottom: 0;
+}
+.personal-app .nb-workout-editor input[type="checkbox"] {
+  appearance: auto;
+  width: 21px;
+  height: 21px;
+  min-height: 21px;
+  flex: 0 0 21px;
+  margin: 0;
+  accent-color: var(--ds-accent);
+  cursor: pointer;
+}
+.personal-app .nb-workout-editor .nb-editor-check-row > span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.personal-app .nb-workout-editor .nb-editor-check-row strong {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.personal-app .nb-workout-editor .nb-editor-check-row small {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--ds-secondary);
+  overflow-wrap: anywhere;
+}
+.personal-app .nb-workout-editor .nb-editor-field-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 22px;
+}
+.personal-app .nb-workout-editor .nb-editor-field-toggle > span {
+  min-width: 0;
+  flex: 1 1 115px;
+  overflow-wrap: anywhere;
+}
+.personal-app .nb-workout-editor .nb-editor-field-toggle > small {
+  color: var(--ds-secondary);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+.personal-app .nb-workout-editor .nb-editor-selection-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 13px;
+  color: var(--ds-secondary);
+}
+.personal-app .nb-workout-editor .nb-editor-selection-heading .ds-button {
+  padding-inline: 4px;
+}
+.personal-app .nb-workout-editor .nb-editor-actual-row > span {
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.personal-app .nb-workout-editor .nb-editor-actual-row > strong {
+  text-align: right;
+  font-family: var(--ds-mono);
+}
+.personal-app .nb-workout-editor .nb-editor-footer {
+  display: grid;
+  grid-template-columns: minmax(76px, 0.65fr) minmax(0, 1.35fr);
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ds-rule);
+}
+.personal-app .nb-workout-editor .nb-editor-footer > .ds-button {
+  min-height: 48px;
+  padding: 12px 8px;
+  white-space: normal;
+}
+.personal-app .nb-workout-editor .nb-editor-footer .ds-button__normal {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
