@@ -6,9 +6,9 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build && node scripts/build-pwa.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "playwright test personal.spec.ts effort.spec.ts design-system.spec.ts two-screen.spec.ts full-workout.spec.ts session-card.spec.ts",
+    "test": "playwright test personal.spec.ts effort.spec.ts design-system.spec.ts two-screen.spec.ts full-workout.spec.ts session-card.spec.ts manual-workout.spec.ts",
     "format": "prettier --write frontend/src vite.config.ts playwright.config.ts scripts/build-pwa.mjs",
-    "test:e2e": "playwright test personal.spec.ts effort.spec.ts design-system.spec.ts two-screen.spec.ts full-workout.spec.ts session-card.spec.ts",
+    "test:e2e": "playwright test personal.spec.ts effort.spec.ts design-system.spec.ts two-screen.spec.ts full-workout.spec.ts session-card.spec.ts manual-workout.spec.ts",
     "test:pages": "playwright test pages.spec.ts"
   },
   "dependencies": {

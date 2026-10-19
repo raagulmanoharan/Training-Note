@@ -53,6 +53,7 @@ import {
 } from "./personalCatalog";
 import {
   generatePlan,
+  generateCustomPlan,
   suggestSwap,
   progression,
   availableTargets,
@@ -102,6 +103,9 @@ export default function PersonalApp() {
   useEffect(() => {
     if (tab === "home") window.scrollTo({ top: 0, behavior: "instant" });
   }, [tab]);
+  const [manualSelection, setManualSelection] = useState(false);
+  const [pickedExercises, setPickedExercises] = useState<string[]>([]);
+  const [exerciseSearch, setExerciseSearch] = useState("");
   const [selected, setSelected] = useState<MuscleGroup[]>([]),
     [count, setCount] = useState(4),
     [plan, setPlan] = useState<PersonalWorkout | null>(null),
@@ -272,7 +276,11 @@ export default function PersonalApp() {
   }
   function makePlan() {
     try {
-      setPlan(generatePlan(selected, count, state!.settings));
+      setPlan(
+        manualSelection
+          ? generateCustomPlan(pickedExercises, state!.settings)
+          : generatePlan(selected, count, state!.settings),
+      );
       setReviewing(true);
       setError("");
     } catch (e) {
@@ -303,6 +311,13 @@ export default function PersonalApp() {
       activeExerciseId: exercises[0]?.id || "",
     });
     setSelected([...previous.groups]);
+    setPickedExercises(
+      Array.from(new Set(exercises.map((e) => e.catalogId))).filter((id) =>
+        catalogExercises.some((e) => e.id === id),
+      ),
+    );
+    setManualSelection(true);
+    setExerciseSearch("");
     setCount(exercises.length);
     setReviewing(true);
     setTab("today");
@@ -992,6 +1007,13 @@ export default function PersonalApp() {
                               ? selected.filter((x) => x !== g.id)
                               : [...selected, g.id];
                             setSelected(next);
+                            setPickedExercises((ids) =>
+                              ids.filter((id) =>
+                                catalogExercises.some(
+                                  (e) => e.id === id && next.includes(e.group),
+                                ),
+                              ),
+                            );
                             setCount((c) =>
                               Math.min(
                                 12,
@@ -1006,45 +1028,164 @@ export default function PersonalApp() {
                         </DSChoice>
                       ))}
                     </div>
-                    <DSStepper
-                      label="Exercises"
-                      value={String(count)}
-                      min={Math.max(1, selected.length)}
-                      max={
-                        selected.length
-                          ? Math.min(12, availableTargets(selected))
-                          : 12
-                      }
-                      onChange={(value) => {
-                        setCount(
-                          Math.min(
-                            selected.length ? availableTargets(selected) : 12,
-                            12,
-                            Math.max(1, selected.length, Number(value) || 1),
-                          ),
-                        );
-                        setPlan(null);
-                      }}
-                      onDecrement={() => {
-                        setCount((c) => Math.max(1, selected.length, c - 1));
-                        setPlan(null);
-                      }}
-                      onIncrement={() => {
-                        setCount((c) =>
-                          Math.min(12, availableTargets(selected) || 12, c + 1),
-                        );
-                        setPlan(null);
-                      }}
-                      boundaryHint={
-                        selected.length
-                          ? `${selected.length}–${Math.min(12, availableTargets(selected))} exercises across distinct primary targets.`
-                          : "Choose one or more muscle groups."
-                      }
-                    />
+                    <div
+                      className="nb-planning-mode"
+                      role="group"
+                      aria-label="Workout planning mode"
+                    >
+                      <DSButton
+                        variant={manualSelection ? "secondary" : "primary"}
+                        aria-pressed={!manualSelection}
+                        onClick={() => {
+                          setManualSelection(false);
+                          setPlan(null);
+                        }}
+                      >
+                        Suggest exercises
+                      </DSButton>
+                      <DSButton
+                        variant={manualSelection ? "primary" : "secondary"}
+                        aria-pressed={manualSelection}
+                        onClick={() => {
+                          setManualSelection(true);
+                          setPlan(null);
+                        }}
+                      >
+                        Pick exercises
+                      </DSButton>
+                    </div>
+                    {manualSelection ? (
+                      <div className="nb-exercise-picker">
+                        <label>
+                          Find an exercise
+                          <DSInput
+                            type="search"
+                            value={exerciseSearch}
+                            onChange={(e) => setExerciseSearch(e.target.value)}
+                            placeholder="Search exercises"
+                          />
+                        </label>
+                        <p className="personal-muted">
+                          {pickedExercises.length} selected · tap in your
+                          workout order
+                        </p>
+                        {!selected.length && (
+                          <p className="personal-muted">
+                            Choose muscle groups above to see exercises.
+                          </p>
+                        )}
+                        <div className="nb-picker-list">
+                          {catalogExercises
+                            .filter(
+                              (e) =>
+                                selected.includes(e.group) &&
+                                e.name
+                                  .toLowerCase()
+                                  .includes(
+                                    exerciseSearch.trim().toLowerCase(),
+                                  ),
+                            )
+                            .map((e) => {
+                              const index = pickedExercises.indexOf(e.id);
+                              return (
+                                <DSChoice
+                                  key={e.id}
+                                  selected={index >= 0}
+                                  aria-label={e.name}
+                                  disabled={
+                                    index < 0 && pickedExercises.length >= 20
+                                  }
+                                  onClick={() => {
+                                    setPickedExercises((ids) =>
+                                      index >= 0
+                                        ? ids.filter((id) => id !== e.id)
+                                        : [...ids, e.id],
+                                    );
+                                    setPlan(null);
+                                  }}
+                                >
+                                  <span>
+                                    {index >= 0 ? `${index + 1}. ` : ""}
+                                    {e.name}
+                                  </span>
+                                  <small>{e.equipment}</small>
+                                </DSChoice>
+                              );
+                            })}
+                          {!!selected.length &&
+                            !catalogExercises.some(
+                              (e) =>
+                                selected.includes(e.group) &&
+                                e.name
+                                  .toLowerCase()
+                                  .includes(
+                                    exerciseSearch.trim().toLowerCase(),
+                                  ),
+                            ) && (
+                              <p className="personal-muted">
+                                No matching exercises. Try another name.
+                              </p>
+                            )}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <DSStepper
+                          label="Exercises"
+                          value={String(count)}
+                          min={Math.max(1, selected.length)}
+                          max={
+                            selected.length
+                              ? Math.min(12, availableTargets(selected))
+                              : 12
+                          }
+                          onChange={(value) => {
+                            setCount(
+                              Math.min(
+                                selected.length
+                                  ? availableTargets(selected)
+                                  : 12,
+                                12,
+                                Math.max(
+                                  1,
+                                  selected.length,
+                                  Number(value) || 1,
+                                ),
+                              ),
+                            );
+                            setPlan(null);
+                          }}
+                          onDecrement={() => {
+                            setCount((c) =>
+                              Math.max(1, selected.length, c - 1),
+                            );
+                            setPlan(null);
+                          }}
+                          onIncrement={() => {
+                            setCount((c) =>
+                              Math.min(
+                                12,
+                                availableTargets(selected) || 12,
+                                c + 1,
+                              ),
+                            );
+                            setPlan(null);
+                          }}
+                          boundaryHint={
+                            selected.length
+                              ? `${selected.length}–${Math.min(12, availableTargets(selected))} exercises across distinct primary targets.`
+                              : "Choose one or more muscle groups."
+                          }
+                        />
+                      </>
+                    )}
                     <DSButton
                       variant="primary"
                       className="personal-primary"
-                      disabled={!selected.length}
+                      disabled={
+                        !selected.length ||
+                        (manualSelection && !pickedExercises.length)
+                      }
                       onClick={() => (plan ? setReviewing(true) : makePlan())}
                     >
                       Build my workout <ChevronRight size={18} />
@@ -1162,9 +1303,11 @@ export default function PersonalApp() {
                       title="About muscle coverage"
                     >
                       <p className="personal-muted">
-                        Each movement has a different primary target. Compound
-                        exercises also use secondary muscles, so some overlap is
-                        normal. This is a starting point, not a prescription.
+                        Suggestions spread movements across primary targets. If
+                        you pick exercises yourself, shared targets and
+                        variations are allowed. Compound exercises can also
+                        overlap. Adjust the editable sets and reps to your own
+                        programme.
                       </p>
                     </DSDisclosure>
                     <DSButton

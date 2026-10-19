@@ -76,6 +76,27 @@ export function generatePlan(
     activeExerciseId: planned[0].id,
   };
 }
+/** Explicit exercise choices may share targets; suggestions keep their existing coverage rule. */
+export function generateCustomPlan(
+  ids: string[],
+  settings: PersonalState["settings"],
+): PersonalWorkout {
+  if (!ids.length || ids.length > 20 || new Set(ids).size !== ids.length)
+    throw new Error("Choose 1–20 different exercises.");
+  const chosen = ids.map((id) => exercises.find((e) => e.id === id));
+  if (chosen.some((e) => !e))
+    throw new Error(
+      "One of the selected exercises is unavailable. Choose it again.",
+    );
+  const planned = chosen.map((e) => makeExercise(e!, settings));
+  return {
+    id: crypto.randomUUID(),
+    startedAt: new Date().toISOString(),
+    groups: Array.from(new Set(planned.map((e) => e.group))),
+    exercises: planned,
+    activeExerciseId: planned[0].id,
+  };
+}
 export function suggestSwap(
   exercise: PersonalExercise,
   workout: PersonalWorkout,

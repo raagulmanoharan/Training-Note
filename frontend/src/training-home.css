@@ -1116,3 +1116,27 @@
     padding: 6px 12px;
   }
 }
+.nb-planning-mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0;
+}
+.nb-planning-mode .ds-button {
+  padding-inline: 10px;
+}
+.nb-exercise-picker {
+  display: grid;
+  gap: 12px;
+}
+.nb-picker-list {
+  display: grid;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 4px;
+  scrollbar-width: thin;
+}
+.nb-picker-list .ds-choice {
+  min-height: 64px;
+}
